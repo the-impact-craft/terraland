@@ -1,7 +1,6 @@
 import asyncio
 import atexit
 import os
-import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -13,7 +12,6 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Vertical, Horizontal, Container
 from textual.css.query import NoMatches
-from textual.events import MouseMove, MouseUp
 from textual.widgets import Footer, Label
 from textual.widgets import RichLog
 from textual.widgets._toggle_button import ToggleButton
