@@ -11,7 +11,7 @@ from terry.presentation.cli.custom.messages.move_resizing_rule import (
 
 class ResizingRule(Rule, can_focus=True):
     dragging: reactive[bool] = reactive(False)
-    position: reactive[MoveEvent] | None = reactive(None)
+    position: reactive[MoveEvent | None] = reactive(None)
 
     def __init__(self, prev_component_id, next_component_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,7 +23,7 @@ class ResizingRule(Rule, can_focus=True):
     def on_mouse_down(self, event: MouseDown) -> None:
         """Start dragging when the separator is clicked."""
         self.dragging = True
-        self.post_message(SelectResizingRule(id=self.id))
+        self.post_message(SelectResizingRule(id=self.id))  # type: ignore
 
     def on_mouse_up(self, event: MouseUp) -> None:
         """Stop dragging when mouse is released."""
@@ -49,4 +49,4 @@ class ResizingRule(Rule, can_focus=True):
         self.dragging = False
         self.position = None
 
-        self.post_message(ReleaseResizingRule(id=self.id))
+        self.post_message(ReleaseResizingRule(id=self.id))  # type: ignore

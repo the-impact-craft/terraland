@@ -4,9 +4,9 @@ from textual.events import MouseMove, MouseUp
 
 from terry.presentation.cli.custom.messages.move_resizing_rule import (
     MoveEvent,
-    MoveResizingRule, 
-    SelectResizingRule, 
-    ReleaseResizingRule, 
+    MoveResizingRule,
+    SelectResizingRule,
+    ReleaseResizingRule,
 )
 from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
 from terry.settings import MIN_SECTION_DIMENSION
@@ -38,7 +38,7 @@ class ResizeContainersWatcherMixin:
         Arguments:
             event (SelectResizingRule): The event containing the resizing rule id.
         """
-        self.active_resizing_rule = self.query_one(f'#{event.id}')
+        self.active_resizing_rule = self.query_one(f'#{event.id}')  # type: ignore
 
     def on_release_resizing_rule(self, _: ReleaseResizingRule) -> None:
         """
@@ -67,8 +67,8 @@ class ResizeContainersWatcherMixin:
             
         """
 
-        prev_component = self.query_one(f'#{event.previous_component_id}')
-        next_component = self.query_one(f'#{event.next_component_id}')
+        prev_component = self.query_one(f'#{event.previous_component_id}')  # type: ignore
+        next_component = self.query_one(f'#{event.next_component_id}')  # type: ignore
 
         delta = event.delta
 
@@ -79,7 +79,7 @@ class ResizeContainersWatcherMixin:
             prev_component.styles.height = f"{max(MIN_SECTION_DIMENSION, prev_component.styles.height.value + delta)}%"
             next_component.styles.height = f"{max(MIN_SECTION_DIMENSION, next_component.styles.height.value - delta)}%"
 
-        self.refresh()
+        self.refresh()  # type: ignore
 
     def on_mouse_move(self, event: MouseMove) -> None:
         """
