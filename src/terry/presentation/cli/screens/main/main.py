@@ -66,6 +66,8 @@ from terry.presentation.cli.screens.main.containers.header import Header
 from terry.presentation.cli.screens.main.containers.project_tree import ProjectTree
 from terry.presentation.cli.screens.main.containers.state_files import StateFiles
 from terry.presentation.cli.screens.main.containers.workspaces import Workspaces
+from terry.presentation.cli.screens.main.mixins.auto_mixin import AutoMixin
+from terry.presentation.cli.screens.main.mixins.resize_containers_watcher_mixin import ResizeContainersWatcherMixin
 from terry.presentation.cli.screens.search.main import SearchScreen
 from terry.presentation.cli.screens.tf_command_output.main import TerraformCommandOutputScreen
 from terry.presentation.cli.themes.arctic import arctic_theme
@@ -79,8 +81,6 @@ from terry.settings import (
     DEFAULT_THEME,
 )
 
-from terry.presentation.cli.custom.messages.move_resizing_rule import MoveResizingRule, SelectResizingRule, \
-    ReleaseResizingRule, MoveEvent
 from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
 
 STATUS_TO_COLOR: dict = {
@@ -110,7 +110,11 @@ class TerraformCommandExecutor:
         self.command = []
 
 
-class Terry(App):
+class Terry(
+    App, 
+    AutoMixin,
+    ResizeContainersWatcherMixin
+):
     """The main app for the Terry project."""
 
     CSS_PATH = "styles.tcss"
@@ -166,7 +170,6 @@ class Terry(App):
         self.log_component: RichLog | None = None  # type: ignore
         self.workspaces_container: Workspaces | None = None
         self.project_tree_container: ProjectTree | None = None
-
 
         self.active_resizing_rule: ResizingRule | None = None
 
@@ -644,59 +647,6 @@ class Terry(App):
     # Terraform actions methods
     # ------------------------------------------------------------------------------------------------------------------
 
-    @on(SelectResizingRule)
-    def on_select_resizing_rule(self, event: SelectResizingRule):
-        """Start dragging when the separator is clicked."""
-        self.active_resizing_rule = self.query_one(f'#{event.id}')
-
-    @on(ReleaseResizingRule)
-    def on_release_resizing_rule(self, event: ReleaseResizingRule):
-        self.active_resizing_rule = None
-
-    @on(MoveResizingRule)
-    def on_move_resizing_rule(self, event: MoveResizingRule):
-        """Resize panels when dragging."""
-
-        previous_component = self.query_one(f'#{event.previous_component_id}')
-        next_component = self.query_one(f'#{event.next_component_id}')
-
-        dx = event.delta
-
-        if event.orientation == "vertical":
-            left_width = max(10, previous_component.styles.width.value + dx)  # type: ignore
-            right_width = max(10, next_component.styles.width.value - dx)  # type: ignore
-
-            previous_component.styles.width = f"{left_width}%"
-            next_component.styles.width = f"{right_width}%"
-        elif event.orientation == "horizontal":
-            top_height = max(10, previous_component.styles.height.value + dx) # type: ignore
-            bottom_height = max(10, next_component.styles.height.value - dx)   # type: ignore
-
-            previous_component.styles.height = f'{top_height}%'
-            next_component.styles.height = f'{bottom_height}%' 
-        self.refresh()
-
-
-    def on_mouse_move(self, event: MouseMove) -> None:
-        """Resize panels when dragging."""
-        
-        if self.active_resizing_rule and self.active_resizing_rule.dragging:
-
-            delta = None
-            if self.active_resizing_rule.orientation == "horizontal":
-                delta = event.delta_y
-            if self.active_resizing_rule.orientation == "vertical":
-                delta = event.delta_x
-            if not delta:
-                return 
-            self.active_resizing_rule.position = MoveEvent(timestamp=time.time(),  delta=delta)
-
-        
-    def on_mouse_up(self, event: MouseUp) -> None:
-        """Stop dragging when mouse is released."""
-        if self.active_resizing_rule:
-            self.active_resizing_rule.cleanup()
-            self.active_resizing_rule = None
 
     @on(ClickableTfActionLabel.ClickEvent)
     def handle_tf_action_click(self, event: ClickableTfActionLabel.ClickEvent) -> None:
