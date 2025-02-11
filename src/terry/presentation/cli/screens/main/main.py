@@ -1,6 +1,7 @@
 import asyncio
 import atexit
 import os
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -12,6 +13,7 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Vertical, Horizontal, Container
 from textual.css.query import NoMatches
+from textual.events import MouseMove, MouseUp
 from textual.widgets import Footer, Label
 from textual.widgets import RichLog
 from textual.widgets._toggle_button import ToggleButton
@@ -76,6 +78,10 @@ from terry.settings import (
     SEVERITY_LEVEL_INFORMATION,
     DEFAULT_THEME,
 )
+
+from terry.presentation.cli.custom.messages.move_resizing_rule import MoveResizingRule, SelectResizingRule, \
+    ReleaseResizingRule, MoveEvent
+from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
 
 STATUS_TO_COLOR: dict = {
     CommandStatus.SUCCESS: "green",
@@ -161,6 +167,9 @@ class Terry(App):
         self.workspaces_container: Workspaces | None = None
         self.project_tree_container: ProjectTree | None = None
 
+
+        self.active_resizing_rule: ResizingRule | None = None
+
         self.validate_env()
         self.init_env()
 
@@ -209,8 +218,22 @@ class Terry(App):
                     yield self.workspaces_container
                     yield self.project_tree_container
                     yield StateFiles(id="state_files", state_files=state_files)
-                with Vertical():
+                yield ResizingRule(
+                    id="resize-sidebar-right_container",
+                    orientation="vertical",
+                    classes="resize-handle",
+                    prev_component_id="sidebar",
+                    next_component_id="right_container"
+                )
+                with Vertical(id="right_container"):
                     yield Content(id="content")
+                    yield ResizingRule(
+                        id="resize-content-commands_log",
+                        orientation="horizontal",
+                        classes="resize-handle",
+                        prev_component_id="content",
+                        next_component_id="commands_log"
+                    )
                     yield CommandsLog(id="commands_log", content="log")
             yield Footer()
 
@@ -620,6 +643,60 @@ class Terry(App):
     # ------------------------------------------------------------------------------------------------------------------
     # Terraform actions methods
     # ------------------------------------------------------------------------------------------------------------------
+
+    @on(SelectResizingRule)
+    def on_select_resizing_rule(self, event: SelectResizingRule):
+        """Start dragging when the separator is clicked."""
+        self.active_resizing_rule = self.query_one(f'#{event.id}')
+
+    @on(ReleaseResizingRule)
+    def on_release_resizing_rule(self, event: ReleaseResizingRule):
+        self.active_resizing_rule = None
+
+    @on(MoveResizingRule)
+    def on_move_resizing_rule(self, event: MoveResizingRule):
+        """Resize panels when dragging."""
+
+        previous_component = self.query_one(f'#{event.previous_component_id}')
+        next_component = self.query_one(f'#{event.next_component_id}')
+
+        dx = event.delta
+
+        if event.orientation == "vertical":
+            left_width = max(10, previous_component.styles.width.value + dx)  # type: ignore
+            right_width = max(10, next_component.styles.width.value - dx)  # type: ignore
+
+            previous_component.styles.width = f"{left_width}%"
+            next_component.styles.width = f"{right_width}%"
+        elif event.orientation == "horizontal":
+            top_height = max(10, previous_component.styles.height.value + dx) # type: ignore
+            bottom_height = max(10, next_component.styles.height.value - dx)   # type: ignore
+
+            previous_component.styles.height = f'{top_height}%'
+            next_component.styles.height = f'{bottom_height}%' 
+        self.refresh()
+
+
+    def on_mouse_move(self, event: MouseMove) -> None:
+        """Resize panels when dragging."""
+        
+        if self.active_resizing_rule and self.active_resizing_rule.dragging:
+
+            delta = None
+            if self.active_resizing_rule.orientation == "horizontal":
+                delta = event.delta_y
+            if self.active_resizing_rule.orientation == "vertical":
+                delta = event.delta_x
+            if not delta:
+                return 
+            self.active_resizing_rule.position = MoveEvent(timestamp=time.time(),  delta=delta)
+
+        
+    def on_mouse_up(self, event: MouseUp) -> None:
+        """Stop dragging when mouse is released."""
+        if self.active_resizing_rule:
+            self.active_resizing_rule.cleanup()
+            self.active_resizing_rule = None
 
     @on(ClickableTfActionLabel.ClickEvent)
     def handle_tf_action_click(self, event: ClickableTfActionLabel.ClickEvent) -> None:

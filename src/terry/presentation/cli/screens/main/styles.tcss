@@ -11,6 +11,10 @@
   width: 20%;
 }
 
+#right_container {
+  width: 79%;
+}
+
 #workspaces {
   content-align: left top;
   border: round $secondary-background;
@@ -47,11 +51,17 @@
 
 #commands_log {
   content-align: left top;
-  height: 20%;
+  height: 19%;
   border: round $secondary-background;
   border-title-color: $primary-lighten-2;
 }
 
 #tf-error-message {
   align: center middle;
+}
+
+.resize-handle {
+  padding: 0 0;
+  margin: 0 0;
+  color: #3a3a3a;
 }
