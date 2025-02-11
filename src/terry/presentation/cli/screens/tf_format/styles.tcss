@@ -1,0 +1,41 @@
+FormatSettingsScreen {
+  align: center middle;
+  content-align: center top;
+
+  & > Container {
+    padding: 1 2 0 2;
+    margin: 0 0;
+    width: 50;
+    height: auto;
+  # border:thick $background 80 %;
+    background: $surface;
+
+    border: tall $secondary-background;
+    border-title-color: $primary-lighten-2;
+
+    & > Label {
+      margin: 0 0 1 0;
+    }
+
+    & > RadioSet {
+      background: transparent;
+      width: 100%;
+      border: none;
+
+      &:focus {
+        border: none;
+      }
+
+      & > RadioButton {
+        background: transparent;
+        border: none;
+        width: 100%;
+      }
+    }
+
+    & > #controls {
+      padding: 1 0 0 0;
+      height: 4;
+    }
+  }
+}

@@ -1,0 +1,57 @@
+* {
+  scrollbar-size-horizontal: 1;
+  scrollbar-size-vertical: 1;
+}
+
+#main_container {
+   align: center middle;
+}
+
+#sidebar {
+  width: 20%;
+}
+
+#workspaces {
+  content-align: left top;
+  border: round $secondary-background;
+  border-title-color: $primary-lighten-2;
+  height: 25%;
+  min-height: 4;
+
+}
+
+#project_tree {
+  content-align: left top;
+  border: round $secondary-background;
+  border-title-color: $primary-lighten-2;
+  height: 50%;
+  min-height: 4;
+
+}
+
+#state_files {
+  content-align: left top;
+  border: round $secondary-background;
+  border-title-color: $primary-lighten-2;
+  height: 25%;
+  min-height: 4;
+}
+
+
+#content {
+  content-align: left top;
+  height: 80%;
+  border: round $secondary-background;
+  border-title-color: $primary-lighten-2;
+}
+
+#commands_log {
+  content-align: left top;
+  height: 20%;
+  border: round $secondary-background;
+  border-title-color: $primary-lighten-2;
+}
+
+#tf-error-message {
+  align: center middle;
+}

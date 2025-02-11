@@ -1,0 +1,30 @@
+TerraformCommandOutputScreen {
+  align: center middle;
+  content-align: center top;
+
+  & > #terraform-command-output {
+    padding: 1 2 0 2;
+    margin: 0 0;
+    width: 80%;
+    height: 30;
+    background: $surface;
+    border: tall $secondary-background;
+    border-title-color: $primary-lighten-2;
+
+    & > #log-content {
+      height: 80%;
+
+        & > TextArea {
+            height: 100%;
+        }
+    }
+    & > LoadingIndicator {
+      height: 2fr;
+    }
+    & > Input {
+      margin-top: 1;
+      height: auto;
+    }
+  }
+}
+

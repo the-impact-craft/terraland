@@ -1,0 +1,48 @@
+[project]
+name = "terry"
+version = "1.0.0"
+description = "UI for Terraform"
+dynamic = ["dependencies"]
+authors = [
+  {name = "Bohdana Kuzmenko", email = "bogdana.kuzmenko.16@gmail.com"},
+]
+readme = {file = "README.md", content-type = "text/markdown"}
+
+[project.scripts]
+terry = "terry.presentation.cli.app:main"
+
+[build-system]
+requires = ["setuptools >= 61.0",  "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["./requirements/requirements-base.txt"] }
+
+[tool.coverage.run]
+branch = true
+source = [
+    "src/terry",
+]
+command_line = "-m pytest tests/ -v"
+
+[tool.coverage.report]
+fail_under = 70
+
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self\\.debug",
+    "pragma: no cover",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+    ]
+
+
+[tool.black]
+line-length = 127

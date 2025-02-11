@@ -1,0 +1,46 @@
+PlanSettingsScreen {
+  align: center middle;
+  content-align: center top;
+
+  & > #plan_settings {
+    padding: 1 2 0 2;
+    margin: 0 0;
+    width: 70;
+    height: 30;
+    background: $surface;
+    border: tall $secondary-background;
+    border-title-color: $primary-lighten-2;
+
+    & > #about_plan {
+      width: 100%;
+      height: 4;
+    }
+
+    & > #settings {
+      width: 100%;
+      height: 19;
+
+      & > Label {
+        margin: 0 0 1 0;
+      }
+
+      & > Rule.-horizontal {
+        margin: 0;
+        color: $border;
+      }
+
+      & > Widget {
+        height: auto;
+      }
+    }
+    
+    & > #controls {
+      align: center middle;
+      content-align: center top;
+      width: 100%;
+      padding: 1 0 0 0;
+      height: 4;
+    }
+  }
+}
+
