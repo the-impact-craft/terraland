@@ -12,6 +12,8 @@ INIT_BACKEND_CONFIG_DESCRIPTION = "Configuration to be merged with what is in th
 INIT_PLUGIN_DIR_DESCRIPTION = "(-plugin-dir=path) The path to a directory containing plugin binaries. This can be used to override the default search path for plugin binaries."
 INIT_TEST_DIRECTORY_DESCRIPTION = '(-test-directory=path)  Set the Terraform test directory, defaults to "tests".'
 
+# ------------------------------------------------------------------------------------------
+
 PLAN_ABOUT_DESCRIPTION = "Generates a speculative execution plan, showing what actions Terraform would take to apply the current configuration. This command will not actually perform the planned actions."
 PLAN_DESTROY_DESCRIPTION = '(-destroy) Select the "destroy" planning mode, which creates a plan to destroy all objects currently managed by this Terraform configuration instead of the usual behavior.'
 PLAN_REFRESH_ONLY_DESCRIPTION = '(-refresh-only) Select the "refresh only" planning mode, which checks whether remote objects still match the outcome of the most recent Terraform apply but does not propose any actions to undo any changes made outside of Terraform..'
@@ -20,10 +22,17 @@ PLAN_MODE_SETTINGS_DESCRIPTION = "l alternative planning modes that you can use 
 PLAN_INLINE_VAR_DESCRIPTION = "Set a value for one of the input variables in the root module of the configuration. Use this option more than once to set more than one variable."
 PLAN_ENV_VAR_DESCRIPTION = "Environment variables can be used to set variables. The environment variables must be in the format TF_VAR_name and this will be checked last for a value"
 PLAN_VAR_FILE_DESCRIPTION = "Load variable values from the given file, in addition to the default files terraform.tfvars and *.auto.tfvars. Use this option more than once to include more than one variables file."
+PLAN_OUT_DESCRIPTION = (
+    '(-out=path) Write a plan file to the given path. This can be used as input to the "apply" command.'
+)
+
+# ------------------------------------------------------------------------------------------
 
 VALIDATE_DESCRIPTION = "Validate the configuration files in a directory, referring only to the configuration and not accessing any remote services such as remote state, provider APIs, etc."
 VALIDATE_NO_TESTS_DESCRIPTION = "(-no-tests) If specified, Terraform will not validate test files."
 VALIDATE_TEST_DIRECTORY_DESCRIPTION = '(-test-directory=path) Set the Terraform test directory, defaults to "tests".'
+
+# ------------------------------------------------------------------------------------------
 
 APPLY_DESCRIPTION = (
     "Creates or updates infrastructure according to Terraform configuration files in the current directory."
@@ -41,3 +50,6 @@ APPLY_STATE_DESCRIPTION = (
     "(-state=path) Path to read and save state (unless state-out is specified). Defaults to 'terraform.tfstate'."
 )
 APPLY_STATE_OUT_DESCRIPTION = "(-state-out=path) Path to write state to that is different than '-state'. This can be used to preserve the old state."
+APPLY_PLAN_DESCRIPTION = (
+    "Path to a Terraform plan file to apply. This plan file can be generated using the 'terraform plan' command."
+)

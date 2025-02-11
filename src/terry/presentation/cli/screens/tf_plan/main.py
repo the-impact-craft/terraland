@@ -18,6 +18,7 @@ from terry.presentation.cli.commands_descriptions import (
     PLAN_ENV_VAR_DESCRIPTION,
     PLAN_VAR_FILE_DESCRIPTION,
     PLAN_REFRESH_FALSE,
+    PLAN_OUT_DESCRIPTION,
 )
 from terry.presentation.cli.custom.messages.tf_plan_action_request import PlanActionRequest
 from terry.presentation.cli.custom.widgets.buttons.add_key_value_button import AddKeyValueButton
@@ -25,6 +26,7 @@ from terry.presentation.cli.custom.widgets.buttons.open_file_navigator_modal_but
 from terry.presentation.cli.custom.widgets.form.checkbox_settings_block import CheckboxSettingBlock
 from terry.presentation.cli.custom.widgets.form.collapsible_info_settings_block import CollapsibleInfoBlock
 from terry.presentation.cli.custom.widgets.form.key_value_block import KeyValueBlock
+from terry.presentation.cli.custom.widgets.form.text_input_block import TextInputBlock
 from terry.presentation.cli.custom.widgets.modal_control_label import ModalControlLabel
 from terry.presentation.cli.screens.base.base_tf_settings_screen import BaseTfSettingsModalScreen
 from terry.presentation.cli.screens.file_system_navigation.main import FileSystemSelectionValidationRule
@@ -70,6 +72,14 @@ class PlanSettingsScreen(BaseTfSettingsModalScreen):
                     TerraformPlanSettingsAttributes.REFRESH_ONLY, "Refresh only", PLAN_REFRESH_ONLY_DESCRIPTION
                 )
                 yield CheckboxSettingBlock(TerraformPlanSettingsAttributes.NO_REFRESH, "No refresh", PLAN_REFRESH_FALSE)
+
+                yield Rule()
+                yield TextInputBlock(
+                    TerraformPlanSettingsAttributes.OUT,
+                    "Plan out path",
+                    PLAN_OUT_DESCRIPTION,
+                    id=TerraformPlanSettingsAttributes.OUT,
+                )
 
                 yield Rule()
                 yield CollapsibleInfoBlock(
@@ -154,9 +164,15 @@ class PlanSettingsScreen(BaseTfSettingsModalScreen):
             ],
         )
 
+        text_input_settings = self.process_text_inputs(
+            [
+                TerraformPlanSettingsAttributes.OUT,
+            ]
+        )
+
         file_settings = self.process_files([TerraformPlanSettingsAttributes.VAR_FILES])
 
-        result.update({**checkbox_settings, **key_value_settings, **file_settings})
+        result.update({**checkbox_settings, **key_value_settings, **file_settings, **text_input_settings})
 
         if any(value is None for setting, value in result.items()):
             self.notify("Failed to process plan settings", severity="error")
@@ -175,4 +191,5 @@ class PlanSettingsScreen(BaseTfSettingsModalScreen):
             TerraformPlanSettingsAttributes.ENV_VARS: [],
             TerraformPlanSettingsAttributes.INLINE_VARS: [],
             TerraformPlanSettingsAttributes.VAR_FILES: [],
+            TerraformPlanSettingsAttributes.OUT: None,
         }

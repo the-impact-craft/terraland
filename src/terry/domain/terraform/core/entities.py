@@ -44,6 +44,7 @@ class TerraformPlanSettingsAttributes:
     DESTROY = "destroy"
     REFRESH_ONLY = "refresh_only"
     NO_REFRESH = "norefresh"
+    OUT = "out"
 
 
 class TerraformValidateSettingsAttributes:
@@ -60,6 +61,7 @@ class TerraformApplySettingsAttributes:
     INPUT = "input"
     STATE = "state"
     STATE_OUT = "state_out"
+    PLAN = "plan"
 
 
 # ------------------------------------------------------------------------------------------
@@ -222,6 +224,7 @@ class PlanSettings:
     destroy: bool = False
     refresh_only: bool = False
     norefresh: bool = False
+    out: Optional[str] = None
 
 
 @dataclass
@@ -286,3 +289,4 @@ class ApplySettings:
     # parallelism: int = 10
     state: Optional[str | Path] = None
     state_out: Optional[str | Path] = None
+    plan: Optional[List[str | Path]] = None  # Temporary add as list, should be able to limit to a single path

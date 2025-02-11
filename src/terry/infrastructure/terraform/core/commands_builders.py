@@ -28,6 +28,10 @@ class TerraformPlanCommandBuilder:
         self._command.extend(["-var-file", file])
         return self
 
+    def add_out(self, out: str) -> "TerraformPlanCommandBuilder":
+        self._command.extend(["-out", out])
+        return self
+
     def build(self) -> list[str]:
         return self._command
 
@@ -46,6 +50,8 @@ class TerraformPlanCommandBuilder:
         if settings.var_files:
             for var_file in settings.var_files:
                 self.add_var_file(var_file)
+        if settings.out:
+            self.add_out(settings.out)
         return self.build()
 
 
@@ -264,6 +270,11 @@ class TerraformApplyCommandBuilder:
         self.command.extend(["-state-out", str(state_out)])
         return self
 
+    def app_plan_file(self, plan_file: str | Path) -> "TerraformApplyCommandBuilder":
+        """Add a plan file path."""
+        self.command.extend([str(plan_file)])
+        return self
+
     def build(self) -> list[str]:
         """Build and return the final terraform apply command."""
         return self.command
@@ -285,4 +296,6 @@ class TerraformApplyCommandBuilder:
             self.add_state(settings.state)
         if settings.state_out:
             self.add_state_out(settings.state_out)
+        if settings.plan:
+            self.app_plan_file(f"{settings.plan[0]}")
         return self.build()

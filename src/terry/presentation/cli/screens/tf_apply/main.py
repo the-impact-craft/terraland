@@ -15,6 +15,7 @@ from terry.presentation.cli.commands_descriptions import (
     APPLY_STATE_OUT_DESCRIPTION,
     APPLY_STATE_DESCRIPTION,
     APPLY_DISABLE_LOCK_DESCRIPTION,
+    APPLY_PLAN_DESCRIPTION,
 )
 from terry.presentation.cli.custom.messages.tf_apply_action_request import ApplyActionRequest
 from terry.presentation.cli.custom.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
@@ -90,6 +91,20 @@ class ApplySettingsScreen(BaseTfSettingsModalScreen):
                         ],
                     )
 
+                yield Rule()
+                yield CollapsibleInfoBlock("plan", "Plan path", APPLY_PLAN_DESCRIPTION)
+                with Widget(id=TerraformApplySettingsAttributes.PLAN):
+                    yield FileNavigatorModalButton(
+                        content="+ Plan file path",
+                        id="add_plan_path",
+                        section_id=TerraformApplySettingsAttributes.PLAN,
+                        validation_rules=[
+                            FileSystemSelectionValidationRule(
+                                action=lambda path: path.is_file(), error_message="Selected path is not a file"
+                            )
+                        ],
+                    )
+
             yield Horizontal(
                 ApplySettingsScreenControlLabel("Close", name="close", id="close", classes="button"),
                 ApplySettingsScreenControlLabel("Apply", name="apply", id="apply", classes="button"),
@@ -120,6 +135,7 @@ class ApplySettingsScreen(BaseTfSettingsModalScreen):
         paths_settings = self.process_files(
             [
                 TerraformApplySettingsAttributes.STATE,
+                TerraformApplySettingsAttributes.PLAN,
             ]
         )
 
