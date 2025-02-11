@@ -1,6 +1,13 @@
 from dataclasses import dataclass
+from enum import Enum, auto
 
 from textual.message import Message
+
+
+# Todo: Move this enums module
+class Orientation(Enum):
+    HORIZONTAL = auto()
+    VERTICAL = auto()
 
 
 @dataclass
@@ -18,10 +25,15 @@ class MoveResizingRule(Message):
 
 
 @dataclass
-class SelectResizingRule(Message):
+class BaseResizingRule(Message):
     id: str
 
 
 @dataclass
-class ReleaseResizingRule(Message):
-    id: str
+class SelectResizingRule(BaseResizingRule):
+    pass
+
+
+@dataclass
+class ReleaseResizingRule(BaseResizingRule):
+    pass

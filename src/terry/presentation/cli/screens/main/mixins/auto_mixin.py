@@ -1,3 +1,6 @@
+from typing import Type
+
+
 class AutoMixin:
     """
     A mixin class that automatically injects methods from base classes.
@@ -7,7 +10,7 @@ class AutoMixin:
     if such methods do not already exist in the subclass.
     """
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls: Type['AutoMixin'], **kwargs: Any):
         super().__init_subclass__(**kwargs)
 
         # Collect all mixin methods that start with `on_`
