@@ -10,9 +10,6 @@ from terry.domain.terraform.common.entities import BaseTerraformOutput
 # ------------------------------------------------------------------------------------------
 # Enums
 # ------------------------------------------------------------------------------------------
-class CommandStatus(Enum):
-    SUCCESS = "SUCCESS"
-    ERROR = "ERROR"
 
 
 class TerraformFormatScope(Enum):

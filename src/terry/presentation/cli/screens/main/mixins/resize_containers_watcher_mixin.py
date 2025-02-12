@@ -26,6 +26,15 @@ class ResizeContainersWatcherMixin:
     and is inherited from textual App.
     """
 
+    required_methods = ["query_one", "refresh"]
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        for method in cls.required_methods:
+            if not hasattr(cls, method) or not callable(getattr(cls, method)):
+                raise TypeError(f"Class {cls.__name__} must implement method {method}")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.active_resizing_rule: ResizingRule | None = None
