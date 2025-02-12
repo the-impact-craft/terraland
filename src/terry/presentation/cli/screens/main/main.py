@@ -64,6 +64,8 @@ from terry.presentation.cli.screens.main.containers.header import Header
 from terry.presentation.cli.screens.main.containers.project_tree import ProjectTree
 from terry.presentation.cli.screens.main.containers.state_files import StateFiles
 from terry.presentation.cli.screens.main.containers.workspaces import Workspaces
+from terry.presentation.cli.screens.main.mixins.auto_mixin import AutoMixin
+from terry.presentation.cli.screens.main.mixins.resize_containers_watcher_mixin import ResizeContainersWatcherMixin
 from terry.presentation.cli.screens.search.main import SearchScreen
 from terry.presentation.cli.screens.tf_command_output.main import TerraformCommandOutputScreen
 from terry.presentation.cli.themes.arctic import arctic_theme
@@ -76,6 +78,8 @@ from terry.settings import (
     SEVERITY_LEVEL_INFORMATION,
     DEFAULT_THEME,
 )
+
+from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
 
 STATUS_TO_COLOR: dict = {
     CommandStatus.SUCCESS: "green",
@@ -104,7 +108,11 @@ class TerraformCommandExecutor:
         self.command = []
 
 
-class Terry(App):
+class Terry(
+    App, 
+    AutoMixin,
+    ResizeContainersWatcherMixin
+):
     """The main app for the Terry project."""
 
     CSS_PATH = "styles.tcss"
@@ -161,6 +169,8 @@ class Terry(App):
         self.workspaces_container: Workspaces | None = None
         self.project_tree_container: ProjectTree | None = None
 
+        self.active_resizing_rule: ResizingRule | None = None
+
         self.validate_env()
         self.init_env()
 
@@ -209,8 +219,22 @@ class Terry(App):
                     yield self.workspaces_container
                     yield self.project_tree_container
                     yield StateFiles(id="state_files", state_files=state_files)
-                with Vertical():
+                yield ResizingRule(
+                    id="resize-sidebar-right_container",
+                    orientation="vertical",
+                    classes="resize-handle",
+                    prev_component_id="sidebar",
+                    next_component_id="right_container"
+                )
+                with Vertical(id="right_container"):
                     yield Content(id="content")
+                    yield ResizingRule(
+                        id="resize-content-commands_log",
+                        orientation="horizontal",
+                        classes="resize-handle",
+                        prev_component_id="content",
+                        next_component_id="commands_log"
+                    )
                     yield CommandsLog(id="commands_log", content="log")
             yield Footer()
 
@@ -620,6 +644,7 @@ class Terry(App):
     # ------------------------------------------------------------------------------------------------------------------
     # Terraform actions methods
     # ------------------------------------------------------------------------------------------------------------------
+
 
     @on(ClickableTfActionLabel.ClickEvent)
     def handle_tf_action_click(self, event: ClickableTfActionLabel.ClickEvent) -> None:
