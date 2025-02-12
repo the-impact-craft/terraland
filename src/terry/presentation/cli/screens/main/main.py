@@ -46,7 +46,6 @@ from terry.presentation.cli.screens.main.containers.header import Header
 from terry.presentation.cli.screens.main.containers.project_tree import ProjectTree
 from terry.presentation.cli.screens.main.containers.state_files import StateFiles
 from terry.presentation.cli.screens.main.containers.workspaces import Workspaces
-from terry.presentation.cli.screens.main.mixins.auto_mixin import AutoMixin
 from terry.presentation.cli.screens.main.mixins.resize_containers_watcher_mixin import ResizeContainersWatcherMixin
 from terry.presentation.cli.screens.main.mixins.terraform_action_handler_mixin import TerraformActionHandlerMixin
 from terry.presentation.cli.screens.search.main import SearchScreen
@@ -72,8 +71,18 @@ STATUS_TO_ICON: dict = {
 }
 
 
-class Terry(App, AutoMixin, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
+class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
     """The main app for the Terry project."""
+
+    __slots__ = [
+        "work_dir",
+        "workspace_service",
+        "terraform_version",
+        "file_system_service",
+        "updated_events_count",
+        "terraform_core_service",
+        "operation_system_service",
+    ]
 
     CSS_PATH = "styles.tcss"
 

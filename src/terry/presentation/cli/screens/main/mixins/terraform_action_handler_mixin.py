@@ -23,6 +23,30 @@ from terry.settings import CommandStatus
 
 
 class TerraformActionHandlerMixin:
+    required_methods = [
+        "query_one",
+        "notify",
+        "log",
+        "write_command_log",
+        "push_screen",
+    ]
+
+    required_attributes = [
+        "work_dir",
+        "terraform_core_service",
+    ]
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        for attribute in cls.required_attributes:
+            if not hasattr(cls, attribute):
+                raise AttributeError(f"Class {cls.__name__} must have attribute {attribute}")
+
+        for method in cls.required_methods:
+            if not hasattr(cls, method) or not callable(getattr(cls, method)):
+                raise TypeError(f"Class {cls.__name__} must implement method {method}")
+
     def on_clickable_tf_action_label_click_event(self, event: ClickableTfActionLabel.ClickEvent) -> None:
         """
         Handle the clickable label click event in the Terry application.
