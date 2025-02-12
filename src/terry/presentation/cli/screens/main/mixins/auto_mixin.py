@@ -5,12 +5,12 @@ class AutoMixin:
     """
     A mixin class that automatically injects methods from base classes.
 
-    The AutoMixin class inspects its base classes and automatically attaches 
-    methods that start with "on_" from the base classes to the deriving class 
+    The AutoMixin class inspects its base classes and automatically attaches
+    methods that start with "on_" from the base classes to the deriving class
     if such methods do not already exist in the subclass.
     """
 
-    def __init_subclass__(cls: Type['AutoMixin'], **kwargs: Any):
+    def __init_subclass__(cls: Type["AutoMixin"], **kwargs: Any):
         super().__init_subclass__(**kwargs)
 
         # Collect all mixin methods that start with `on_`

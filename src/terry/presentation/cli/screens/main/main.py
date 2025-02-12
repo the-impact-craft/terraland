@@ -108,11 +108,7 @@ class TerraformCommandExecutor:
         self.command = []
 
 
-class Terry(
-    App, 
-    AutoMixin,
-    ResizeContainersWatcherMixin
-):
+class Terry(App, AutoMixin, ResizeContainersWatcherMixin):
     """The main app for the Terry project."""
 
     CSS_PATH = "styles.tcss"
@@ -222,7 +218,7 @@ class Terry(
                         orientation="horizontal",
                         classes="resize-handle",
                         prev_component_id="workspaces",
-                        next_component_id="project_tree"
+                        next_component_id="project_tree",
                     )
                     yield self.project_tree_container
                     yield ResizingRule(
@@ -230,7 +226,7 @@ class Terry(
                         orientation="horizontal",
                         classes="resize-handle",
                         prev_component_id="project_tree",
-                        next_component_id="state_files"
+                        next_component_id="state_files",
                     )
                     yield StateFiles(id="state_files", state_files=state_files)
                 yield ResizingRule(
@@ -238,7 +234,7 @@ class Terry(
                     orientation="vertical",
                     classes="resize-handle",
                     prev_component_id="sidebar",
-                    next_component_id="right_container"
+                    next_component_id="right_container",
                 )
                 with Vertical(id="right_container"):
                     yield Content(id="content")
@@ -247,7 +243,7 @@ class Terry(
                         orientation="horizontal",
                         classes="resize-handle",
                         prev_component_id="content",
-                        next_component_id="commands_log"
+                        next_component_id="commands_log",
                     )
                     yield CommandsLog(id="commands_log", content="log")
             yield Footer()
@@ -658,7 +654,6 @@ class Terry(
     # ------------------------------------------------------------------------------------------------------------------
     # Terraform actions methods
     # ------------------------------------------------------------------------------------------------------------------
-
 
     @on(ClickableTfActionLabel.ClickEvent)
     def handle_tf_action_click(self, event: ClickableTfActionLabel.ClickEvent) -> None:

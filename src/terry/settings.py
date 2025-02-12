@@ -90,5 +90,4 @@ ENV_VARS_PREFIXES = [
 ]
 
 
-
 MIN_SECTION_DIMENSION = 10  # Minimum width/height for components

@@ -3,9 +3,10 @@ from textual.reactive import reactive
 from textual.widgets import Rule
 
 from terry.presentation.cli.custom.messages.move_resizing_rule import (
+    MoveEvent,
     MoveResizingRule,
     SelectResizingRule,
-    ReleaseResizingRule, MoveEvent
+    ReleaseResizingRule,
 )
 
 
@@ -41,7 +42,7 @@ class ResizingRule(Rule, can_focus=True):
                 delta=self.position.delta,
                 previous_component_id=self.prev_component_id,
                 next_component_id=self.next_component_id,
-                orientation=self.orientation
+                orientation=self.orientation,
             )
         )
 

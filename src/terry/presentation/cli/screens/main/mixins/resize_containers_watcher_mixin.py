@@ -22,8 +22,8 @@ class ResizeContainersWatcherMixin:
     properly executed and the state is consistently maintained. This class also
     manages interactions like dragging and concludes resizing tasks when necessary.
 
-    Class should be used as a mixin in classes that require resizing functionality 
-    and is inherited from textual App. 
+    Class should be used as a mixin in classes that require resizing functionality
+    and is inherited from textual App.
     """
 
     def __init__(self, *args, **kwargs):
@@ -38,7 +38,7 @@ class ResizeContainersWatcherMixin:
         Arguments:
             event (SelectResizingRule): The event containing the resizing rule id.
         """
-        self.active_resizing_rule = self.query_one(f'#{event.id}')  # type: ignore
+        self.active_resizing_rule = self.query_one(f"#{event.id}")  # type: ignore
 
     def on_release_resizing_rule(self, _: ReleaseResizingRule) -> None:
         """
@@ -64,30 +64,31 @@ class ResizeContainersWatcherMixin:
 
         Arguments:
             event (MoveResizingRule): The event containing the resizing rule details.
-            
         """
 
-        prev_component = self.query_one(f'#{event.previous_component_id}')  # type: ignore
-        next_component = self.query_one(f'#{event.next_component_id}')  # type: ignore
+        prev_component = self.query_one(f"#{event.previous_component_id}")  # type: ignore
+        next_component = self.query_one(f"#{event.next_component_id}")  # type: ignore
 
-        delta = event.delta
+        dimension = "width" if event.orientation == "vertical" else "height"
 
-        if event.orientation == "vertical":
-            prev_component.styles.width = f"{max(MIN_SECTION_DIMENSION, prev_component.styles.width.value + delta)}%"
-            next_component.styles.width = f"{max(MIN_SECTION_DIMENSION, next_component.styles.width.value - delta)}%"
-        elif event.orientation == "horizontal":
-            prev_component.styles.height = f"{max(MIN_SECTION_DIMENSION, prev_component.styles.height.value + delta)}%"
-            next_component.styles.height = f"{max(MIN_SECTION_DIMENSION, next_component.styles.height.value - delta)}%"
+        previous_component_dimension = getattr(prev_component.styles, dimension).value + event.delta
+        next_component_dimension = getattr(next_component.styles, dimension).value - event.delta
+
+        if previous_component_dimension < MIN_SECTION_DIMENSION or next_component_dimension < MIN_SECTION_DIMENSION:
+            return
+
+        setattr(prev_component.styles, dimension, f"{previous_component_dimension}%")
+        setattr(next_component.styles, dimension, f"{next_component_dimension}%")
 
         self.refresh()  # type: ignore
 
     def on_mouse_move(self, event: MouseMove) -> None:
         """
-        Handles mouse movement events to manage resizing operations based on the active resizing 
-        rule. The function determines the change in position (delta) either horizontally or 
-        vertically, depending on the orientation of the active resizing rule. If the resizing 
+        Handles mouse movement events to manage resizing operations based on the active resizing
+        rule. The function determines the change in position (delta) either horizontally or
+        vertically, depending on the orientation of the active resizing rule. If the resizing
         rule is active and dragging is occurring, it updates the position accordingly.
-        
+
         Arguments:
             event (MouseMove): The event containing the mouse movement details.
         """
