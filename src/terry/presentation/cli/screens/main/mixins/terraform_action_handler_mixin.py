@@ -1,6 +1,6 @@
 import asyncio
 
-from terry.domain.terraform.core.entities import TerraformFormatScope, CommandStatus
+from terry.domain.terraform.core.entities import TerraformFormatScope
 from terry.infrastructure.shared.command_process_context_manager import CommandProcessContextManager
 from terry.infrastructure.shared.command_utils import process_stdout_stderr
 from terry.infrastructure.terraform.core.commands_builders import (
@@ -19,6 +19,7 @@ from terry.presentation.cli.custom.widgets.clickable_tf_action_label import Clic
 from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
 from terry.presentation.cli.screens.main.containers.content import Content
 from terry.presentation.cli.screens.tf_command_output.main import TerraformCommandOutputScreen
+from terry.settings import CommandStatus
 
 
 class TerraformActionHandlerMixin:
