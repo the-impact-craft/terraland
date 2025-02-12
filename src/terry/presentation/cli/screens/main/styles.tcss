@@ -19,7 +19,7 @@
   content-align: left top;
   border: round $secondary-background;
   border-title-color: $primary-lighten-2;
-  height: 25%;
+  height: 24%;
   min-height: 4;
 
 }
@@ -28,7 +28,7 @@
   content-align: left top;
   border: round $secondary-background;
   border-title-color: $primary-lighten-2;
-  height: 50%;
+  height: 49%;
   min-height: 4;
 
 }
@@ -37,7 +37,7 @@
   content-align: left top;
   border: round $secondary-background;
   border-title-color: $primary-lighten-2;
-  height: 25%;
+  height: 24%;
   min-height: 4;
 }
 

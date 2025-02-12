@@ -217,7 +217,21 @@ class Terry(
             with Horizontal(id="main_container"):
                 with Vertical(id="sidebar"):
                     yield self.workspaces_container
+                    yield ResizingRule(
+                        id="resize-workspaces-project_tree",
+                        orientation="horizontal",
+                        classes="resize-handle",
+                        prev_component_id="workspaces",
+                        next_component_id="project_tree"
+                    )
                     yield self.project_tree_container
+                    yield ResizingRule(
+                        id="resize-project_tree-state_files",
+                        orientation="horizontal",
+                        classes="resize-handle",
+                        prev_component_id="project_tree",
+                        next_component_id="state_files"
+                    )
                     yield StateFiles(id="state_files", state_files=state_files)
                 yield ResizingRule(
                     id="resize-sidebar-right_container",
