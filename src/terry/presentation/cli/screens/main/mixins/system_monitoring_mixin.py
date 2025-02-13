@@ -4,6 +4,8 @@ from textual import work
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from watchdog.observers import Observer
 
+from terry.settings import SYSTEM_EVENTS_MONITORING_TIMEOUT
+
 
 class SystemMonitoringMixin:
     required_methods = ["refresh_env", "update_selected_file_content"]
@@ -73,10 +75,13 @@ class SystemMonitoringMixin:
         updates have been detected. After processing the updates, it resets the update counter, updates the last
         synchronization date, and refreshes the environment settings. The monitoring loop runs indefinitely unless
         stopped by external control or exceptions. It ensures to log a warning message when the monitoring ceases.
+
+        We run a separate monitoring loop to check for system updates not to trigger full environment refreshes on every
+        file system event.
         """
         try:
             while True:
-                await asyncio.sleep(1)
+                await asyncio.sleep(SYSTEM_EVENTS_MONITORING_TIMEOUT)
                 if self.updated_events_count > 0:
                     self.updated_events_count = 0
                     self.refresh_env()  # type: ignore #  method is in required_methods
