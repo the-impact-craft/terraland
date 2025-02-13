@@ -1,5 +1,4 @@
 import atexit
-from datetime import datetime
 from pathlib import Path
 from typing import List
 
@@ -9,7 +8,6 @@ from textual.binding import Binding
 from textual.containers import Vertical, Horizontal, Container
 from textual.css.query import NoMatches
 from textual.widgets import Footer, Label
-from textual.widgets import RichLog
 from textual.widgets._toggle_button import ToggleButton
 from watchdog.events import FileSystemEvent
 
@@ -31,6 +29,11 @@ from terry.presentation.cli.custom.messages.files_select_message import FileSele
 from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
 from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
+from terry.presentation.cli.screens.main.constants import (
+    MainScreenIdentifiers,
+    Orientation,
+    TERRAFORM_VERIFICATION_FAILED_MESSAGE,
+)
 from terry.presentation.cli.screens.main.containers.commands_log import (
     CommandsLog,
 )
@@ -54,16 +57,6 @@ from terry.settings import (
     SEVERITY_LEVEL_INFORMATION,
     DEFAULT_THEME,
 )
-
-STATUS_TO_COLOR: dict = {
-    CommandStatus.SUCCESS: "green",
-    CommandStatus.ERROR: "red",
-}
-
-STATUS_TO_ICON: dict = {
-    CommandStatus.SUCCESS: "🟢",
-    CommandStatus.ERROR: "🔴",
-}
 
 
 class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, SystemMonitoringMixin):
@@ -130,7 +123,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
 
         # containers
         # Todo: create properties for these
-        self.log_component: RichLog | None = None  # type: ignore
+        self.log_component: CommandsLog | None = None  # type: ignore
         self.workspaces_container: Workspaces | None = None
         self.project_tree_container: ProjectTree | None = None
 
@@ -165,57 +158,56 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         """
         is_tf_project = True
 
-        self.workspaces_container = Workspaces(id="workspaces")
+        self.workspaces_container = Workspaces(id=MainScreenIdentifiers.WORKSPACE_ID)
+        self.project_tree_container = ProjectTree(id=MainScreenIdentifiers.PROJECT_TREE_ID, work_dir=self.work_dir)
+        self.log_component = CommandsLog(id=MainScreenIdentifiers.COMMANDS_LOG_ID)
+
         self.workspaces_container.selected_workspace = self.selected_workspace
         self.workspaces_container.workspaces = self.workspaces
 
-        self.project_tree_container = ProjectTree(id="project_tree", work_dir=self.work_dir)
-
         if not is_tf_project:
-            yield Container(
-                Label("💥 Failed to verify terraform project 💥 "),
-                id="tf-error-message",
-            )
-        else:
-            state_files = self.file_system_service.list_state_files()
-            yield Header(TERRAFORM_MAIN_ACTIONS, TERRAFORM_ADDITIONAL_ACTIONS, id="header")
-            with Horizontal(id="main_container"):
-                with Vertical(id="sidebar"):
-                    yield self.workspaces_container
-                    yield ResizingRule(
-                        id="resize-workspaces-project_tree",
-                        orientation="horizontal",
-                        classes="resize-handle",
-                        prev_component_id="workspaces",
-                        next_component_id="project_tree",
-                    )
-                    yield self.project_tree_container
-                    yield ResizingRule(
-                        id="resize-project_tree-state_files",
-                        orientation="horizontal",
-                        classes="resize-handle",
-                        prev_component_id="project_tree",
-                        next_component_id="state_files",
-                    )
-                    yield StateFiles(id="state_files", state_files=state_files)
+            yield from self.no_tf_container()
+            return
+
+        state_files = self.file_system_service.list_state_files()
+        yield Header(TERRAFORM_MAIN_ACTIONS, TERRAFORM_ADDITIONAL_ACTIONS, id="header")
+        with Horizontal(id=MainScreenIdentifiers.MAIN_CONTAINER_ID):
+            with Vertical(id=MainScreenIdentifiers.SIDEBAR):
+                yield self.workspaces_container
                 yield ResizingRule(
-                    id="resize-sidebar-right_container",
-                    orientation="vertical",
+                    id=MainScreenIdentifiers.RESIZE_RULE_WS_PT,
+                    orientation=Orientation.HORIZONTAL.value,
                     classes="resize-handle",
-                    prev_component_id="sidebar",
-                    next_component_id="right_container",
+                    prev_component_id=MainScreenIdentifiers.WORKSPACE_ID,
+                    next_component_id=MainScreenIdentifiers.PROJECT_TREE_ID,
                 )
-                with Vertical(id="right_container"):
-                    yield Content(id="content")
-                    yield ResizingRule(
-                        id="resize-content-commands_log",
-                        orientation="horizontal",
-                        classes="resize-handle",
-                        prev_component_id="content",
-                        next_component_id="commands_log",
-                    )
-                    yield CommandsLog(id="commands_log", content="log")
-            yield Footer()
+                yield self.project_tree_container
+                yield ResizingRule(
+                    id=MainScreenIdentifiers.RESIZE_RULE_PT_SF,
+                    orientation=Orientation.HORIZONTAL.value,
+                    classes="resize-handle",
+                    prev_component_id=MainScreenIdentifiers.PROJECT_TREE_ID,
+                    next_component_id=MainScreenIdentifiers.STATE_FILES_ID,
+                )
+                yield StateFiles(id=MainScreenIdentifiers.STATE_FILES_ID, state_files=state_files)
+            yield ResizingRule(
+                id=MainScreenIdentifiers.RESIZE_RULE_SR,
+                orientation=Orientation.VERTICAL.value,
+                classes="resize-handle",
+                prev_component_id=MainScreenIdentifiers.SIDEBAR,
+                next_component_id=MainScreenIdentifiers.RIGHT_PANEL,
+            )
+            with Vertical(id=MainScreenIdentifiers.RIGHT_PANEL):
+                yield Content(id=MainScreenIdentifiers.CONTENT_ID)
+                yield ResizingRule(
+                    id=MainScreenIdentifiers.RESIZE_RULE_CC,
+                    orientation=Orientation.HORIZONTAL.value,
+                    classes="resize-handle",
+                    prev_component_id=MainScreenIdentifiers.CONTENT_ID,
+                    next_component_id=MainScreenIdentifiers.COMMANDS_LOG_ID,
+                )
+                yield self.log_component
+        yield Footer()
 
     async def on_mount(self):
         """
@@ -229,11 +221,6 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         self.theme = DEFAULT_THEME
         self.start_system_events_monitoring()
         self.start_sync_monitoring()
-
-        try:
-            self.log_component: RichLog = self.query_one(f"#{CommandsLog.LOG_COMPONENT_ID}")  # type: ignore
-        except NoMatches:
-            return
 
     def action_open_search(self) -> None:
         """
@@ -254,6 +241,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         Parameters:
             message (str): The command or action being logged.
             status (CommandStatus): The execution status of the command ('SUCCESS' or 'ERROR').
+            details(str): Additional details or context for the command log entry.
 
         Writes two log entries to the CommandsLog component:
             1. A basic command log with the message
@@ -268,17 +256,12 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
             - Updates the CommandsLog widget with formatted log entries
         """
         if not self.log_component:
-            try:
-                self.log_component: RichLog = self.query_one(f"#{CommandsLog.LOG_COMPONENT_ID}")  # type: ignore
-            except NoMatches:
-                return
+            return
 
-        self.log_component.write(f"~$: [bold]{message}[/bold]")
-        self.log_component.write(
-            f"{STATUS_TO_ICON.get(status)} [#808080]{datetime.now()} {message} [/#808080][{status.name}]"
-        )
+        self.log_component.write_primary_message(message)
+        self.log_component.write_datetime_status_message(message, status)
         if details:
-            self.log_component.write(f"[#808080]{details}[/#808080]")
+            self.log_component.write_secondary_message(details)
 
     def update_selected_file_content(self, event: FileSystemEvent):
         """
@@ -430,16 +413,14 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         if not str(file_path).startswith(str(self.work_dir)):
             file_path = self.work_dir / file_path
 
-        self.log.info("Refreshing content component")
-
         try:
             content = self.file_system_service.read(file_path)
         except ReadFileException as e:
             self.notify(str(e), severity="error")
             return
-        else:
-            file_path = file_path.relative_to(self.work_dir)
-            await self.query_one(Content).add(str(file_path), content, message.line)
+
+        file_path = file_path.relative_to(self.work_dir)
+        await self.query_one(Content).add(str(file_path), content, message.line)
 
     def on_workspaces_select_event(self, message: Workspaces.SelectEvent) -> None:
         """
@@ -497,3 +478,10 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         log_message = f"terraform workspace select {workspace.name}"
         self.write_command_log(log_message, status, log_message)
         self.init_env()
+
+    @staticmethod
+    def no_tf_container():
+        yield Container(
+            Label(TERRAFORM_VERIFICATION_FAILED_MESSAGE),
+            id=MainScreenIdentifiers.TERRAFORM_ERROR_MESSAGE_ID,
+        )
