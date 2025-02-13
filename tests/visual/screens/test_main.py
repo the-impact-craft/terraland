@@ -36,7 +36,7 @@
 #         file_path = Path("main.tf")
 #         file_content = "resource 'aws_instance' 'example' {}"
 #         pilot.app.file_system_service.read.return_value = file_content
-#         await pilot.app.on_file_double_clicked_event(FileSelect(file_path))
+#         await pilot.app.on_file_select(FileSelect(file_path))
 #
 #         # Assert tab has been added
 #         assert tabbed_content.tab_count == 1

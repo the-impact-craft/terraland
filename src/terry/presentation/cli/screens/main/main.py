@@ -1,12 +1,9 @@
-import asyncio
 import atexit
-import os
 from datetime import datetime
 from pathlib import Path
 from typing import List
 
 from dependency_injector.wiring import inject, Provide
-from textual import work, on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Vertical, Horizontal, Container
@@ -14,8 +11,7 @@ from textual.css.query import NoMatches
 from textual.widgets import Footer, Label
 from textual.widgets import RichLog
 from textual.widgets._toggle_button import ToggleButton
-from watchdog.events import FileSystemEventHandler, FileSystemEvent
-from watchdog.observers import Observer
+from watchdog.events import FileSystemEvent
 
 from terry.domain.terraform.core.entities import (
     TerraformVersion,
@@ -25,9 +21,6 @@ from terry.infrastructure.file_system.exceptions import ReadFileException
 from terry.infrastructure.file_system.services import FileSystemService
 from terry.infrastructure.operation_system.services import OperationSystemService
 from terry.infrastructure.shared.command_utils import clean_up_command_output
-from terry.infrastructure.terraform.core.exceptions import (
-    TerraformVersionException,
-)
 from terry.infrastructure.terraform.core.services import TerraformCoreService
 from terry.infrastructure.terraform.workspace.exceptions import (
     TerraformWorkspaceListException,
@@ -46,7 +39,9 @@ from terry.presentation.cli.screens.main.containers.header import Header
 from terry.presentation.cli.screens.main.containers.project_tree import ProjectTree
 from terry.presentation.cli.screens.main.containers.state_files import StateFiles
 from terry.presentation.cli.screens.main.containers.workspaces import Workspaces
+from terry.presentation.cli.screens.main.helpers import get_or_raise_validate_terraform, validate_work_dir
 from terry.presentation.cli.screens.main.mixins.resize_containers_watcher_mixin import ResizeContainersWatcherMixin
+from terry.presentation.cli.screens.main.mixins.system_monitoring_mixin import SystemMonitoringMixin
 from terry.presentation.cli.screens.main.mixins.terraform_action_handler_mixin import TerraformActionHandlerMixin
 from terry.presentation.cli.screens.search.main import SearchScreen
 from terry.presentation.cli.themes.arctic import arctic_theme
@@ -71,7 +66,7 @@ STATUS_TO_ICON: dict = {
 }
 
 
-class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
+class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, SystemMonitoringMixin):
     """The main app for the Terry project."""
 
     __slots__ = [
@@ -79,7 +74,6 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
         "workspace_service",
         "terraform_version",
         "file_system_service",
-        "updated_events_count",
         "terraform_core_service",
         "operation_system_service",
     ]
@@ -88,7 +82,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
 
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
-        Binding(key="ctrl+f", action="open_modal", description="Search"),
+        Binding(key="ctrl+f", action="open_search", description="Search"),
     ]
 
     @inject
@@ -118,13 +112,15 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
             workspace (str): Initial workspace name, set to "default".
         """
         super().__init__(*args, **kwargs)
+        ResizeContainersWatcherMixin.__init__(self)
+        TerraformActionHandlerMixin.__init__(self)
+        SystemMonitoringMixin.__init__(self)
+
         self.work_dir: Path = work_dir if isinstance(work_dir, Path) else Path(work_dir)
 
-        self.observer = None
         self.workspaces: List[Workspace] = []
         self.selected_workspace: Workspace | None = None
         self.terraform_version: TerraformVersion | None = None
-        self.updated_events_count: int = 0
         self._tf_command_executor: TerraformCommandExecutor | None = None
 
         self.workspace_service: WorkspaceService = workspace_service
@@ -239,7 +235,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
         except NoMatches:
             return
 
-    def action_open_modal(self) -> None:
+    def action_open_search(self) -> None:
         """
         Open the search modal for the current working directory.
 
@@ -284,17 +280,6 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
         if details:
             self.log_component.write(f"[#808080]{details}[/#808080]")
 
-    def increment_updated_events(self, event: FileSystemEvent):
-        """
-        Increments the count of updated events for internal tracking purposes. This
-        method modifies the internal `updated_events_count` attribute by adding one
-        each time it is invoked.
-
-        :param event: The event object whose update triggers the increment.
-        :type event: object
-        """
-        self.updated_events_count += 1
-
     def update_selected_file_content(self, event: FileSystemEvent):
         """
         Updates the content of a selected file when a modification event occurs.
@@ -330,11 +315,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
 
     def cleanup(self):
         """Stop and cleanup the file system observer."""
-        if getattr(self, "observer"):
-            if self.observer is None:
-                return
-            self.observer.stop()
-            self.observer.join()
+        self.cleanup_observer()
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
 
@@ -352,8 +333,8 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
         Raises:
             ValueError: If the working directory is invalid or the project is not a Terraform project.
         """
-        self._validate_work_dir(self.work_dir)
-        self._validate_terraform()
+        validate_work_dir(self.work_dir)
+        self.terraform_version = get_or_raise_validate_terraform(self.terraform_core_service)
 
     def init_env(self):
         """
@@ -421,8 +402,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
     # Event handlers
     # ------------------------------------------------------------------------------------------------------------------
 
-    @on(FileSelect)
-    async def on_file_double_clicked_event(self, message: FileSelect) -> None:
+    async def on_file_select(self, message: FileSelect) -> None:
         """
         Handle the file double-clicked event in the Terry application.
 
@@ -461,8 +441,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
             file_path = file_path.relative_to(self.work_dir)
             await self.query_one(Content).add(str(file_path), content, message.line)
 
-    @on(Workspaces.SelectEvent)
-    def handle_workspace_select(self, message: Workspaces.SelectEvent) -> None:
+    def on_workspaces_select_event(self, message: Workspaces.SelectEvent) -> None:
         """
         Handle the workspace change event in the Terry application.
 
@@ -518,108 +497,3 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin):
         log_message = f"terraform workspace select {workspace.name}"
         self.write_command_log(log_message, status, log_message)
         self.init_env()
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # Validation methods
-    # ------------------------------------------------------------------------------------------------------------------
-
-    def _validate_work_dir(self, path) -> None:
-        """
-        Validate the provided working directory path.
-
-        This method checks if the provided path exists, is a directory, and is readable.
-
-        Parameters:
-            path (Path): The working directory path to validate.
-
-        Raises:
-            ValueError: If the path does not exist or is not a directory.
-            PermissionError: If the directory is not readable.
-
-        """
-        if not path.exists():
-            raise ValueError(f"Directory does not exist: {path}")
-
-        if not path.is_dir():
-            raise ValueError(f"Path is not a directory: {path}")
-
-        if not os.access(path, os.R_OK):
-            raise PermissionError(f"Directory is not readable: {path}")
-
-    def _validate_terraform(self):
-        """
-        Validate the Terraform installation in the current environment.
-
-        This method checks if the Terraform binary is available in the system PATH.
-
-        Raises:
-            RuntimeError: If the Terraform binary is not found in the system PATH.
-            RuntimeError: If the version output cannot be parsed.
-        """
-
-        try:
-            self.terraform_version = self.terraform_core_service.version()
-        except TerraformVersionException as e:
-            error_message = f"""Terraform seems to be not installed. 
-                Please install Terraform to use this application. 
-                Details: {str(e)}"""
-            raise RuntimeError(error_message)
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # Async workers
-    # ------------------------------------------------------------------------------------------------------------------
-
-    @work()
-    async def start_system_events_monitoring(self):
-        """
-        Asynchronously starts monitoring system events within a specific directory.
-
-        This function utilizes an observer pattern to monitor file system events such
-        as creation, modification, deletion, or movement within the specified directory.
-        When an event is detected, the following handlers are invoked in order:
-        1. increment_updated_events: Tracks the number of file system events
-        2. update_selected_file_content: Updates the UI when monitored files change
-
-        The monitoring process runs continuously until explicitly stopped or interrupted.
-        """
-
-        class EventHandler(FileSystemEventHandler):
-            def __init__(self, handlers: list[callable], *args, **kwargs):  # type: ignore
-                super().__init__(*args, **kwargs)
-                self.handlers = handlers
-
-            def on_any_event(self, event: FileSystemEvent) -> None:
-                for handler in self.handlers:
-                    handler(event)
-
-        event_handler = EventHandler(
-            [
-                self.increment_updated_events,
-                self.update_selected_file_content,
-            ]
-        )
-        self.observer = Observer()
-        self.observer.schedule(event_handler, str(self.work_dir), recursive=True)
-        self.observer.start()
-        try:
-            while True:
-                await asyncio.sleep(1)
-        finally:
-            self.cleanup()
-
-    @work()
-    async def start_sync_monitoring(self):
-        """
-        This method asynchronously starts monitoring for system updates. It checks periodically if any system
-        updates have been detected. After processing the updates, it resets the update counter, updates the last
-        synchronization date, and refreshes the environment settings. The monitoring loop runs indefinitely unless
-        stopped by external control or exceptions. It ensures to log a warning message when the monitoring ceases.
-        """
-        try:
-            while True:
-                await asyncio.sleep(1)
-                if self.updated_events_count > 0:
-                    self.updated_events_count = 0
-                    self.refresh_env()
-        finally:
-            self.log.warning("System updates monitoring stopped")

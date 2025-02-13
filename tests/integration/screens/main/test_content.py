@@ -50,7 +50,7 @@ class TestContent:
             file_path = Path("main.tf")
             file_content = "resource 'aws_instance' 'example' {}"
             file_system_service.read.return_value = file_content
-            await pilot.app.on_file_double_clicked_event(FileSelect(file_path))
+            await pilot.app.on_file_select(FileSelect(file_path))
 
             tab_id = content.files_contents[str(file_path)].get("id")
 
@@ -80,7 +80,7 @@ class TestContent:
             file_content = '{"key": ["value"], "key2": "value2"}'
             file_system_service.read.return_value = file_content
 
-            await pilot.app.on_file_double_clicked_event(FileSelect(file_path))
+            await pilot.app.on_file_select(FileSelect(file_path))
             await pilot.pause()
 
             tab_id = content.files_contents[str(file_path)].get("id")
@@ -110,7 +110,7 @@ class TestContent:
 
             for file_path, file_content in files.items():
                 file_system_service.read.return_value = file_content
-                await pilot.app.on_file_double_clicked_event(FileSelect(Path(file_path)))
+                await pilot.app.on_file_select(FileSelect(Path(file_path)))
 
             # Activate content area
             await click(pilot, tabbed_content)
@@ -140,7 +140,7 @@ class TestContent:
             file_path = Path("main.tf")
             file_content = "resource 'aws_instance' 'example' {}"
             file_system_service.read.return_value = file_content
-            await pilot.app.on_file_double_clicked_event(FileSelect(file_path))
+            await pilot.app.on_file_select(FileSelect(file_path))
 
             # Assert tab has been added
             assert tabbed_content.tab_count == 1
@@ -172,7 +172,7 @@ class TestContent:
 
             for file_path, file_content in files.items():
                 file_system_service.read.return_value = file_content
-                await pilot.app.on_file_double_clicked_event(FileSelect(Path(file_path)))
+                await pilot.app.on_file_select(FileSelect(Path(file_path)))
 
             # Activate content area
             await click(pilot, tabbed_content)
@@ -223,7 +223,7 @@ class TestContent:
             updated_content = "resource 'aws_instance' 'example' {name = 'test'}"
 
             file_system_service.read.return_value = initial_file_content
-            await pilot.app.on_file_double_clicked_event(FileSelect(file_path))
+            await pilot.app.on_file_select(FileSelect(file_path))
             await pilot.pause()
 
             text_area = content.query_one(TextArea)
@@ -274,10 +274,10 @@ class TestContent:
             updated_content = "resource 'aws_instance' 'example' {name = 'test'}"
 
             file_system_service.read.return_value = initial_file_content
-            await pilot.app.on_file_double_clicked_event(FileSelect(file_path_1))
+            await pilot.app.on_file_select(FileSelect(file_path_1))
             await pilot.pause()
 
-            await pilot.app.on_file_double_clicked_event(FileSelect(file_path_2))
+            await pilot.app.on_file_select(FileSelect(file_path_2))
             await pilot.pause()
 
             text_area = content.query_one(TextArea)
