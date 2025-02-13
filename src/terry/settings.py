@@ -9,6 +9,16 @@ class CommandStatus(Enum):
     ERROR = "ERROR"
 
 
+STATUS_TO_COLOR: dict = {
+    CommandStatus.SUCCESS: "green",
+    CommandStatus.ERROR: "red",
+}
+
+STATUS_TO_ICON: dict = {
+    CommandStatus.SUCCESS: "🟢",
+    CommandStatus.ERROR: "🔴",
+}
+
 DEFAULT_LANGUAGE: str = "python"
 
 TERRAFORM_MAIN_ACTIONS: List[TerraformCommand] = [
@@ -88,7 +98,6 @@ ENV_VARS_PREFIXES = [
     "AWS",
     "ARM",
 ]
-
 
 MIN_SECTION_DIMENSION = 10  # Minimum width/height for components
 
