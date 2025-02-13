@@ -22,7 +22,7 @@ Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance 
 ## 🛠 Installation
 
 ```bash
-pip install terry-cli
+pip install git+https://github.com/the-impact-craft/terry.git
 ```
 
 ## 📌 Usage
