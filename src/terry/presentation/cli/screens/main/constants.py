@@ -43,3 +43,4 @@ class Orientation(Enum):
 # ------------------------------------------------------------------------------------------
 
 TERRAFORM_VERIFICATION_FAILED_MESSAGE = "💥 Failed to verify terraform project 💥"
+WORKSPACE_SWITCH_SUCCESS_TEMPLATE = "Workspace has been changed to {}."

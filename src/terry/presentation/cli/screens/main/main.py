@@ -33,6 +33,7 @@ from terry.presentation.cli.screens.main.constants import (
     MainScreenIdentifiers,
     Orientation,
     TERRAFORM_VERIFICATION_FAILED_MESSAGE,
+    WORKSPACE_SWITCH_SUCCESS_TEMPLATE,
 )
 from terry.presentation.cli.screens.main.containers.commands_log import (
     CommandsLog,
@@ -469,10 +470,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
 
         else:
             status = CommandStatus.SUCCESS
-            self.notify(
-                f"Workspace has been changed to {workspace.name}.",
-                severity=SEVERITY_LEVEL_INFORMATION,
-            )
+            self.notify(WORKSPACE_SWITCH_SUCCESS_TEMPLATE.format(workspace.name), severity=SEVERITY_LEVEL_INFORMATION)
             self.selected_workspace = workspace
 
         log_message = f"terraform workspace select {workspace.name}"
