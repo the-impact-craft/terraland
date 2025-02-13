@@ -4,6 +4,8 @@
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
+![](https://github.com/the-impact-craft/terry/blob/main/media/demo1.gif)
+
 Installation:
 
 ```bash
