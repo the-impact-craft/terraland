@@ -4,26 +4,73 @@
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
+# Terry - The Visual Terraform CLI
+
+Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance your workflow with an intuitive UI and real-time validation. Whether you're managing complex infrastructure or just getting started with Terraform, Terry provides a smooth experience right from your terminal.
+
+
 ![](https://github.com/the-impact-craft/terry/blob/main/media/demo1.gif)
 
-Installation:
+
+## 🚀 Features
+
+- 🌎 **Workspace Management**: Easily switch between different Terraform workspaces.
+- 📂 **Project Explorer**: View your Terraform files and directory structure effortlessly.
+- ✅ **Real-time Validation**: Execute `init`, `plan`, `apply`, `validate` and more using ui buttons or shortcut keys.
+- 🖥️ **Minimalist UI**: A clean and distraction-free interface built using the Textual framework.
+
+## 🛠 Installation
+
+```bash
+pip install terry-cli
+```
+
+## 📌 Usage
+
+```bash
+terry
+```
+
+Navigate through workspaces, view state files, and manage your Terraform infrastructure—all from a single, interactive terminal interface.
+
+## 🎯 Shortcuts
+
+- `Ctrl + f` - Search
+- `Ctrl + Q` - Quit the app
+
+[//]: Others to be added
+
+## 🤝 Contributing
+
+We welcome contributions! Feel free to open discussions to share your ideas.
+
+## 📜 License
+
+Terry is released under the MIT License.
+
+---
+
+🚀 Get started with Terry and simplify your Terraform workflow!
+
+
+
+
+## Development instructions
+
+
+Install requirements:
 
 ```bash
 pip install -r requirements/requirements-dev.txt
 ```
 
-Run:
-    
-```bash
-export PYTHONPATH="$PYTHONPATH:$PWD" && python src/terry/presentation/cli/app.py
-```
-
-Dev mode:
+Run in dev mode:
 
 ```bash
 pip install textual-dev
 cd src
-export PYTHONPATH="$PYTHONPATH:$PWD" && textual run terry/presentation/cli/app.py
+export PYTHONPATH="$PYTHONPATH:$PWD" && 
+textual run --dev terry/presentation/cli/app.py
 ```
 
 Run tests:
