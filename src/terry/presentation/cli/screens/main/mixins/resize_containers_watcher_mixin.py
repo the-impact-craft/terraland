@@ -36,7 +36,6 @@ class ResizeContainersWatcherMixin:
                 raise TypeError(f"Class {cls.__name__} must implement method {method}")
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.active_resizing_rule: ResizingRule | None = None
 
     def on_select_resizing_rule(self, event: SelectResizingRule) -> None:
