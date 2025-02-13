@@ -25,7 +25,7 @@ from terry.settings import DEFAULT_LANGUAGE, ANIMATION_SPEED
 
 
 class Preview(Horizontal):
-    content: reactive[str] = reactive("", recompose=True)
+    content: reactive[str | None] = reactive(None, recompose=True)
     language: reactive[str] = reactive(DEFAULT_LANGUAGE, recompose=True)
     selected_line: reactive[int] = reactive(0, recompose=True)
 
@@ -71,7 +71,7 @@ class Preview(Horizontal):
         """
 
         text_area = TextArea(
-            self.content,
+            self.content or "",
             language=self.language,
             read_only=True,
             show_line_numbers=True,
@@ -80,7 +80,7 @@ class Preview(Horizontal):
         text_area.register_theme(terrafort_text_area_theme)
         text_area.theme = TERRAFORT_THEME_NAME
 
-        if not self.content:
+        if self.content is None:
             yield Container(
                 Static(LOGO_ANIMATION[-1], id="no_content_label_content"),
                 id="no_content_label",
@@ -88,22 +88,23 @@ class Preview(Horizontal):
             yield text_area
             if self.animation_enabled and not self.animation_task_running:
                 self.turn_animation_on()
-        else:
-            self.turn_animation_off()
-            if self.language in ["json"]:
-                try:
-                    data = json.loads(self.content)
-                except json.JSONDecodeError:
-                    yield text_area
-                    self.notify("Invalid JSON content.")
-                else:
-                    with Horizontal(id="json-preview"):
-                        yield text_area
-                        yield self.build_tree(data)
-            else:
+            return
+
+        self.turn_animation_off()
+        if self.language in ["json"]:
+            try:
+                data = json.loads(self.content)
+            except json.JSONDecodeError:
                 yield text_area
-            if self.selected_line:
-                text_area.cursor_location = (self.selected_line, 0)
+                self.notify("Invalid JSON content.")
+            else:
+                with Horizontal(id="json-preview"):
+                    yield text_area
+                    yield self.build_tree(data)
+        else:
+            yield text_area
+        if self.selected_line:
+            text_area.cursor_location = (self.selected_line, 0)
 
     @work(exclusive=True, thread=True)
     async def animate_logo(self):
@@ -189,6 +190,16 @@ class Preview(Horizontal):
         if not tree:
             tree = Tree("State:", id="state-tree")
         return tree
+
+    def reset(self):
+        """
+        Resets the content and language attributes of the instance to their default values.
+
+        This method is used to clear the current content and reset the language
+        to the predefined default language constant.
+        """
+        self.content = None
+        self.language = DEFAULT_LANGUAGE
 
 
 class Content(Vertical):
@@ -377,9 +388,7 @@ class Content(Vertical):
             tabs.remove_tab(active_tab.id)
             del self.files_contents[str(active_tab.label)]
         if not self.files_contents:
-            preview = self.query_one(Preview)
-            preview.content = ""
-            preview.language = DEFAULT_LANGUAGE
+            self.query_one(Preview).reset()
             self.active_tab = None
 
     def action_clear(self) -> None:
@@ -395,8 +404,5 @@ class Content(Vertical):
         """
         self.files_contents = {}
         self.query_one(Tabs).clear()
-
-        preview = self.query_one(Preview)
-        preview.content = ""
-        preview.language = DEFAULT_LANGUAGE
+        self.query_one(Preview).reset()
         self.active_tab = None
