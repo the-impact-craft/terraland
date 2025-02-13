@@ -1,8 +1,6 @@
 import os
-from datetime import datetime
 
 from terry.infrastructure.terraform.core.exceptions import TerraformVersionException
-from terry.settings import STATUS_TO_ICON, CommandStatus
 
 
 def validate_work_dir(path) -> None:
@@ -47,20 +45,3 @@ def get_or_raise_validate_terraform(terraform_core_service):
             Please install Terraform to use this application. 
             Details: {str(e)}"""
         raise RuntimeError(error_message)
-
-
-class CommandLogMessageFormatter:
-    @staticmethod
-    def get_primary_message(message: str) -> str:
-        return f"~$: [bold]{message}[/bold]"
-
-    @staticmethod
-    def get_secondary_message(message: str) -> str:
-        return f"[#808080]{message}[/#808080]"
-
-    @staticmethod
-    def get_datetime_status_message(
-        message: str,
-        status: CommandStatus,
-    ) -> str:
-        return f"{STATUS_TO_ICON.get(status)} [#808080]{datetime.now()} {message} [/#808080][{status.name}]"

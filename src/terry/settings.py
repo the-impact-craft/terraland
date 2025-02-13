@@ -9,12 +9,12 @@ class CommandStatus(Enum):
     ERROR = "ERROR"
 
 
-STATUS_TO_COLOR: dict = {
+STATUS_TO_COLOR: dict[CommandStatus, str] = {
     CommandStatus.SUCCESS: "green",
     CommandStatus.ERROR: "red",
 }
 
-STATUS_TO_ICON: dict = {
+STATUS_TO_ICON: dict[CommandStatus, str] = {
     CommandStatus.SUCCESS: "🟢",
     CommandStatus.ERROR: "🔴",
 }
