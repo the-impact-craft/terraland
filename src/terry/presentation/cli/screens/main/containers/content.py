@@ -192,9 +192,14 @@ class Preview(Horizontal):
         return tree
 
     def reset(self):
+        """
+        Resets the content and language attributes of the instance to their default values.
+
+        This method is used to clear the current content and reset the language
+        to the predefined default language constant.
+        """
         self.content = None
         self.language = DEFAULT_LANGUAGE
-        self.active_tab = None
 
 
 class Content(Vertical):
@@ -384,6 +389,7 @@ class Content(Vertical):
             del self.files_contents[str(active_tab.label)]
         if not self.files_contents:
             self.query_one(Preview).reset()
+            self.active_tab = None
 
     def action_clear(self) -> None:
         """
@@ -399,3 +405,4 @@ class Content(Vertical):
         self.files_contents = {}
         self.query_one(Tabs).clear()
         self.query_one(Preview).reset()
+        self.active_tab = None
