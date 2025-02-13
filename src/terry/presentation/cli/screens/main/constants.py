@@ -17,7 +17,7 @@ class MainScreenIdentifiers:
     SIDEBAR = "sidebar"
     RIGHT_PANEL = "right_panel"
 
-    WORKSPACE_ID = "workspace"
+    WORKSPACE_ID = "workspaces"
     PROJECT_TREE_ID = "project_tree"
     STATE_FILES_ID = "state_files"
     CONTENT_ID = "content"
