@@ -209,10 +209,14 @@ class TerraformActionHandlerMixin:
         area = self.app.query_one(TerraformCommandOutputScreen)  # type: ignore
         manager = CommandProcessContextManager(tf_command, str(self.work_dir))  # type: ignore
         self._tf_command_executor.command_process = manager  # type: ignore
+        output = []
         with manager as (stdin, stdout, stderr):
             area.stdin = stdin
             for line in process_stdout_stderr(stdout, stderr):
                 area.write_log(line)
+                output.append(line)
+            self._log_success("Command executed successfully.", tf_command_str, "\n".join(output))
+
         area.stdin = None
 
         if manager.error:

@@ -73,7 +73,6 @@ class Preview(Horizontal):
         text_area = TextArea(
             self.content or "",
             language=self.language,
-            read_only=True,
             show_line_numbers=True,
         )
 
