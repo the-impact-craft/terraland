@@ -21,11 +21,51 @@ class ReadFileException(BaseFileSystemException):
     """
 
 
+class CreateFileException(BaseFileSystemException):
+    """
+    Custom exception for errors occurring during a file system create file operation.
+
+    This exception is used to indicate and encapsulate errors specific
+    to the process of creating a new file.
+    It provides additional context about the nature of the error.
+    """
+
+
+class CreateDirException(BaseFileSystemException):
+    """
+    Custom exception for errors occurring during a file system create directory operation.
+
+    This exception is used to indicate and encapsulate errors specific
+    to the process of creating a new directory.
+    It provides additional context about the nature of the error.
+    """
+
+
 class ListDirException(BaseFileSystemException):
     """
     Custom exception for errors occurring during a file system list directory operation.
 
     This exception is used to indicate and encapsulate errors specific
     to the process of listing directory contents.
+    It provides additional context about the nature of the error.
+    """
+
+
+class DeleteFileException(BaseFileSystemException):
+    """
+    Custom exception for errors occurring during a file system delete file operation.
+
+    This exception is used to indicate and encapsulate errors specific
+    to the process of deleting a file.
+    It provides additional context about the nature of the error.
+    """
+
+
+class DeleteDirException(BaseFileSystemException):
+    """
+    Custom exception for errors occurring during a file system delete directory operation.
+
+    This exception is used to indicate and encapsulate errors specific
+    to the process of deleting a directory.
     It provides additional context about the nature of the error.
     """

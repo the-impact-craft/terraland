@@ -1,9 +1,18 @@
+import shutil
 import subprocess
 from pathlib import Path
 
 from terry.domain.file_system.entities import SearchResult, SearchResultOutput, ListDirOutput
 from terry.domain.file_system.services import BaseFileSystemService
-from terry.infrastructure.file_system.exceptions import FileSystemGrepException, ReadFileException, ListDirException
+from terry.infrastructure.file_system.exceptions import (
+    FileSystemGrepException,
+    ReadFileException,
+    ListDirException,
+    CreateFileException,
+    CreateDirException,
+    DeleteFileException,
+    DeleteDirException,
+)
 
 
 class FileSystemService(BaseFileSystemService):
@@ -155,3 +164,84 @@ class FileSystemService(BaseFileSystemService):
             raise ListDirException(f"Access denied: {e}")
         except Exception as e:
             raise ListDirException(f"Error listing directory: {e}")
+
+    def create_file(self, path: Path) -> None:
+        """
+        Create a new file at the specified path.
+
+        Args:
+            path (Path): The path to the new file.
+
+        Raises:
+            CreateFileException: If the file creation operation fails.
+        """
+        try:
+            path.relative_to(self.work_dir)
+        except ValueError:
+            raise CreateFileException("Access denied: Path outside work directory")
+        try:
+            if not path.parent.exists():
+                path.parent.mkdir(parents=True)
+            path.touch()
+        except Exception as e:
+            raise CreateFileException(f"Error creating file: {e}")
+
+    def create_dir(self, path: Path) -> None:
+        """
+        Create a new directory at the specified path.
+
+        Args:
+            path (Path): The path to the new directory.
+
+        Raises:
+            CreateDirException: If the directory creation operation fails.
+        """
+
+        try:
+            path.relative_to(self.work_dir)
+        except ValueError:
+            raise CreateDirException("Access denied: Path outside work directory")
+        try:
+            path.mkdir(parents=True)
+        except Exception as e:
+            raise CreateDirException(f"Error creating directory: {e}")
+
+    def delete_file(self, path: Path) -> None:
+        """
+        Delete the file at the specified path.
+
+        Args:
+            path (Path): The path to the file to delete.
+
+        Raises:
+            DeleteFileException: If the file deletion operation fails.
+        """
+        try:
+            path.relative_to(self.work_dir)
+        except ValueError:
+            raise DeleteFileException("Access denied: Path outside work directory")
+        try:
+            path.unlink()
+        except Exception as e:
+            raise DeleteFileException(f"Error deleting file: {e}")
+
+    def delete_dir(self, path: Path) -> None:
+        """
+        Deletes the specified directory and all of its contents recursively.
+
+        This method ensures that the directory specified by the given path is
+        removed completely. Only applicable for writable directories. If the
+        path does not exist or is not a directory, the method does nothing.
+
+        Args:
+            path (Path): The path to the directory to delete.
+        """
+        try:
+            path.relative_to(self.work_dir)
+        except ValueError:
+            raise DeleteDirException("Access denied: Path outside work directory")
+
+        try:
+            shutil.rmtree(path, ignore_errors=True)
+        except Exception as e:
+            raise DeleteDirException(f"Error deleting directory: {e}")

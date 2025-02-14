@@ -15,7 +15,7 @@ from terry.domain.terraform.core.entities import (
     TerraformVersion,
 )
 from terry.domain.terraform.workspaces.entities import Workspace
-from terry.infrastructure.file_system.exceptions import ReadFileException
+from terry.infrastructure.file_system.exceptions import ReadFileException, DeleteDirException, DeleteFileException
 from terry.infrastructure.file_system.services import FileSystemService
 from terry.infrastructure.operation_system.services import OperationSystemService
 from terry.infrastructure.shared.command_utils import clean_up_command_output
@@ -25,10 +25,13 @@ from terry.infrastructure.terraform.workspace.exceptions import (
     TerraformWorkspaceSwitchException,
 )
 from terry.infrastructure.terraform.workspace.services import WorkspaceService
+from terry.presentation.cli.custom.messages.dir_activate_message import DirActivate
 from terry.presentation.cli.custom.messages.files_select_message import FileSelect
+from terry.presentation.cli.custom.messages.path_delete_message import PathDelete
 from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
 from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
+from terry.presentation.cli.screens.add_file.main import AddFileScreen
 from terry.presentation.cli.screens.main.constants import (
     MainScreenIdentifiers,
     Orientation,
@@ -65,6 +68,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
 
     __slots__ = [
         "work_dir",
+        "active_dir",
         "workspace_service",
         "terraform_version",
         "file_system_service",
@@ -77,6 +81,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(key="ctrl+f", action="open_search", description="Search"),
+        Binding(key="ctrl+shift+n", action="open_create_file", description="Create file"),
     ]
 
     @inject
@@ -111,6 +116,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         SystemMonitoringMixin.__init__(self)
 
         self.work_dir: Path = work_dir if isinstance(work_dir, Path) else Path(work_dir)
+        self.active_dir: Path = self.work_dir
 
         self.workspaces: List[Workspace] = []
         self.selected_workspace: Workspace | None = None
@@ -159,9 +165,9 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         """
         is_tf_project = True
 
+        self.log_component = CommandsLog(id=MainScreenIdentifiers.COMMANDS_LOG_ID)
         self.workspaces_container = Workspaces(id=MainScreenIdentifiers.WORKSPACE_ID)
         self.project_tree_container = ProjectTree(id=MainScreenIdentifiers.PROJECT_TREE_ID, work_dir=self.work_dir)
-        self.log_component = CommandsLog(id=MainScreenIdentifiers.COMMANDS_LOG_ID)
 
         self.workspaces_container.selected_workspace = self.selected_workspace
         self.workspaces_container.workspaces = self.workspaces
@@ -234,6 +240,21 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
             None
         """
         self.push_screen(SearchScreen(self.work_dir))
+
+    def action_open_create_file(self) -> None:
+        """
+        Open the create file modal for the current working directory.
+
+        This method pushes a CreateFileScreen onto the application's screen stack, initializing it with the current
+        working directory. The create file modal allows users to create new files within the project.
+
+        Returns:
+            None
+        """
+        add_file_screen = AddFileScreen(
+            self.file_system_service, self.work_dir, self.active_dir.relative_to(self.work_dir)
+        )
+        self.push_screen(add_file_screen)
 
     def write_command_log(self, message: str, status: CommandStatus, details: str = "") -> None:
         """
@@ -346,7 +367,18 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         :raises RuntimeError: If the workspace directory does not exist or cannot be accessed.
         """
 
-        # Todo: split to separate methods
+        self.refresh_workspaces()
+        self.refresh_project_tree()
+
+    def refresh_workspaces(self):
+        """
+        Refreshes the list of available workspaces and updates the corresponding UI components.
+
+        This method fetches the list of available workspaces from the Terraform workspace service
+        and updates the corresponding UI components to reflect the latest workspace state. It also
+        updates the selected workspace in the workspaces container if the active workspace has changed.
+
+        """
         try:
             self.workspaces = self.workspace_service.list().workspaces
         except TerraformWorkspaceListException as e:
@@ -368,12 +400,20 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         ):
             self.workspaces_container.workspaces = self.workspaces
 
+    def refresh_project_tree(self):
+        """
+        Refreshes the project tree by reloading the work directory tree.
+
+        This method reloads the work directory tree in the project tree container to reflect
+        any changes made to the project directory structure. It ensures that the project tree
+        is up-to-date with the latest changes in the working directory.
+
+        """
         if not self.project_tree_container:
             try:
                 self.project_tree_container = self.query_one(ProjectTree)
             except NoMatches:
                 self.notify("Project tree container not found.")
-                return
 
         if not self.project_tree_container:
             return
@@ -385,6 +425,18 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
     # ------------------------------------------------------------------------------------------------------------------
     # Event handlers
     # ------------------------------------------------------------------------------------------------------------------
+    async def on_dir_activate(self, message: DirActivate) -> None:
+        """
+        Handles the activation of a directory triggered by a specific event message.
+
+        Updates the active directory used for file creation and other operations
+        that require a current working context. The active directory must exist
+        and be within the work directory.
+
+        Args:
+            message: The `DirActivate` message containing the path to activate.
+        """
+        self.active_dir = message.path
 
     async def on_file_select(self, message: FileSelect) -> None:
         """
@@ -422,6 +474,30 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
 
         file_path = file_path.relative_to(self.work_dir)
         await self.query_one(Content).add(str(file_path), content, message.line)
+
+    def on_path_delete(self, event: PathDelete):
+        """
+        Handles the event of a path deletion in the system.
+
+        This method is triggered when a path associated with the system is deleted.
+        The event contains information about the deleted path. The method processes
+        the event and implements required on path deletion.
+        """
+
+        try:
+            if event.is_dir:
+                self.file_system_service.delete_dir(event.path)
+            else:
+                self.file_system_service.delete_file(event.path)
+
+        except DeleteDirException as e:
+            self.notify(str(e), severity="error")
+            return
+        except DeleteFileException as e:
+            self.notify(str(e), severity="error")
+            return
+
+        self.refresh_project_tree()
 
     def on_workspaces_select_event(self, message: Workspaces.SelectEvent) -> None:
         """

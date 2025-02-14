@@ -7,7 +7,6 @@ FormatSettingsScreen {
     margin: 0 0;
     width: 50;
     height: auto;
-  # border:thick $background 80 %;
     background: $surface;
 
     border: tall $secondary-background;

@@ -1,0 +1,56 @@
+AddFileScreen {
+  align: center middle;
+  content-align: center top;
+
+  & > Container {
+    padding: 0 1 0 0;
+    margin: 0 0;
+    width: 45;
+    height: auto;
+    background: $surface;
+
+    border: tall $secondary-background;
+    border-title-color: $primary-lighten-2;
+
+    & > #controls {
+      padding: 1 0 0 0;
+      height: 4;
+    }
+  }
+}
+
+
+FileInputModal {
+  align: center middle;
+  content-align: center top;
+  padding: 0 0;
+
+
+  & > Container {
+    padding: 0 0 0 0;
+    margin: 0 0;
+    width: 60;
+    height: auto;
+    background: $surface;
+
+
+    & > .header {
+      width: 100%;
+      padding: 0 0;
+      margin: 0 0;
+      background: $panel;
+      color: $foreground;
+      height: 3;
+      content-align-horizontal: center;
+      content-align-vertical: middle;
+    }
+
+    & > .input {
+      border: transparent;
+
+      &:focus {
+        border: transparent;
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+QuestionScreen {
+  align: center middle;
+  content-align: center top;
+
+  & > #question_screen {
+    padding: 0 1 0 1;
+    margin: 0 0;
+    width: 50;
+    height: auto;
+    background: $surface;
+
+    border: tall $secondary-background;
+    border-title-color: $primary-lighten-2;
+
+    & > #controls {
+      padding: 1 0 0 0;
+      height: 4;
+    }
+  }
+}
