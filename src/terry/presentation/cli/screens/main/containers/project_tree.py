@@ -8,6 +8,7 @@ from textual.reactive import reactive
 from textual.widgets import DirectoryTree, Tree
 from textual.widgets._directory_tree import DirEntry
 
+from terry.presentation.cli.custom.messages.dir_activate_message import DirActivate
 from terry.presentation.cli.custom.messages.files_select_message import FileSelect
 
 
@@ -66,12 +67,24 @@ class TfDirectoryTree(DirectoryTree):
         dir_entry = event.node.data
         if dir_entry is None:
             return
+        current_click = (time(), dir_entry)
+
         if not self._safe_is_dir(dir_entry.path):
-            current_click = (time(), dir_entry)
             if current_click[0] - self.last_file_click[0] < 1.5 and current_click[1] == self.last_file_click[1]:
                 self.post_message(FileSelect(dir_entry.path))
-            self.last_file_click = current_click
+        else:
+            self.post_message(DirActivate(dir_entry.path))
+
+        self.last_file_click = current_click
         super()._on_tree_node_selected(event)
+
+    def _on_tree_node_highlighted(self, event: Tree.NodeExpanded[DirEntry]) -> None:
+        event.stop()
+        dir_entry = event.node.data
+        if dir_entry is None:
+            return
+        if self._safe_is_dir(dir_entry.path):
+            self.post_message(DirActivate(dir_entry.path))
 
 
 class ProjectTree(VerticalScroll):

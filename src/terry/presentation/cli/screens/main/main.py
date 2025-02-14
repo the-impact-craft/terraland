@@ -25,6 +25,7 @@ from terry.infrastructure.terraform.workspace.exceptions import (
     TerraformWorkspaceSwitchException,
 )
 from terry.infrastructure.terraform.workspace.services import WorkspaceService
+from terry.presentation.cli.custom.messages.dir_activate_message import DirActivate
 from terry.presentation.cli.custom.messages.files_select_message import FileSelect
 from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
 from terry.presentation.cli.di_container import DiContainer
@@ -47,6 +48,7 @@ from terry.presentation.cli.screens.main.helpers import get_or_raise_validate_te
 from terry.presentation.cli.screens.main.mixins.resize_containers_watcher_mixin import ResizeContainersWatcherMixin
 from terry.presentation.cli.screens.main.mixins.system_monitoring_mixin import SystemMonitoringMixin
 from terry.presentation.cli.screens.main.mixins.terraform_action_handler_mixin import TerraformActionHandlerMixin
+from terry.presentation.cli.screens.add_file.main import AddFileScreen
 from terry.presentation.cli.screens.search.main import SearchScreen
 from terry.presentation.cli.themes.arctic import arctic_theme
 from terry.presentation.cli.themes.github_dark import github_dark_theme
@@ -77,6 +79,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(key="ctrl+f", action="open_search", description="Search"),
+        Binding(key="ctrl+shift+n", action="open_create_file", description="Create file"),
     ]
 
     @inject
@@ -111,6 +114,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         SystemMonitoringMixin.__init__(self)
 
         self.work_dir: Path = work_dir if isinstance(work_dir, Path) else Path(work_dir)
+        self.active_dir: Path = self.work_dir
 
         self.workspaces: List[Workspace] = []
         self.selected_workspace: Workspace | None = None
@@ -234,6 +238,21 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
             None
         """
         self.push_screen(SearchScreen(self.work_dir))
+
+    def action_open_create_file(self) -> None:
+        """
+        Open the create file modal for the current working directory.
+
+        This method pushes a CreateFileScreen onto the application's screen stack, initializing it with the current
+        working directory. The create file modal allows users to create new files within the project.
+
+        Returns:
+            None
+        """
+        add_file_screen = AddFileScreen(
+            self.file_system_service, self.work_dir, self.active_dir.relative_to(self.work_dir)
+        )
+        self.push_screen(add_file_screen)
 
     def write_command_log(self, message: str, status: CommandStatus, details: str = "") -> None:
         """
@@ -385,6 +404,23 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
     # ------------------------------------------------------------------------------------------------------------------
     # Event handlers
     # ------------------------------------------------------------------------------------------------------------------
+    async def on_dir_activate(self, message: DirActivate) -> None:
+        """
+        Handles the activation of a directory triggered by a specific event message.
+
+        This asynchronous method processes the received `DirActivate` message and
+        executes the necessary logic related to directory activation. This function
+        does not return any value as it performs operations based on the provided
+        input and the associated program flow.
+
+        :param message: The `DirActivate` message which contains details necessary
+            for activating the specific directory. This will be used to determine
+            the directory and handle the corresponding activation logic.
+
+        :return: This function does not return any value.
+
+        """
+        self.active_dir = message.path
 
     async def on_file_select(self, message: FileSelect) -> None:
         """

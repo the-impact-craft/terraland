@@ -3,7 +3,13 @@ from pathlib import Path
 
 from terry.domain.file_system.entities import SearchResult, SearchResultOutput, ListDirOutput
 from terry.domain.file_system.services import BaseFileSystemService
-from terry.infrastructure.file_system.exceptions import FileSystemGrepException, ReadFileException, ListDirException
+from terry.infrastructure.file_system.exceptions import (
+    FileSystemGrepException,
+    ReadFileException,
+    ListDirException,
+    CreateFileException,
+    CreateDirException,
+)
 
 
 class FileSystemService(BaseFileSystemService):
@@ -155,3 +161,44 @@ class FileSystemService(BaseFileSystemService):
             raise ListDirException(f"Access denied: {e}")
         except Exception as e:
             raise ListDirException(f"Error listing directory: {e}")
+
+    def create_file(self, path: Path) -> None:
+        """
+        Create a new file at the specified path.
+
+        Args:
+            path (Path): The path to the new file.
+
+        Raises:
+            CreateFileException: If the file creation operation fails.
+        """
+        try:
+            path.relative_to(self.work_dir)
+        except ValueError:
+            raise CreateFileException("Access denied: Path outside work directory")
+        try:
+            if not path.parent.exists():
+                path.parent.mkdir(parents=True)
+            path.touch()
+        except Exception as e:
+            raise CreateFileException(f"Error creating file: {e}")
+
+    def create_dir(self, path: Path) -> None:
+        """
+        Create a new directory at the specified path.
+
+        Args:
+            path (Path): The path to the new directory.
+
+        Raises:
+            CreateDirException: If the directory creation operation fails.
+        """
+
+        try:
+            path.relative_to(self.work_dir)
+        except ValueError:
+            raise CreateDirException("Access denied: Path outside work directory")
+        try:
+            path.mkdir(parents=True)
+        except Exception as e:
+            raise CreateDirException(f"Error creating directory: {e}")

@@ -69,3 +69,29 @@ class BaseFileSystemService(metaclass=abc.ABCMeta):
             ListDirException: If the path is invalid, directory doesn't exist, or path is not a directory.
         """
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def create_file(self, path: Path) -> None:
+        """
+        Create a new file at the specified path.
+
+        Args:
+            path (Path): The path to the new file.
+
+        Raises:
+            CreateFileException: If the file creation operation fails.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def create_dir(self, path: Path) -> None:
+        """
+        Create a new directory at the specified path.
+
+        Args:
+            path (Path): The path to the new directory.
+
+        Raises:
+            CreateDirException: If the directory creation operation fails.
+        """
+        raise NotImplementedError
