@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from textual import events
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
@@ -33,7 +32,7 @@ class QuestionScreen(ModalScreen[bool]):
     """Screen with a dialog to quit."""
 
     CSS_PATH = "styles.tcss"
-    CONTAINER_ID = "new_file_screen"
+    CONTAINER_ID = "question_screen"
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Pop screen"),
     ]
@@ -52,5 +51,5 @@ class QuestionScreen(ModalScreen[bool]):
     def on_control_yes(self, _: Control.Yes) -> None:
         self.dismiss(True)
 
-    def on_control_no(self, _: events.Mount) -> None:
+    def on_control_no(self, _: Control.No) -> None:
         self.dismiss(False)

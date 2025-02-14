@@ -39,12 +39,13 @@ class TfDirectoryTree(DirectoryTree):
         Attributes:
             last_file_click (Tuple[float, DirEntry]): A tuple containing the timestamp of the last file click and the
             corresponding directory entry
+            selected_path (Path): The path of the currently selected directory entry
         """
         self.last_file_click: Tuple[float, DirEntry] = (
             time() - 2,
             DirEntry(Path(), False),
         )
-        self.selected_path = None
+        self.selected_path: Path | None = None
         super().__init__(*args, **kwargs)
 
     def _on_tree_node_selected(self, event: Tree.NodeSelected[DirEntry]) -> None:
@@ -86,7 +87,7 @@ class TfDirectoryTree(DirectoryTree):
         self.last_file_click = current_click
         super()._on_tree_node_selected(event)
 
-    def _on_tree_node_highlighted(self, event: Tree.NodeExpanded[DirEntry]) -> None:
+    def _on_tree_node_highlighted(self, event: Tree.NodeHighlighted[DirEntry]) -> None:
         """
         Handles the event triggered when a tree node is highlighted.
 
@@ -97,7 +98,7 @@ class TfDirectoryTree(DirectoryTree):
         message to notify about the directory activation.
 
         Arguments:
-            event (Tree.NodeExpanded[DirEntry]): The event triggered when a tree node is highlighted
+            event (Tree.NodeHighlighted[DirEntry]): The event triggered when a tree node is highlighted
         """
         event.stop()
         entry = event.node.data

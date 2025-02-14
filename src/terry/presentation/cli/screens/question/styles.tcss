@@ -2,7 +2,7 @@ QuestionScreen {
   align: center middle;
   content-align: center top;
 
-  & > Container {
+  & > #question_screen {
     padding: 0 1 0 1;
     margin: 0 0;
     width: 50;
