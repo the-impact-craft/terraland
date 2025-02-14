@@ -1,4 +1,4 @@
-NewFileScreen {
+AddFileScreen {
   align: center middle;
   content-align: center top;
 

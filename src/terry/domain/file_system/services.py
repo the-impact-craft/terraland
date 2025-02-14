@@ -95,3 +95,29 @@ class BaseFileSystemService(metaclass=abc.ABCMeta):
             CreateDirException: If the directory creation operation fails.
         """
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def delete_file(self, path: Path) -> None:
+        """
+        Delete the file at the specified path.
+
+        Args:
+            path (Path): The path to the file to delete.
+
+        Raises:
+            DeleteFileException: If the file deletion operation fails.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def delete_dir(self, path: Path) -> None:
+        """
+        Delete the directory at the specified path.
+
+        Args:
+            path (Path): The path to the directory to delete.
+
+        Raises:
+            DeleteDirException: If the directory deletion operation fails.
+        """
+        raise NotImplementedError

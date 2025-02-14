@@ -49,3 +49,23 @@ class ListDirException(BaseFileSystemException):
     to the process of listing directory contents.
     It provides additional context about the nature of the error.
     """
+
+
+class DeleteFileException(BaseFileSystemException):
+    """
+    Custom exception for errors occurring during a file system delete file operation.
+
+    This exception is used to indicate and encapsulate errors specific
+    to the process of deleting a file.
+    It provides additional context about the nature of the error.
+    """
+
+
+class DeleteDirException(BaseFileSystemException):
+    """
+    Custom exception for errors occurring during a file system delete directory operation.
+
+    This exception is used to indicate and encapsulate errors specific
+    to the process of deleting a directory.
+    It provides additional context about the nature of the error.
+    """

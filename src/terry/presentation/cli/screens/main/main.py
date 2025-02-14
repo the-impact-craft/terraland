@@ -15,7 +15,7 @@ from terry.domain.terraform.core.entities import (
     TerraformVersion,
 )
 from terry.domain.terraform.workspaces.entities import Workspace
-from terry.infrastructure.file_system.exceptions import ReadFileException
+from terry.infrastructure.file_system.exceptions import ReadFileException, DeleteDirException, DeleteFileException
 from terry.infrastructure.file_system.services import FileSystemService
 from terry.infrastructure.operation_system.services import OperationSystemService
 from terry.infrastructure.shared.command_utils import clean_up_command_output
@@ -27,9 +27,11 @@ from terry.infrastructure.terraform.workspace.exceptions import (
 from terry.infrastructure.terraform.workspace.services import WorkspaceService
 from terry.presentation.cli.custom.messages.dir_activate_message import DirActivate
 from terry.presentation.cli.custom.messages.files_select_message import FileSelect
+from terry.presentation.cli.custom.messages.path_delete_message import PathDelete
 from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
 from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
+from terry.presentation.cli.screens.add_file.main import AddFileScreen
 from terry.presentation.cli.screens.main.constants import (
     MainScreenIdentifiers,
     Orientation,
@@ -48,7 +50,6 @@ from terry.presentation.cli.screens.main.helpers import get_or_raise_validate_te
 from terry.presentation.cli.screens.main.mixins.resize_containers_watcher_mixin import ResizeContainersWatcherMixin
 from terry.presentation.cli.screens.main.mixins.system_monitoring_mixin import SystemMonitoringMixin
 from terry.presentation.cli.screens.main.mixins.terraform_action_handler_mixin import TerraformActionHandlerMixin
-from terry.presentation.cli.screens.add_file.main import AddFileScreen
 from terry.presentation.cli.screens.search.main import SearchScreen
 from terry.presentation.cli.themes.arctic import arctic_theme
 from terry.presentation.cli.themes.github_dark import github_dark_theme
@@ -164,9 +165,9 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         """
         is_tf_project = True
 
+        self.log_component = CommandsLog(id=MainScreenIdentifiers.COMMANDS_LOG_ID)
         self.workspaces_container = Workspaces(id=MainScreenIdentifiers.WORKSPACE_ID)
         self.project_tree_container = ProjectTree(id=MainScreenIdentifiers.PROJECT_TREE_ID, work_dir=self.work_dir)
-        self.log_component = CommandsLog(id=MainScreenIdentifiers.COMMANDS_LOG_ID)
 
         self.workspaces_container.selected_workspace = self.selected_workspace
         self.workspaces_container.workspaces = self.workspaces
@@ -366,7 +367,18 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         :raises RuntimeError: If the workspace directory does not exist or cannot be accessed.
         """
 
-        # Todo: split to separate methods
+        self.refresh_workspaces()
+        self.refresh_project_tree()
+
+    def refresh_workspaces(self):
+        """
+        Refreshes the list of available workspaces and updates the corresponding UI components.
+
+        This method fetches the list of available workspaces from the Terraform workspace service
+        and updates the corresponding UI components to reflect the latest workspace state. It also
+        updates the selected workspace in the workspaces container if the active workspace has changed.
+
+        """
         try:
             self.workspaces = self.workspace_service.list().workspaces
         except TerraformWorkspaceListException as e:
@@ -388,12 +400,20 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         ):
             self.workspaces_container.workspaces = self.workspaces
 
+    def refresh_project_tree(self):
+        """
+        Refreshes the project tree by reloading the work directory tree.
+
+        This method reloads the work directory tree in the project tree container to reflect
+        any changes made to the project directory structure. It ensures that the project tree
+        is up-to-date with the latest changes in the working directory.
+
+        """
         if not self.project_tree_container:
             try:
                 self.project_tree_container = self.query_one(ProjectTree)
             except NoMatches:
                 self.notify("Project tree container not found.")
-                return
 
         if not self.project_tree_container:
             return
@@ -454,6 +474,30 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
 
         file_path = file_path.relative_to(self.work_dir)
         await self.query_one(Content).add(str(file_path), content, message.line)
+
+    def on_path_delete(self, event: PathDelete):
+        """
+        Handles the event of a path deletion in the system.
+
+        This method is triggered when a path associated with the system is deleted.
+        The event contains information about the deleted path. The method processes
+        the event and implements required on path deletion.
+        """
+
+        try:
+            if event.is_dir:
+                self.file_system_service.delete_dir(event.path)
+            else:
+                self.file_system_service.delete_file(event.path)
+
+        except DeleteDirException as e:
+            self.notify(str(e), severity="error")
+            return
+        except DeleteFileException as e:
+            self.notify(str(e), severity="error")
+            return
+
+        self.refresh_project_tree()
 
     def on_workspaces_select_event(self, message: Workspaces.SelectEvent) -> None:
         """
