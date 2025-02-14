@@ -135,6 +135,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         self.project_tree_container: ProjectTree | None = None
 
         self.active_resizing_rule: ResizingRule | None = None
+        self.pause_system_monitoring = False
 
         self.validate_env()
         self.init_env()

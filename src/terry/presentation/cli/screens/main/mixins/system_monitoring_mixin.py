@@ -82,7 +82,7 @@ class SystemMonitoringMixin:
         try:
             while True:
                 await asyncio.sleep(SYSTEM_EVENTS_MONITORING_TIMEOUT)
-                if self.updated_events_count > 0:
+                if self.updated_events_count > 0 and not self.pause_system_monitoring:  # type: ignore
                     self.updated_events_count = 0
                     self.refresh_env()  # type: ignore #  method is in required_methods
         finally:
