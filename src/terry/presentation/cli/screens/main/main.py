@@ -67,6 +67,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
 
     __slots__ = [
         "work_dir",
+        "active_dir",
         "workspace_service",
         "terraform_version",
         "file_system_service",
@@ -408,17 +409,12 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         """
         Handles the activation of a directory triggered by a specific event message.
 
-        This asynchronous method processes the received `DirActivate` message and
-        executes the necessary logic related to directory activation. This function
-        does not return any value as it performs operations based on the provided
-        input and the associated program flow.
+        Updates the active directory used for file creation and other operations
+        that require a current working context. The active directory must exist
+        and be within the work directory.
 
-        :param message: The `DirActivate` message which contains details necessary
-            for activating the specific directory. This will be used to determine
-            the directory and handle the corresponding activation logic.
-
-        :return: This function does not return any value.
-
+        Args:
+            message: The `DirActivate` message containing the path to activate.
         """
         self.active_dir = message.path
 

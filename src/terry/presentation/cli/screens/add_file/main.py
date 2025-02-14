@@ -84,7 +84,7 @@ class AddFileScreen(ModalScreen):
         try:
             self.file_system_service.create_file(self.root_dir / name)
         except CreateFileException as e:
-            self.notify(f"Error creating file: {e}")
+            self.notify(f"Unable to create file '{name}': {e}", severity="error")
             return
         self.app.pop_screen()
 
@@ -92,7 +92,7 @@ class AddFileScreen(ModalScreen):
         try:
             self.file_system_service.create_dir(self.root_dir / name)
         except CreateDirException as e:
-            self.notify(f"Error creating directory: {e}")
+            self.notify(f"Error creating directory '{name}': {e}", severity="error")
             return
         self.app.pop_screen()
 
