@@ -81,7 +81,7 @@ class Preview(Horizontal):
 
         if self.content is None:
             yield Container(
-                Static(LOGO_ANIMATION[-1], id="no_content_label_content"),
+                Static(LOGO_ANIMATION[-1], id="no_content_label_content", markup=False),
                 id="no_content_label",
             )
             yield text_area
