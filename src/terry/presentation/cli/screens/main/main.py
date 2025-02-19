@@ -166,13 +166,6 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         """
         is_tf_project = True
 
-        self.log_component = CommandsLog(id=MainScreenIdentifiers.COMMANDS_LOG_ID)
-        self.workspaces_container = Workspaces(id=MainScreenIdentifiers.WORKSPACE_ID)
-        self.project_tree_container = ProjectTree(id=MainScreenIdentifiers.PROJECT_TREE_ID, work_dir=self.work_dir)
-
-        self.workspaces_container.selected_workspace = self.selected_workspace
-        self.workspaces_container.workspaces = self.workspaces
-
         if not is_tf_project:
             yield from self.no_tf_container()
             return
@@ -181,7 +174,11 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         yield Header(TERRAFORM_MAIN_ACTIONS, TERRAFORM_ADDITIONAL_ACTIONS, id="header")
         with Horizontal(id=MainScreenIdentifiers.MAIN_CONTAINER_ID):
             with Vertical(id=MainScreenIdentifiers.SIDEBAR):
-                yield self.workspaces_container
+                with Workspaces(id=MainScreenIdentifiers.WORKSPACE_ID) as workspaces_container:
+                    workspaces_container.selected_workspace = self.selected_workspace
+                    workspaces_container.workspaces = self.workspaces
+                    self.workspaces_container = workspaces_container
+
                 yield ResizingRule(
                     id=MainScreenIdentifiers.RESIZE_RULE_WS_PT,
                     orientation=Orientation.HORIZONTAL.value,
@@ -189,7 +186,12 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
                     prev_component_id=MainScreenIdentifiers.WORKSPACE_ID,
                     next_component_id=MainScreenIdentifiers.PROJECT_TREE_ID,
                 )
-                yield self.project_tree_container
+
+                with ProjectTree(
+                    id=MainScreenIdentifiers.PROJECT_TREE_ID, work_dir=self.work_dir
+                ) as project_tree_container:
+                    self.project_tree_container = project_tree_container
+
                 yield ResizingRule(
                     id=MainScreenIdentifiers.RESIZE_RULE_PT_SF,
                     orientation=Orientation.HORIZONTAL.value,
@@ -198,6 +200,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
                     next_component_id=MainScreenIdentifiers.STATE_FILES_ID,
                 )
                 yield StateFiles(id=MainScreenIdentifiers.STATE_FILES_ID, state_files=state_files)
+
             yield ResizingRule(
                 id=MainScreenIdentifiers.RESIZE_RULE_SR,
                 orientation=Orientation.VERTICAL.value,
@@ -214,7 +217,9 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
                     prev_component_id=MainScreenIdentifiers.CONTENT_ID,
                     next_component_id=MainScreenIdentifiers.COMMANDS_LOG_ID,
                 )
-                yield self.log_component
+                with CommandsLog(id=MainScreenIdentifiers.COMMANDS_LOG_ID) as log_component:
+                    self.log_component = log_component
+
         yield Footer()
 
     async def on_mount(self):
