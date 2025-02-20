@@ -365,6 +365,13 @@ class Content(Vertical):
             preview = self.query_one(Preview)
             preview.content = content
 
+    def activate(self, tab_number):
+        tabs_container = self.query_one(Tabs)
+        tabs = list(tabs_container.query("#tabs-list > Tab").results(Tab))
+        if tab_number > len(tabs):
+            return
+        tabs_container.active = tabs[tab_number - 1].id
+
     def action_remove(self) -> None:
         """
         Remove the currently active tab from the content view.

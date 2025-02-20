@@ -60,6 +60,7 @@ from terry.settings import (
     SEVERITY_LEVEL_ERROR,
     SEVERITY_LEVEL_INFORMATION,
     DEFAULT_THEME,
+    MAX_TABS_HOT_KEY,
 )
 
 
@@ -82,6 +83,10 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(key="ctrl+f", action="open_search", description="Search"),
         Binding(key="ctrl+shift+n", action="open_create_file", description="Create file"),
+        *[
+            Binding(key=f"ctrl+{index}", action=f"activate_tab({index})", show=False)
+            for index in range(1, MAX_TABS_HOT_KEY + 1)
+        ],
     ]
 
     @inject
@@ -133,6 +138,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         self.log_component: CommandsLog | None = None  # type: ignore
         self.workspaces_container: Workspaces | None = None
         self.project_tree_container: ProjectTree | None = None
+        self.content: Content | None = None
 
         self.active_resizing_rule: ResizingRule | None = None
         self.pause_system_monitoring = False
@@ -209,7 +215,8 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
                 next_component_id=MainScreenIdentifiers.RIGHT_PANEL,
             )
             with Vertical(id=MainScreenIdentifiers.RIGHT_PANEL):
-                yield Content(id=MainScreenIdentifiers.CONTENT_ID)
+                with Content(id=MainScreenIdentifiers.CONTENT_ID) as content:
+                    self.content = content
                 yield ResizingRule(
                     id=MainScreenIdentifiers.RESIZE_RULE_CC,
                     orientation=Orientation.HORIZONTAL.value,
@@ -234,6 +241,11 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         self.theme = DEFAULT_THEME
         self.start_system_events_monitoring()
         self.start_sync_monitoring()
+
+    def action_activate_tab(self, tab_number):
+        if self.content is None:
+            return
+        self.content.activate(tab_number)
 
     def action_open_search(self) -> None:
         """
