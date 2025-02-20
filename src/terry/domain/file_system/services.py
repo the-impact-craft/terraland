@@ -71,15 +71,30 @@ class BaseFileSystemService(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create_file(self, path: Path) -> None:
+    def create_file(self, path: Path, content: str | None = None) -> None:
         """
         Create a new file at the specified path.
 
         Args:
             path (Path): The path to the new file.
+            content (str | None): Optional file content
 
         Raises:
             CreateFileException: If the file creation operation fails.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def move(self, src_path: Path, dest_path: Path) -> None:
+        """
+        Moves a file or directory from the source path to the destination path.
+        This operation is performed while preserving metadata, ensuring the
+        complete transfer of the resource from its original location to the
+        specified target location.
+
+        Arguments:
+            src_path (Path): The source path of the file or directory to be moved.
+            dest_path (Path): The destination path where the file or directory should be moved.
         """
         raise NotImplementedError
 

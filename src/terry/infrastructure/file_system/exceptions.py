@@ -41,6 +41,17 @@ class CreateDirException(BaseFileSystemException):
     """
 
 
+class MoveFileException(BaseFileSystemException):
+    """
+    Exception raised for errors during file move operation.
+
+    This class is a specific type of exception that handles issues encountered
+    when attempting to move files in a file system. It inherits from
+    `BaseFileSystemException` to maintain consistency with other file system
+    related exceptions.
+    """
+
+
 class ListDirException(BaseFileSystemException):
     """
     Custom exception for errors occurring during a file system list directory operation.
