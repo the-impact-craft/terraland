@@ -8,6 +8,7 @@ from dependency_injector.wiring import Provide
 from rich.text import TextType
 from textual import work
 from textual.app import ComposeResult
+from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, Container
 from textual.css.query import NoMatches
 from textual.reactive import reactive
@@ -15,6 +16,7 @@ from textual.widget import Widget
 from textual.widgets import TextArea, Tree, Tabs, Tab, Static
 from textual.widgets._tree import TreeNode
 
+from terry.infrastructure.file_system.services import FileSystemService
 from terry.logo import LOGO_ANIMATION
 from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.screens.main.containers.text_area_style import (
@@ -25,6 +27,7 @@ from terry.settings import DEFAULT_LANGUAGE, ANIMATION_SPEED
 
 
 class Preview(Horizontal):
+    file_name: reactive[str | None] = reactive(None, recompose=False)
     content: reactive[str | None] = reactive(None, recompose=True)
     language: reactive[str] = reactive(DEFAULT_LANGUAGE, recompose=True)
     selected_line: reactive[int] = reactive(0, recompose=True)
@@ -49,10 +52,13 @@ class Preview(Horizontal):
     }
     """
 
+    BINDINGS = [Binding("ctrl+s", "save", "Save file")]
+
     def __init__(self, animation_enabled: bool = Provide[DiContainer.config.animation_enabled], *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.animation_task_running = None
         self.animation_enabled = animation_enabled
+        self.text_area = None
 
     def compose(self) -> ComposeResult:
         """
@@ -70,21 +76,21 @@ class Preview(Horizontal):
             ComposeResult: A generator yielding Textual UI components for rendering
         """
 
-        text_area = TextArea(
+        self.text_area = TextArea(
             self.content or "",
             language=self.language,
             show_line_numbers=True,
         )
 
-        text_area.register_theme(terrafort_text_area_theme)
-        text_area.theme = TERRAFORT_THEME_NAME
+        self.text_area.register_theme(terrafort_text_area_theme)
+        self.text_area.theme = TERRAFORT_THEME_NAME
 
         if self.content is None:
             yield Container(
                 Static(LOGO_ANIMATION[-1], id="no_content_label_content", markup=False),
                 id="no_content_label",
             )
-            yield text_area
+            yield self.text_area
             if self.animation_enabled and not self.animation_task_running:
                 self.turn_animation_on()
             return
@@ -94,16 +100,16 @@ class Preview(Horizontal):
             try:
                 data = json.loads(self.content)
             except json.JSONDecodeError:
-                yield text_area
+                yield self.text_area
                 self.notify("Invalid JSON content.")
             else:
                 with Horizontal(id="json-preview"):
-                    yield text_area
+                    yield self.text_area
                     yield self.build_tree(data)
         else:
-            yield text_area
+            yield self.text_area
         if self.selected_line:
-            text_area.cursor_location = (self.selected_line, 0)
+            self.text_area.cursor_location = (self.selected_line, 0)
 
     @work(exclusive=True, thread=True)
     async def animate_logo(self):
@@ -198,7 +204,59 @@ class Preview(Horizontal):
         to the predefined default language constant.
         """
         self.content = None
+        self.file_name = None
         self.language = DEFAULT_LANGUAGE
+
+    def action_save(self, file_system_service: FileSystemService = Provide[DiContainer.file_system_service]):
+        """
+        Saves the current content of the text area to a specified file using the provided
+        file system service. This method will generate a temporary file path and save the
+        content to the original file location through an intermediary temporary file.
+
+        Arguments:
+            file_system_service: The service instance responsible for handling file system operations, expected to be
+            provided via dependency injection.
+
+        """
+        if self.text_area is None or self.file_name is None:
+            return
+        temp_file_name = self._generate_temp_file_path(file_system_service)
+        original_file_name = file_system_service.work_dir / self.file_name
+        content = self.text_area.document.text
+
+        self._save_content_to_file(file_system_service, temp_file_name, original_file_name, content)
+
+    def _generate_temp_file_path(self, file_system_service: FileSystemService) -> Path:
+        """
+        Generates a unique temporary file path in the work directory of the provided
+        file system service by appending a UUID to the file name.
+
+        Arguments:
+            file_system_service (FileSystemService): Service providing access to the file system,
+            including the work directory.
+        Returns:
+            Path: A file path composed of the work directory, the initial file name,
+            and a unique identifier.
+        """
+        return file_system_service.work_dir / f"{self.file_name}+{uuid4()}"
+
+    @staticmethod
+    def _save_content_to_file(
+        file_system_service: FileSystemService, temp_path: Path, original_path: Path, content: str
+    ) -> None:
+        """
+        This function saves the provided content to a file by first creating a file
+        at the specified temporary path and then moving it to the original target
+        path using a given file system service.
+
+        Arguments:
+            file_system_service (FileSystemService): The service used to manipulate file system operations.
+            temp_path (Path): The temporary path where the file will be created before being moved to the original path.
+            original_path (Path): The target path where the file will ultimately be saved after being moved.
+            content (str): The string content to be saved into the file.
+        """
+        file_system_service.create_file(path=temp_path, content=content)
+        file_system_service.move(src_path=temp_path, dest_path=original_path)
 
 
 class Content(Vertical):
@@ -295,6 +353,7 @@ class Content(Vertical):
             text_area.visible = True
             file_name = str(event.tab.label)
             self.active_tab = file_name
+            preview.file_name = file_name
             preview.language = self.languages.get(Path(file_name).suffix, DEFAULT_LANGUAGE)
             preview.content = self.files_contents.get(file_name, {}).get("content", "")
 
@@ -335,6 +394,7 @@ class Content(Vertical):
         self.files_contents[name] = {"content": content, "id": tab_id}
 
         preview = self.query_one(Preview)
+        preview.file_name = name
         preview.language = self.languages.get(Path(name).suffix, "python")
         preview.content = content
         preview.selected_line = selected_line
@@ -363,6 +423,7 @@ class Content(Vertical):
 
         if active_label == name:
             preview = self.query_one(Preview)
+            preview.file_name = name
             preview.content = content
 
     def activate(self, tab_number):

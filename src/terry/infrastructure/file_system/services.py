@@ -12,10 +12,15 @@ from terry.infrastructure.file_system.exceptions import (
     CreateDirException,
     DeleteFileException,
     DeleteDirException,
+    MoveFileException,
 )
 
 
 class FileSystemService(BaseFileSystemService):
+    ACCESS_DENIED_ERROR = "Access denied: Path outside work directory"
+    FILE_NOT_FOUND_ERROR = "File does not exist"
+    MOVING_FILE_ERROR = "Moving file error"
+
     def __init__(self, work_dir: Path | str):
         """
         Initialize a Directory instance with the specified project directory.
@@ -116,10 +121,7 @@ class FileSystemService(BaseFileSystemService):
             raise ReadFileException("file_path must be a Path object")
         if not path.exists():
             raise ReadFileException(f"File not found: {path}")
-        try:
-            path.relative_to(self.work_dir)
-        except ValueError:
-            raise ReadFileException("Access denied: Path outside work directory")
+        self.validate_path_within_work_dir(path, ReadFileException)
         try:
             return path.read_text()
         except Exception as e:
@@ -165,26 +167,51 @@ class FileSystemService(BaseFileSystemService):
         except Exception as e:
             raise ListDirException(f"Error listing directory: {e}")
 
-    def create_file(self, path: Path) -> None:
+    def create_file(self, path: Path, content: str | None = None) -> None:
         """
         Create a new file at the specified path.
 
         Args:
             path (Path): The path to the new file.
+            content (str | None): Optional file content
 
         Raises:
             CreateFileException: If the file creation operation fails.
         """
-        try:
-            path.relative_to(self.work_dir)
-        except ValueError:
-            raise CreateFileException("Access denied: Path outside work directory")
+        self.validate_path_within_work_dir(path, CreateFileException)
         try:
             if not path.parent.exists():
                 path.parent.mkdir(parents=True)
-            path.touch()
+            if not content:
+                path.touch()
+            else:
+                path.write_text(content)
         except Exception as e:
             raise CreateFileException(f"Error creating file: {e}")
+
+    def move(self, src_path: Path, dest_path: Path) -> None:
+        """
+        Moves a file or directory from the source path to the destination path.
+        This operation is performed while preserving metadata, ensuring the
+        complete transfer of the resource from its original location to the
+        specified target location.
+
+        Arguments:
+            src_path (Path): The source path of the file or directory to be moved.
+            dest_path (Path): The destination path where the file or directory should be moved.
+        """
+
+        self.validate_path_within_work_dir(src_path, MoveFileException)
+        self.validate_path_within_work_dir(dest_path, MoveFileException)
+
+        try:
+            shutil.move(src_path, dest_path)
+        except FileNotFoundError as ex:
+            raise MoveFileException(f"{self.FILE_NOT_FOUND_ERROR}: {ex}")
+        except PermissionError as ex:
+            raise MoveFileException(f"{self.ACCESS_DENIED_ERROR}: {ex}")
+        except Exception as ex:
+            raise MoveFileException(f"{self.MOVING_FILE_ERROR}: {ex}")
 
     def create_dir(self, path: Path) -> None:
         """
@@ -196,11 +223,7 @@ class FileSystemService(BaseFileSystemService):
         Raises:
             CreateDirException: If the directory creation operation fails.
         """
-
-        try:
-            path.relative_to(self.work_dir)
-        except ValueError:
-            raise CreateDirException("Access denied: Path outside work directory")
+        self.validate_path_within_work_dir(path, CreateDirException)
         try:
             path.mkdir(parents=True)
         except Exception as e:
@@ -216,10 +239,7 @@ class FileSystemService(BaseFileSystemService):
         Raises:
             DeleteFileException: If the file deletion operation fails.
         """
-        try:
-            path.relative_to(self.work_dir)
-        except ValueError:
-            raise DeleteFileException("Access denied: Path outside work directory")
+        self.validate_path_within_work_dir(path, DeleteFileException)
         try:
             path.unlink()
         except Exception as e:
@@ -236,12 +256,16 @@ class FileSystemService(BaseFileSystemService):
         Args:
             path (Path): The path to the directory to delete.
         """
-        try:
-            path.relative_to(self.work_dir)
-        except ValueError:
-            raise DeleteDirException("Access denied: Path outside work directory")
+        self.validate_path_within_work_dir(path, DeleteDirException)
 
         try:
             shutil.rmtree(path, ignore_errors=True)
         except Exception as e:
             raise DeleteDirException(f"Error deleting directory: {e}")
+
+    def validate_path_within_work_dir(self, path: Path, exception_class: type) -> None:
+        """Validates if a path is within the working directory."""
+        try:
+            path.relative_to(self.work_dir)
+        except ValueError:
+            raise exception_class(self.ACCESS_DENIED_ERROR)
