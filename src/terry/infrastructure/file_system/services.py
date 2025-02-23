@@ -19,6 +19,7 @@ from terry.infrastructure.file_system.exceptions import (
 class FileSystemService(BaseFileSystemService):
     ACCESS_DENIED_ERROR = "Access denied: Path outside work directory"
     FILE_NOT_FOUND_ERROR = "File does not exist"
+    MOVING_FILE_ERROR = "Moving file error"
 
     def __init__(self, work_dir: Path | str):
         """
@@ -205,8 +206,12 @@ class FileSystemService(BaseFileSystemService):
 
         try:
             shutil.move(src_path, dest_path)
-        except Exception as ex:
+        except FileNotFoundError as ex:
             raise MoveFileException(f"{self.FILE_NOT_FOUND_ERROR}: {ex}")
+        except PermissionError as ex:
+            raise MoveFileException(f"{self.ACCESS_DENIED_ERROR}: {ex}")
+        except Exception as ex:
+            raise MoveFileException(f"{self.MOVING_FILE_ERROR}: {ex}")
 
     def create_dir(self, path: Path) -> None:
         """
