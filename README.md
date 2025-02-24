@@ -23,8 +23,8 @@ Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance 
         <img src="media/init.gif" width="49%" height="50%"/>
         <img src="media/format.gif" width="49%" height="50%"/>
     </p
-    <img src="media/apply.gif"/>
-
+  
+    ![apply.gif](media/apply.gif)
 
 - 🖥️ **Minimalist UI**: A clean and distraction-free interface built using the Textual framework.
     ![theme.gif](media/theme.gif)
