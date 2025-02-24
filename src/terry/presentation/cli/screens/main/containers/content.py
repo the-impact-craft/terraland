@@ -224,6 +224,7 @@ class Preview(Horizontal):
         original_file_name = file_system_service.work_dir / self.file_name
         content = self.text_area.document.text
         self.content = content
+        # Todo: add cursor position
 
         self._save_content_to_file(file_system_service, temp_file_name, original_file_name, content)
 
