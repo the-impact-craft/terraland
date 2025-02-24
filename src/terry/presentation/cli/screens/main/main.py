@@ -25,6 +25,7 @@ from terry.infrastructure.terraform.workspace.exceptions import (
     TerraformWorkspaceSwitchException,
 )
 from terry.infrastructure.terraform.workspace.services import WorkspaceService
+from terry.presentation.cli.action_handlers.main import action_handler_registry
 from terry.presentation.cli.custom.messages.dir_activate_message import DirActivate
 from terry.presentation.cli.custom.messages.files_select_message import FileSelect
 from terry.presentation.cli.custom.messages.path_delete_message import PathDelete
@@ -86,6 +87,10 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         *[
             Binding(key=f"ctrl+{index}", action=f"activate_tab({index})", show=False)
             for index in range(1, MAX_TABS_HOT_KEY + 1)
+        ],
+        *[
+            Binding(action.shortcut, action=f'tf_request("{action.value}")', description=action.name)
+            for action in TERRAFORM_MAIN_ACTIONS + TERRAFORM_ADDITIONAL_ACTIONS
         ],
     ]
 
@@ -241,23 +246,6 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         self.theme = DEFAULT_THEME
         self.start_system_events_monitoring()
         self.start_sync_monitoring()
-
-    def action_activate_tab(self, tab_number):
-        if self.content is None:
-            return
-        self.content.activate(tab_number)
-
-    def action_open_search(self) -> None:
-        """
-        Open the search modal for the current working directory.
-
-        This method pushes a SearchScreen onto the application's screen stack, initializing it with the current working
-        directory. The search modal allows users to search and interact with files within the project.
-
-        Returns:
-            None
-        """
-        self.push_screen(SearchScreen(self.work_dir))
 
     def action_open_create_file(self) -> None:
         """
@@ -577,3 +565,41 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
             Label(TERRAFORM_VERIFICATION_FAILED_MESSAGE),
             id=MainScreenIdentifiers.TERRAFORM_ERROR_MESSAGE_ID,
         )
+
+    # ----------------------------------------------------------------------------------------------------------------
+    # Hot keys handlers
+    # ----------------------------------------------------------------------------------------------------------------
+
+    def action_tf_request(self, action: str) -> None:
+        """
+        Handle the clickable label click event in the Terry application.
+
+        This method processes the clickable label click events triggered by the user in the main screen.
+
+        Args:
+            action (str): The event containing the action to handle.
+
+        Raises:
+            Exception: If the action handler fails.
+        """
+        handler = action_handler_registry.get(action)
+        if not handler:
+            return
+        handler(self).handle()
+
+    def action_activate_tab(self, tab_number):
+        if self.content is None:
+            return
+        self.content.activate(tab_number)
+
+    def action_open_search(self) -> None:
+        """
+        Open the search modal for the current working directory.
+
+        This method pushes a SearchScreen onto the application's screen stack, initializing it with the current working
+        directory. The search modal allows users to search and interact with files within the project.
+
+        Returns:
+            None
+        """
+        self.push_screen(SearchScreen(self.work_dir))
