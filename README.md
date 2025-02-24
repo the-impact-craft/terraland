@@ -19,9 +19,11 @@ Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance 
 
 
 - ✅ **Real-time Validation**: Execute `init`, `plan`, `apply`, `validate` and more using ui buttons or shortcut keys.
-    ![init.gif](media/init.gif)  
-    ![format.gif](media/format.gif)
-    ![apply.gif](media/apply.gif)
+    <p float="left">
+        <img src="media/init.gif" width="30%" height="30%"/>
+        <img src="media/format.gif" width="30%" height="30%"/>
+        <img src="media/apply.gif" width="30%" height="30%"/>
+    </p
 
 
 - 🖥️ **Minimalist UI**: A clean and distraction-free interface built using the Textual framework.
