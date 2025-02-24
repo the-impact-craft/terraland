@@ -12,15 +12,20 @@ Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance 
 
 - 🌎 **Workspace Management**: Easily switch between different Terraform workspaces.
     ![switch_workspace.gif](media/switch_workspace.gif)[](https://github.com/the-impact-craft/terry/blob/main/media/demo1.gif)
+
+
 - 📂 **Project Explorer**: View your Terraform files and directory structure effortlessly.
     ![preview_files.gif](media/preview_files.gif)
+
+
 - ✅ **Real-time Validation**: Execute `init`, `plan`, `apply`, `validate` and more using ui buttons or shortcut keys.
     ![init.gif](media/init.gif)  
     ![format.gif](media/format.gif)
     ![apply.gif](media/apply.gif)
+
+
 - 🖥️ **Minimalist UI**: A clean and distraction-free interface built using the Textual framework.
     ![theme.gif](media/theme.gif)
-
 
 ## 🛠 Installation
 
