@@ -28,12 +28,12 @@ class CommandHistorySidebar(BaseSidebar):
         self.set_class(visible, "-visible")
         if not self.list_view:
             return
-        self.refresh_content()
+        self.refresh_content()  # type: ignore
         self.list_view.focus()
 
     def on_mount(self, event):
-        self.refresh_content()
+        self.refresh_content()  # type: ignore
 
     @work(exclusive=True, thread=True)
     async def refresh_content(self):
-        self.commands = self.cache.get("commands")
+        self.commands = self.cache.get("commands")  # type: ignore

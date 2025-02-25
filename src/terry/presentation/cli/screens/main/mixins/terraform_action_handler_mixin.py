@@ -218,9 +218,9 @@ class TerraformActionHandlerMixin:
         self._tf_command_executor.command_process = manager  # type: ignore
         output = []
         cache.extend("commands", tf_command_str)
-        if self.history_sidebar:
-            self.history_sidebar.refresh_content()
-        self.pause_system_monitoring = True  # type: ignore
+        if self.history_sidebar:  # type: ignore
+            self.history_sidebar.refresh_content()  # type: ignore
+        self.pause_system_monitoring = True
         with manager as (stdin, stdout, stderr):
             area.stdin = stdin
             for line in process_stdout_stderr(stdout, stderr):

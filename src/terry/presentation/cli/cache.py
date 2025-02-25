@@ -1,3 +1,5 @@
+from typing import Any
+
 from diskcache import Cache
 
 MAX_CACHE_FIELD_SIZE = 10
@@ -7,11 +9,10 @@ class TerryCache:
     def __init__(self, cache: Cache):
         self.cache = cache
 
-    def get(self, key):
-        print("!@!@!@!@!@!@!@!@!@!@")
+    def get(self, key: str):
         return self.cache.get(key)
 
-    def set(self, key, value):
+    def set(self, key: str, value: Any):
         self.cache.set(key, value)
 
     def extend(self, key, value):
