@@ -36,4 +36,4 @@ class CommandHistorySidebar(BaseSidebar):
 
     @work(exclusive=True, thread=True)
     async def refresh_content(self):
-        self.commands = self.cache.get("commands")  # type: ignore
+        self.commands = self.cache.get("commands", [])  # type: ignore

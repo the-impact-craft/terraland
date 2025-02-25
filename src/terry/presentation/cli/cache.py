@@ -1,3 +1,4 @@
+from sqlite3 import OperationalError
 from typing import Any
 
 from diskcache import Cache
@@ -9,11 +10,17 @@ class TerryCache:
     def __init__(self, cache: Cache):
         self.cache = cache
 
-    def get(self, key: str):
-        return self.cache.get(key)
+    def get(self, key: str, default: Any = None) -> Any:
+        try:
+            return self.cache.get(key) or default
+        except OperationalError:
+            return default
 
     def set(self, key: str, value: Any):
-        self.cache.set(key, value)
+        try:
+            self.cache.set(key, value)
+        except OperationalError:
+            pass
 
     def extend(self, key, value):
         values = self.get(key) or []
