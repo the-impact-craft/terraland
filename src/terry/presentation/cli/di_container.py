@@ -31,7 +31,7 @@ class DiContainer(containers.DeclarativeContainer):
         work_dir=config.work_dir,
     )
 
-    disk_cache = providers.Singleton(Cache, ".terry/.cache")
+    disk_cache = providers.Singleton(Cache, config.cache_dir)
 
     cache = providers.Factory(
         TerryCache,
