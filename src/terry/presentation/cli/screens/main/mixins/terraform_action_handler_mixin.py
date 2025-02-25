@@ -1,5 +1,7 @@
 import asyncio
 
+from dependency_injector.wiring import Provide
+
 from terry.domain.terraform.core.entities import TerraformFormatScope
 from terry.infrastructure.shared.command_process_context_manager import CommandProcessContextManager
 from terry.infrastructure.shared.command_utils import process_stdout_stderr
@@ -10,12 +12,14 @@ from terry.infrastructure.terraform.core.commands_builders import (
 )
 from terry.infrastructure.terraform.core.exceptions import TerraformFormatException, TerraformValidateException
 from terry.presentation.cli.action_handlers.main import action_handler_registry
+from terry.presentation.cli.cache import TerryCache
 from terry.presentation.cli.custom.messages.tf_apply_action_request import ApplyActionRequest
 from terry.presentation.cli.custom.messages.tf_format_action_request import FormatActionRequest
 from terry.presentation.cli.custom.messages.tf_init_action_request import InitActionRequest
 from terry.presentation.cli.custom.messages.tf_plan_action_request import PlanActionRequest
 from terry.presentation.cli.custom.messages.tf_validate_action_request import ValidateActionRequest
 from terry.presentation.cli.custom.widgets.clickable_tf_action_label import ClickableTfActionLabel
+from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
 from terry.presentation.cli.screens.main.containers.content import Content
 from terry.presentation.cli.screens.tf_command_output.main import TerraformCommandOutputScreen
@@ -191,7 +195,9 @@ class TerraformActionHandlerMixin:
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
 
-    async def run_tf_action(self, tf_command: list[str], error_message: str):
+    async def run_tf_action(
+        self, tf_command: list[str], error_message: str, cache: TerryCache = Provide[DiContainer.cache]
+    ):
         """
         Executes an asynchronous plan based on the specified tab name and updates the UI
         elements to reflect the ongoing process. The method logs the corresponding command
@@ -199,8 +205,9 @@ class TerraformActionHandlerMixin:
         error, appropriate notifications are shown, and the error is logged.
 
         Arguments:
-           tf_command (list[str]): The Terraform command to execute.
+            tf_command (list[str]): The Terraform command to execute.
             error_message (str): The error message to display in case of an error.
+            cache (TerryCache): The cache instance to store the executed commands
         """
 
         await asyncio.sleep(2)
@@ -210,6 +217,9 @@ class TerraformActionHandlerMixin:
         manager = CommandProcessContextManager(tf_command, str(self.work_dir))  # type: ignore
         self._tf_command_executor.command_process = manager  # type: ignore
         output = []
+        cache.extend("commands", tf_command_str)
+        if self.history_sidebar:
+            self.history_sidebar.refresh_content()
         self.pause_system_monitoring = True  # type: ignore
         with manager as (stdin, stdout, stderr):
             area.stdin = stdin

@@ -152,6 +152,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         self.workspaces_container: Workspaces | None = None
         self.project_tree_container: ProjectTree | None = None
         self.content: Content | None = None
+        self.history_sidebar: CommandHistorySidebar | None = None
 
         self.active_resizing_rule: ResizingRule | None = None
         self.pause_system_monitoring = False
@@ -242,7 +243,8 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
 
             with Vertical(id=MainScreenIdentifiers.SIDE_MENU):
                 yield SidebarButton(content="⥻", action=self.action_toggle_history_sidebar)
-            yield CommandHistorySidebar()
+            with CommandHistorySidebar() as history_sidebar:
+                self.history_sidebar = history_sidebar
         yield Footer()
 
     async def on_mount(self):
