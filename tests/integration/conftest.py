@@ -1,5 +1,6 @@
 from pathlib import Path
 from unittest import mock
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -167,9 +168,13 @@ def app(
     :param operation_system_service: A mocked service for OS-related operations.
     :return: An instance of Terry configured for testing.
     """
+
+    cache_mock = MagicMock()
+    cache_mock.get.return_value = []
     di_container = DiContainer()
     di_container.config.work_dir.from_value(tmp_path)
     di_container.config.animation_enabled.from_value(True)
+    di_container.cache.override(cache_mock)
     di_container.wire(packages=["terry.presentation.cli", "tests"])
 
     with (
