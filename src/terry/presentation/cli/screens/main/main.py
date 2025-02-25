@@ -27,11 +27,11 @@ from terry.infrastructure.terraform.workspace.exceptions import (
 )
 from terry.infrastructure.terraform.workspace.services import WorkspaceService
 from terry.presentation.cli.action_handlers.main import action_handler_registry
-from terry.presentation.cli.custom.messages.dir_activate_message import DirActivate
-from terry.presentation.cli.custom.messages.files_select_message import FileSelect
-from terry.presentation.cli.custom.messages.path_delete_message import PathDelete
-from terry.presentation.cli.custom.widgets.buttons.sidebar_button import SidebarButton
-from terry.presentation.cli.custom.widgets.resizable_rule import ResizingRule
+from terry.presentation.cli.messages.dir_activate_message import DirActivate
+from terry.presentation.cli.messages.files_select_message import FileSelect
+from terry.presentation.cli.messages.path_delete_message import PathDelete
+from terry.presentation.cli.widgets.buttons.sidebar_button import SidebarButton
+from terry.presentation.cli.widgets.resizable_rule import ResizingRule
 from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
 from terry.presentation.cli.screens.add_file.main import AddFileScreen

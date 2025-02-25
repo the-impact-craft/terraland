@@ -13,12 +13,12 @@ from terry.infrastructure.terraform.core.commands_builders import (
 from terry.infrastructure.terraform.core.exceptions import TerraformFormatException, TerraformValidateException
 from terry.presentation.cli.action_handlers.main import action_handler_registry
 from terry.presentation.cli.cache import TerryCache
-from terry.presentation.cli.custom.messages.tf_apply_action_request import ApplyActionRequest
-from terry.presentation.cli.custom.messages.tf_format_action_request import FormatActionRequest
-from terry.presentation.cli.custom.messages.tf_init_action_request import InitActionRequest
-from terry.presentation.cli.custom.messages.tf_plan_action_request import PlanActionRequest
-from terry.presentation.cli.custom.messages.tf_validate_action_request import ValidateActionRequest
-from terry.presentation.cli.custom.widgets.clickable_tf_action_label import ClickableTfActionLabel
+from terry.presentation.cli.messages.tf_apply_action_request import ApplyActionRequest
+from terry.presentation.cli.messages.tf_format_action_request import FormatActionRequest
+from terry.presentation.cli.messages.tf_init_action_request import InitActionRequest
+from terry.presentation.cli.messages.tf_plan_action_request import PlanActionRequest
+from terry.presentation.cli.messages.tf_validate_action_request import ValidateActionRequest
+from terry.presentation.cli.widgets.clickable_tf_action_label import ClickableTfActionLabel
 from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
 from terry.presentation.cli.screens.main.containers.content import Content

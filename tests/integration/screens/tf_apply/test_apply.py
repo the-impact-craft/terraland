@@ -2,7 +2,7 @@ import pytest
 from textual.widgets import Static
 
 from terry.domain.terraform.core.entities import TerraformApplySettingsAttributes, ApplySettings
-from terry.presentation.cli.custom.messages.tf_apply_action_request import ApplyActionRequest
+from terry.presentation.cli.messages.tf_apply_action_request import ApplyActionRequest
 from terry.presentation.cli.screens.tf_apply.main import ApplySettingsScreen
 from tests.integration.utils import click
 

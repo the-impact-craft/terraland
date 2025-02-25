@@ -9,9 +9,9 @@ from textual.reactive import reactive
 from textual.widgets import DirectoryTree, Tree
 from textual.widgets._directory_tree import DirEntry
 
-from terry.presentation.cli.custom.messages.dir_activate_message import DirActivate
-from terry.presentation.cli.custom.messages.files_select_message import FileSelect
-from terry.presentation.cli.custom.messages.path_delete_message import PathDelete
+from terry.presentation.cli.messages.dir_activate_message import DirActivate
+from terry.presentation.cli.messages.files_select_message import FileSelect
+from terry.presentation.cli.messages.path_delete_message import PathDelete
 from terry.presentation.cli.screens.question.main import QuestionScreen
 
 
