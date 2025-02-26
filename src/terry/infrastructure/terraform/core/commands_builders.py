@@ -313,7 +313,7 @@ class TerraformFormatCommandBuilder:
         self.command = ["terraform", "fmt"]
 
     def add_path(self, path: str | Path) -> list[str]:
-        self.command.extend([path])
+        self.command.extend([str(path)])
         return self.command
 
     def build(self) -> list[str]:
