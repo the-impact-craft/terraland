@@ -64,7 +64,7 @@ class CommandHistorySidebar(BaseSidebar):
     def compose(self) -> ComposeResult:
         with ListView() as self.list_view:
             for command in reversed(self.commands):
-                yield ListItem(CommandItem(command.get("command"), command.get("timestamp")))
+                yield ListItem(CommandItem(command.get("command"), command.get("timestamp")))  # type: ignore
 
     def toggle(self, visible: bool):
         self.set_class(visible, "-visible")
