@@ -1,8 +1,8 @@
-import asyncio
 from contextlib import contextmanager
 from datetime import datetime
 
 from dependency_injector.wiring import Provide
+from textual.screen import Screen
 
 from terry.domain.terraform.core.entities import TerraformFormatScope
 from terry.infrastructure.shared.command_process_context_manager import CommandProcessContextManager
@@ -124,13 +124,14 @@ class TerraformActionHandlerMixin:
         Arguments:
             event (PlanApplyRequest): The event containing the plan settings to apply.
         """
-        self.push_screen(TerraformCommandOutputScreen())  # type: ignore
+        output_screen = TerraformCommandOutputScreen()
+        self.push_screen(output_screen)  # type: ignore
         command = TerraformPlanCommandBuilder().build_from_settings(event.settings)
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
 
         worker = self.run_worker(  # type: ignore
-            self.run_tf_action(command, "Failed to apply plan settings."),
+            self.run_tf_action(command, "Failed to apply plan settings.", output_screen=output_screen),
             exit_on_error=True,
             thread=True,
             group="tf_command_worker",
@@ -150,14 +151,16 @@ class TerraformActionHandlerMixin:
             event (InitActionRequest): The initialization apply request
                 event that triggers this handler.
         """
-        self.push_screen(TerraformCommandOutputScreen())  # type: ignore
+        output_screen = TerraformCommandOutputScreen()
+        self.push_screen(output_screen)  # type: ignore
+
         command = TerraformInitCommandBuilder().build_from_settings(event.settings)
 
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
 
         worker = self.run_worker(  # type: ignore
-            self.run_tf_action(command, error_message="Failed to apply plan settings."),
+            self.run_tf_action(command, error_message="Failed to apply plan settings.", output_screen=output_screen),
             exit_on_error=True,
             thread=True,
             group="tf_command_worker",
@@ -179,14 +182,15 @@ class TerraformActionHandlerMixin:
                 applying the Terraform plan.
 
         """
-        self.push_screen(TerraformCommandOutputScreen())  # type: ignore
+        output_screen = TerraformCommandOutputScreen()
+        self.push_screen(output_screen)  # type: ignore
         command = TerraformApplyCommandBuilder().build_from_settings(event.settings)
 
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
 
         worker = self.run_worker(  # type: ignore
-            self.run_tf_action(command, error_message="Failed to apply settings."),
+            self.run_tf_action(command, error_message="Failed to apply settings.", output_screen=output_screen),
             exit_on_error=True,
             thread=True,
             group="tf_command_worker",
@@ -202,7 +206,7 @@ class TerraformActionHandlerMixin:
         tf_command: list[str],
         error_message: str,
         cache: TerryCache = Provide[DiContainer.cache],
-        run_in_background: bool = False,
+        output_screen: Screen | None = None,
     ):
         """
         Executes an asynchronous plan based on the specified tab name and updates the UI
@@ -214,12 +218,10 @@ class TerraformActionHandlerMixin:
             tf_command (list[str]): The Terraform command to execute.
             error_message (str): The error message to display in case of an error.
             cache (TerryCache): The cache instance to store the executed commands
+            output_screen (Screen): The screen to display the command output.
         """
 
-        await asyncio.sleep(2)
-
         tf_command_str = " ".join(tf_command)
-        area = self._get_ui_area(run_in_background)
 
         manager = CommandProcessContextManager(tf_command, str(self.work_dir))  # type: ignore
         self._tf_command_executor.command_process = manager  # type: ignore
@@ -231,7 +233,7 @@ class TerraformActionHandlerMixin:
 
         with self.paused_system_monitoring():
             with manager as (stdin, stdout, stderr):
-                self._handle_logs(tf_command_str, area, stdin, stdout, stderr)
+                self._handle_logs(tf_command_str, output_screen, stdin, stdout, stderr)
 
         if manager.error:
             self._log_error(error_message, tf_command_str, str(manager.error))
@@ -267,18 +269,18 @@ class TerraformActionHandlerMixin:
         self.notify(message, severity="error")  # type: ignore
         self.write_command_log(command, CommandStatus.ERROR, error_message)  # type: ignore
 
-    def _get_ui_area(self, run_in_background: bool):
+    def _get_ui_area(self):
         """Sets up the UI output area based on the background execution flag."""
-        return self.app.query_one(TerraformCommandOutputScreen) if not run_in_background else None  # type: ignore
+        return self.app.query_one(TerraformCommandOutputScreen)  # type: ignore
 
-    def _handle_logs(self, command, ui_output_area, stdin, stdout, stderr):
+    def _handle_logs(self, command, output_screen, stdin, stdout, stderr):
         """Handles logging the process output and updating the UI."""
         output = []
 
-        if ui_output_area:
-            with ui_output_area.stdin_context(stdin):
+        if output_screen:
+            with output_screen.stdin_context(stdin):
                 for line in process_stdout_stderr(stdout, stderr):
-                    ui_output_area.write_log(line)
+                    output_screen.write_log(line)
                     output.append(line)
         else:
             for line in process_stdout_stderr(stdout, stderr):
