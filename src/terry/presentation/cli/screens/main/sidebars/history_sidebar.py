@@ -3,12 +3,40 @@ from typing import List
 from dependency_injector.wiring import Provide
 from textual import work
 from textual.app import ComposeResult
+from textual.containers import Horizontal
 from textual.reactive import reactive
-from textual.widgets import ListView, ListItem, Label
+from textual.widgets import ListView, ListItem, Label, Static
 
 from terry.presentation.cli.cache import TerryCache
 from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.screens.main.sidebars.base import BaseSidebar
+
+
+class CommandItem(Horizontal):
+    DEFAULT_CSS = """
+    CommandItem {
+        height: auto;
+        padding: 0 1;
+        margin-bottom: 1;
+        
+        
+        & > .command {
+            width: 90%;
+
+        }
+        & > .repeat_button {
+            width: 10%;
+        }
+    }
+    """
+
+    def __init__(self, command: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.command = command
+
+    def compose(self) -> ComposeResult:
+        yield Label(self.command, classes="command")
+        yield Static("⤾", classes="repeat_button").with_tooltip("Repeat command")
 
 
 class CommandHistorySidebar(BaseSidebar):
@@ -22,7 +50,7 @@ class CommandHistorySidebar(BaseSidebar):
     def compose(self) -> ComposeResult:
         with ListView() as self.list_view:
             for command in reversed(self.commands):
-                yield ListItem(Label(command))
+                yield ListItem(CommandItem(command))
 
     def toggle(self, visible: bool):
         self.set_class(visible, "-visible")

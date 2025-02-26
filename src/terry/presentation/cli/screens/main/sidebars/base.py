@@ -11,7 +11,7 @@ class BaseSidebar(Widget):
 
     DEFAULT_CSS = """
     BaseSidebar {
-        width: 30;
+        width: 40;
         /* Needs to go in its own layer to sit above content */
         layer: sidebar; 
         /* Dock the sidebar to the appropriate side */
