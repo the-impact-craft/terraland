@@ -97,7 +97,7 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
             for action in TERRAFORM_MAIN_ACTIONS + TERRAFORM_ADDITIONAL_ACTIONS
         ],
         Binding("h", "toggle_history_sidebar", "History"),
-        Binding("escape", "exit", "Exit sidebar"),
+        Binding("escape", "exit", "Exit sidebar", show=False),
     ]
 
     show_history_sidebar = reactive(False)
