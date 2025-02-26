@@ -312,9 +312,9 @@ class TerraformFormatCommandBuilder:
         """Initialize the base terraform apply command."""
         self.command = ["terraform", "fmt"]
 
-    def add_path(self, path: str | Path) -> list[str]:
+    def add_path(self, path: str | Path) -> "TerraformFormatCommandBuilder":
         self.command.extend([str(path)])
-        return self.command
+        return self
 
     def build(self) -> list[str]:
         """Build and return the final terraform apply command."""
