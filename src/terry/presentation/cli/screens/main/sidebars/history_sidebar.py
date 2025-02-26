@@ -54,7 +54,7 @@ class CommandItem(Horizontal):
 
 
 class CommandHistorySidebar(BaseSidebar):
-    commands: reactive[List[str]] = reactive([], recompose=True)
+    commands: reactive[List[dict]] = reactive([], recompose=True)
 
     def __init__(self, cache: TerryCache = Provide[DiContainer.cache], *args, **kwargs):
         super().__init__(*args, **kwargs)
