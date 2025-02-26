@@ -28,7 +28,7 @@ class CommandItem(Horizontal):
             }
             
             .timestamp {
-                color: grey;
+                color:  $block-cursor-foreground;
             }
 
         }
@@ -48,7 +48,7 @@ class CommandItem(Horizontal):
             classes="command",
         ):
             yield Label(self.command)
-            yield Static(self.timestamp, classes="timestamp")
+            yield Label(self.timestamp, classes="timestamp")
 
         yield Static("⤾", classes="repeat_button").with_tooltip("Repeat command")
 

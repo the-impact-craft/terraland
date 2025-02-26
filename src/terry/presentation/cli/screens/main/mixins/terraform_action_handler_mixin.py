@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import contextmanager
 from datetime import datetime
 
 from dependency_injector.wiring import Provide
@@ -14,16 +15,16 @@ from terry.infrastructure.terraform.core.commands_builders import (
 from terry.infrastructure.terraform.core.exceptions import TerraformFormatException, TerraformValidateException
 from terry.presentation.cli.action_handlers.main import action_handler_registry
 from terry.presentation.cli.cache import TerryCache
+from terry.presentation.cli.di_container import DiContainer
+from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
 from terry.presentation.cli.messages.tf_apply_action_request import ApplyActionRequest
 from terry.presentation.cli.messages.tf_format_action_request import FormatActionRequest
 from terry.presentation.cli.messages.tf_init_action_request import InitActionRequest
 from terry.presentation.cli.messages.tf_plan_action_request import PlanActionRequest
 from terry.presentation.cli.messages.tf_validate_action_request import ValidateActionRequest
-from terry.presentation.cli.widgets.clickable_tf_action_label import ClickableTfActionLabel
-from terry.presentation.cli.di_container import DiContainer
-from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
 from terry.presentation.cli.screens.main.containers.content import Content
 from terry.presentation.cli.screens.tf_command_output.main import TerraformCommandOutputScreen
+from terry.presentation.cli.widgets.clickable_tf_action_label import ClickableTfActionLabel
 from terry.settings import CommandStatus
 
 
@@ -197,7 +198,11 @@ class TerraformActionHandlerMixin:
             self._tf_command_executor.cancel()
 
     async def run_tf_action(
-        self, tf_command: list[str], error_message: str, cache: TerryCache = Provide[DiContainer.cache]
+        self,
+        tf_command: list[str],
+        error_message: str,
+        cache: TerryCache = Provide[DiContainer.cache],
+        run_in_background: bool = False,
     ):
         """
         Executes an asynchronous plan based on the specified tab name and updates the UI
@@ -214,25 +219,20 @@ class TerraformActionHandlerMixin:
         await asyncio.sleep(2)
 
         tf_command_str = " ".join(tf_command)
-        area = self.app.query_one(TerraformCommandOutputScreen)  # type: ignore
+        area = self._get_ui_area(run_in_background)
+
         manager = CommandProcessContextManager(tf_command, str(self.work_dir))  # type: ignore
         self._tf_command_executor.command_process = manager  # type: ignore
-        output = []
+
         cache.extend("commands", {"command": tf_command_str, "timestamp": datetime.now().isoformat(sep=" ")})
 
         if self.history_sidebar:  # type: ignore
             self.history_sidebar.refresh_content()  # type: ignore
-        self.pause_system_monitoring = True
-        with manager as (stdin, stdout, stderr):
-            area.stdin = stdin
-            for line in process_stdout_stderr(stdout, stderr):
-                area.write_log(line)
-                output.append(line)
-            self._log_success("Command executed successfully.", tf_command_str, "\n".join(output))
 
-        self.pause_system_monitoring = False  # type: ignore
+        with self.paused_system_monitoring():
+            with manager as (stdin, stdout, stderr):
+                self._handle_logs(tf_command_str, area, stdin, stdout, stderr)
 
-        area.stdin = None
         if manager.error:
             self._log_error(error_message, tf_command_str, str(manager.error))
             return
@@ -266,3 +266,30 @@ class TerraformActionHandlerMixin:
         self.log.error(error_message)  # type: ignore
         self.notify(message, severity="error")  # type: ignore
         self.write_command_log(command, CommandStatus.ERROR, error_message)  # type: ignore
+
+    def _get_ui_area(self, run_in_background: bool):
+        """Sets up the UI output area based on the background execution flag."""
+        return self.app.query_one(TerraformCommandOutputScreen) if not run_in_background else None  # type: ignore
+
+    def _handle_logs(self, command, ui_output_area, stdin, stdout, stderr):
+        """Handles logging the process output and updating the UI."""
+        output = []
+
+        if ui_output_area:
+            with ui_output_area.stdin_context(stdin):
+                for line in process_stdout_stderr(stdout, stderr):
+                    ui_output_area.write_log(line)
+                    output.append(line)
+        else:
+            for line in process_stdout_stderr(stdout, stderr):
+                output.append(line)
+
+        self._log_success("Command executed.", command, "\n".join(output))
+
+    @contextmanager
+    def paused_system_monitoring(self):
+        try:
+            self.pause_system_monitoring = True
+            yield
+        finally:
+            self.pause_system_monitoring = False
