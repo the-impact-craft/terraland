@@ -4,15 +4,16 @@ from datetime import datetime
 from dependency_injector.wiring import Provide
 from textual.screen import Screen
 
-from terry.domain.terraform.core.entities import TerraformFormatScope
+from terry.domain.terraform.core.entities import TerraformFormatScope, FormatSettings
 from terry.infrastructure.shared.command_process_context_manager import CommandProcessContextManager
 from terry.infrastructure.shared.command_utils import process_stdout_stderr
 from terry.infrastructure.terraform.core.commands_builders import (
     TerraformPlanCommandBuilder,
     TerraformInitCommandBuilder,
     TerraformApplyCommandBuilder,
+    TerraformFormatCommandBuilder,
 )
-from terry.infrastructure.terraform.core.exceptions import TerraformFormatException, TerraformValidateException
+from terry.infrastructure.terraform.core.exceptions import TerraformValidateException
 from terry.presentation.cli.action_handlers.main import action_handler_registry
 from terry.presentation.cli.cache import TerryCache
 from terry.presentation.cli.di_container import DiContainer
@@ -89,13 +90,19 @@ class TerraformActionHandlerMixin:
             if not format_scope:
                 self.notify("No file selected.", severity="warning")  # type: ignore
                 return
-        try:
-            output = self.terraform_core_service.fmt(format_scope)  # type: ignore
-        except TerraformFormatException as ex:
-            self._log_error("Failed to apply format settings.", ex.command, ex.message)
-            return
-        else:
-            self._log_success("Format settings applied successfully.", output.command, output.output)
+        settings = FormatSettings(path=format_scope)
+
+        command = TerraformFormatCommandBuilder().build_from_settings(settings)
+        if self._tf_command_executor:
+            self._tf_command_executor.cancel()
+
+        worker = self.run_worker(  # type: ignore
+            self.run_tf_action(command, "Failed to format."),
+            exit_on_error=True,
+            thread=True,
+            group="tf_command_worker",
+        )
+        self._tf_command_executor = TerraformCommandExecutor(command=command, worker=worker)  # type: ignore
 
     def on_validate_action_request(self, event: ValidateActionRequest) -> None:
         """
