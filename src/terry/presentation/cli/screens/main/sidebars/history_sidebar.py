@@ -3,7 +3,7 @@ from typing import List
 from dependency_injector.wiring import Provide
 from textual import work
 from textual.app import ComposeResult
-from textual.containers import Horizontal
+from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
 from textual.widgets import ListView, ListItem, Label, Static
 
@@ -22,6 +22,15 @@ class CommandItem(Horizontal):
         
         & > .command {
             width: 90%;
+            height: auto;
+            & > Label { 
+                width: 100%;
+                color: $primary-lighten-2;
+            }
+            
+            .timestamp {
+                color: grey;
+            }
 
         }
         & > .repeat_button {
@@ -35,7 +44,12 @@ class CommandItem(Horizontal):
         self.command = command
 
     def compose(self) -> ComposeResult:
-        yield Label(self.command, classes="command")
+        with Vertical(
+            classes="command",
+        ):
+            yield Label(self.command)
+            yield Static("2025-02-26 13:00:00", classes="timestamp")
+
         yield Static("⤾", classes="repeat_button").with_tooltip("Repeat command")
 
 
