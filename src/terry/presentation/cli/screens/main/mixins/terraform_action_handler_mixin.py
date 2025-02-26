@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 
 from dependency_injector.wiring import Provide
 
@@ -217,7 +218,8 @@ class TerraformActionHandlerMixin:
         manager = CommandProcessContextManager(tf_command, str(self.work_dir))  # type: ignore
         self._tf_command_executor.command_process = manager  # type: ignore
         output = []
-        cache.extend("commands", tf_command_str)
+        cache.extend("commands", {"command": tf_command_str, "timestamp": datetime.now().isoformat(sep=" ")})
+
         if self.history_sidebar:  # type: ignore
             self.history_sidebar.refresh_content()  # type: ignore
         self.pause_system_monitoring = True

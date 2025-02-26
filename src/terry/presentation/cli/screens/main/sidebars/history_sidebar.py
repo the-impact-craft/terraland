@@ -25,7 +25,6 @@ class CommandItem(Horizontal):
             height: auto;
             & > Label { 
                 width: 100%;
-                color: $primary-lighten-2;
             }
             
             .timestamp {
@@ -39,16 +38,17 @@ class CommandItem(Horizontal):
     }
     """
 
-    def __init__(self, command: str, *args, **kwargs):
+    def __init__(self, command: str, timestamp, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.command = command
+        self.timestamp = timestamp
 
     def compose(self) -> ComposeResult:
         with Vertical(
             classes="command",
         ):
             yield Label(self.command)
-            yield Static("2025-02-26 13:00:00", classes="timestamp")
+            yield Static(self.timestamp, classes="timestamp")
 
         yield Static("⤾", classes="repeat_button").with_tooltip("Repeat command")
 
@@ -64,7 +64,7 @@ class CommandHistorySidebar(BaseSidebar):
     def compose(self) -> ComposeResult:
         with ListView() as self.list_view:
             for command in reversed(self.commands):
-                yield ListItem(CommandItem(command))
+                yield ListItem(CommandItem(command.get("command"), command.get("timestamp")))
 
     def toggle(self, visible: bool):
         self.set_class(visible, "-visible")
