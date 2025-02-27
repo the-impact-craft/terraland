@@ -17,11 +17,13 @@ from terry.infrastructure.terraform.core.exceptions import TerraformValidateExce
 from terry.presentation.cli.action_handlers.main import action_handler_registry
 from terry.presentation.cli.cache import TerryCache
 from terry.presentation.cli.di_container import DiContainer
+from terry.presentation.cli.entities.command_cache import CommandCache
 from terry.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
 from terry.presentation.cli.messages.tf_apply_action_request import ApplyActionRequest
 from terry.presentation.cli.messages.tf_format_action_request import FormatActionRequest
 from terry.presentation.cli.messages.tf_init_action_request import InitActionRequest
 from terry.presentation.cli.messages.tf_plan_action_request import PlanActionRequest
+from terry.presentation.cli.messages.tf_rerun_command import RerunCommandRequest
 from terry.presentation.cli.messages.tf_validate_action_request import ValidateActionRequest
 from terry.presentation.cli.screens.main.containers.content import Content
 from terry.presentation.cli.screens.tf_command_output.main import TerraformCommandOutputScreen
@@ -204,6 +206,21 @@ class TerraformActionHandlerMixin:
         )
         self._tf_command_executor = TerraformCommandExecutor(command=command, worker=worker)
 
+    async def on_rerun_command_request(self, event: RerunCommandRequest):
+        output_screen = None
+        if event.run_in_modal:
+            output_screen = TerraformCommandOutputScreen()
+            self.push_screen(output_screen)  # type: ignore
+        if self._tf_command_executor:
+            self._tf_command_executor.cancel()
+        worker = self.run_worker(  # type: ignore
+            self.run_tf_action(event.command, error_message=event.error_message, output_screen=output_screen),
+            exit_on_error=True,
+            thread=True,
+            group="tf_command_worker",
+        )
+        self._tf_command_executor = TerraformCommandExecutor(command=event.command, worker=worker)
+
     def on_terraform_command_output_screen_close(self, _: TerraformCommandOutputScreen.Close):
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
@@ -233,7 +250,12 @@ class TerraformActionHandlerMixin:
         manager = CommandProcessContextManager(tf_command, str(self.work_dir))  # type: ignore
         self._tf_command_executor.command_process = manager  # type: ignore
 
-        cache.extend("commands", {"command": tf_command_str, "timestamp": datetime.now().isoformat(sep=" ")})
+        cache.extend(
+            "commands",
+            CommandCache(
+                tf_command, datetime.now(), run_in_modal=output_screen is not None, error_message=error_message
+            ),
+        )  # type: ignore
 
         if self.history_sidebar:  # type: ignore
             self.history_sidebar.refresh_content()  # type: ignore
