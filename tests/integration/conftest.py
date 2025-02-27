@@ -6,7 +6,7 @@ import pytest
 
 from terry.domain.file_system.entities import ListDirOutput
 from terry.domain.operation_system.entities import OperationSystem, Variable
-from terry.domain.terraform.core.entities import TerraformVersion, TerraformFormatOutput
+from terry.domain.terraform.core.entities import TerraformVersion
 from terry.domain.terraform.workspaces.entities import WorkspaceListOutput, Workspace
 from terry.presentation.cli.di_container import DiContainer
 from terry.presentation.cli.screens.main.main import Terry
@@ -81,10 +81,6 @@ def terraform_core_service() -> mock.Mock:
         terraform_outdated=False,
         provider_selections={},
         command="terraform version",
-    )
-    terraform_core_service.fmt.return_value = TerraformFormatOutput(
-        command="terraform fmt",
-        output="",
     )
     return terraform_core_service
 
