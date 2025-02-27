@@ -11,7 +11,7 @@ class AboutHandler(BaseTerraformActionHandler):
         terraform_version = (
             self.app.terraform_version.terraform_version if self.app.terraform_version else "(undefined)"
         )
-        platform = sys.platform
+        platform = self.app.terraform_version.platform if self.app.terraform_version else sys.platform
 
         self.app.push_screen(
             AboutScreen(
