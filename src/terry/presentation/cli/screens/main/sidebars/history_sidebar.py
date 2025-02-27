@@ -30,7 +30,9 @@ class CommandItem(Horizontal):
             height: auto;
             & > Label { 
                 width: 100%;
+                color: $text-secondary
             }
+            
             
             .timestamp {
                 color:  $block-cursor-foreground;
@@ -79,6 +81,22 @@ class CommandItem(Horizontal):
 
 
 class CommandHistorySidebar(BaseSidebar):
+    DEFAULT_CSS = """
+    ListView {
+        & > ListItem {
+            &.-highlight {
+                CommandItem {
+                    & > .command {
+                        & > Label { 
+                             color:  $block-cursor-foreground;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    """
+
     commands: reactive[List[CommandCache]] = reactive([], recompose=True)
 
     def __init__(self, cache: TerryCache = Provide[DiContainer.cache], *args, **kwargs):
