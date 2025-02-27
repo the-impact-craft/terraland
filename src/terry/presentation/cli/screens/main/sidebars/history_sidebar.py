@@ -32,12 +32,9 @@ class CommandItem(Horizontal):
                 width: 100%;
                 color: $text-secondary
             }
-            
-            
             .timestamp {
                 color:  $block-cursor-foreground;
             }
-
         }
         & > .repeat_button {
             width: 10%;
