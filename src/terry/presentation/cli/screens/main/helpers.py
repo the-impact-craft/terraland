@@ -27,7 +27,7 @@ def validate_work_dir(path) -> None:
         raise PermissionError(f"Directory is not readable: {path}")
 
 
-def get_or_raise_validate_terraform(terraform_core_service):
+def get_terraform_version(terraform_core_service):
     """
     Validate the Terraform installation in the current environment.
 
@@ -40,11 +40,5 @@ def get_or_raise_validate_terraform(terraform_core_service):
 
     try:
         return terraform_core_service.version()
-    except TerraformVersionException as e:
-        error_message = (
-            "🚨\033[91mTerraform seems to be not installed.🚨\n"
-            "Please install Terraform to use this application.\n"
-            f"Details: {str(e)}"
-        )
-        print(error_message)
-        exit(1)
+    except TerraformVersionException:
+        return
