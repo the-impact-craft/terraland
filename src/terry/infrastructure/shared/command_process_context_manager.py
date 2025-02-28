@@ -2,11 +2,14 @@ import io
 import subprocess
 from typing import List, Tuple, Union, IO
 
+from terry.domain.operation_system.services import BaseOperationSystemService
+
 
 class CommandProcessContextManager:
     def __init__(
         self,
         command: List[str],
+        operation_system_service: BaseOperationSystemService,
         cwd: str | None = None,
         env_vars: dict[str, str] | None = None,
     ):
@@ -22,6 +25,7 @@ class CommandProcessContextManager:
         self.process: subprocess.Popen | None = None
         self.env_vars = env_vars
         self.error = None
+        self.operation_system_service = operation_system_service
 
     def __enter__(self) -> Tuple[Union[IO, None], Union[IO, None], Union[IO, None]]:
         """
@@ -29,11 +33,22 @@ class CommandProcessContextManager:
 
         :return: Tuple containing stdin, stdout, and stderr streams.
         """
+        # If no user env variables provided, set None, thus using the current environment variables
+        env_vars = None
+
+        if self.env_vars:
+            # If user env variables are provided, merge them with the current environment variables
+            env_vars = self.operation_system_service.list_environment_variables()
+            env_vars = {
+                **self.env_vars,
+                **{var.name: var.value for var in env_vars},
+            }
+
         try:
             self.process = subprocess.Popen(
                 self.command,
                 cwd=self.cwd,
-                env=self.env_vars,
+                env=env_vars,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 stdin=subprocess.PIPE,

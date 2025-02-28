@@ -136,11 +136,18 @@ class TerraformActionHandlerMixin:
         output_screen = TerraformCommandOutputScreen()
         self.push_screen(output_screen)  # type: ignore
         command = TerraformPlanCommandBuilder().build_from_settings(event.settings)
+
+        env_vars = None
+        if event.settings.env_vars:
+            env_vars = {var.name: var.value for var in event.settings.env_vars}
+
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
 
         worker = self.run_worker(  # type: ignore
-            self.run_tf_action(command, "Failed to apply plan settings.", output_screen=output_screen),
+            self.run_tf_action(
+                command, "Failed to apply plan settings.", env_vars=env_vars, output_screen=output_screen
+            ),
             exit_on_error=True,
             thread=True,
             group="tf_command_worker",
@@ -195,11 +202,17 @@ class TerraformActionHandlerMixin:
         self.push_screen(output_screen)  # type: ignore
         command = TerraformApplyCommandBuilder().build_from_settings(event.settings)
 
+        env_vars = None
+        if event.settings.env_vars:
+            env_vars = {var.name: var.value for var in event.settings.env_vars}
+
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
 
         worker = self.run_worker(  # type: ignore
-            self.run_tf_action(command, error_message="Failed to apply settings.", output_screen=output_screen),
+            self.run_tf_action(
+                command, error_message="Failed to apply settings.", env_vars=env_vars, output_screen=output_screen
+            ),
             exit_on_error=True,
             thread=True,
             group="tf_command_worker",
@@ -229,6 +242,7 @@ class TerraformActionHandlerMixin:
         self,
         tf_command: list[str],
         error_message: str,
+        env_vars: dict | None = None,
         cache: TerryCache = Provide[DiContainer.cache],
         output_screen: Screen | None = None,
     ):
@@ -241,13 +255,19 @@ class TerraformActionHandlerMixin:
         Arguments:
             tf_command (list[str]): The Terraform command to execute.
             error_message (str): The error message to display in case of an error.
+            env_vars(dict | None): The environment variables to set during command execution
             cache (TerryCache): The cache instance to store the executed commands
             output_screen (Screen): The screen to display the command output.
         """
 
         tf_command_str = " ".join(tf_command)
 
-        manager = CommandProcessContextManager(tf_command, str(self.work_dir))  # type: ignore
+        manager = CommandProcessContextManager(
+            tf_command,
+            self.operation_system_service,  # type: ignore
+            str(self.work_dir),  # type: ignore
+            env_vars,
+        )
         self._tf_command_executor.command_process = manager  # type: ignore
 
         cache.extend(
