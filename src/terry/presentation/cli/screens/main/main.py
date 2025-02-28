@@ -49,7 +49,7 @@ from terry.presentation.cli.screens.main.containers.header import Header
 from terry.presentation.cli.screens.main.containers.project_tree import ProjectTree
 from terry.presentation.cli.screens.main.containers.state_files import StateFiles
 from terry.presentation.cli.screens.main.containers.workspaces import Workspaces
-from terry.presentation.cli.screens.main.helpers import get_or_raise_validate_terraform, validate_work_dir
+from terry.presentation.cli.screens.main.helpers import get_terraform_version, validate_work_dir
 from terry.presentation.cli.screens.main.mixins.resize_containers_watcher_mixin import ResizeContainersWatcherMixin
 from terry.presentation.cli.screens.main.mixins.system_monitoring_mixin import SystemMonitoringMixin
 from terry.presentation.cli.screens.main.mixins.terraform_action_handler_mixin import TerraformActionHandlerMixin
@@ -362,7 +362,9 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
             ValueError: If the working directory is invalid or the project is not a Terraform project.
         """
         validate_work_dir(self.work_dir)
-        self.terraform_version = get_or_raise_validate_terraform(self.terraform_core_service)
+        self.terraform_version = get_terraform_version(self.terraform_core_service)
+        if self.terraform_version and self.terraform_version.terraform_outdated:
+            self.notify("Terraform version is outdated.", severity="warning")
 
     def init_env(self):
         """
