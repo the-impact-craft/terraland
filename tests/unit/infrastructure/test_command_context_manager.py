@@ -2,9 +2,9 @@ from pathlib import Path
 from terry.infrastructure.shared.command_process_context_manager import CommandProcessContextManager
 
 
-def test_successful_command_execution():
+def test_successful_command_execution(operation_system_service):
     """Test successful command execution and output capture"""
-    with CommandProcessContextManager(["echo", "hello"]) as (stdin, stdout, stderr):
+    with CommandProcessContextManager(["echo", "hello"], operation_system_service) as (stdin, stdout, stderr):
         # Read output
         output = stdout.read()
         assert "hello" in output
@@ -13,15 +13,19 @@ def test_successful_command_execution():
         assert stderr.read() == ""
 
 
-def test_command_with_error():
+def test_command_with_error(operation_system_service):
     """Test command that returns error"""
-    with CommandProcessContextManager(["ls", "nonexistent_directory"]) as (stdin, stdout, stderr):
+    with CommandProcessContextManager(["ls", "nonexistent_directory"], operation_system_service) as (
+        stdin,
+        stdout,
+        stderr,
+    ):
         # Verify error output
         error_output = stderr.read()
         assert "No such file or directory" in error_output
 
 
-def test_command_with_working_directory():
+def test_command_with_working_directory(operation_system_service):
     """Test command execution in specific working directory"""
     # Create a temporary directory and file
     temp_dir = Path("test_dir")
@@ -30,7 +34,11 @@ def test_command_with_working_directory():
     temp_file.write_text("test content")
 
     try:
-        with CommandProcessContextManager(["ls"], cwd=str(temp_dir)) as (stdin, stdout, stderr):
+        with CommandProcessContextManager(["ls"], operation_system_service, cwd=str(temp_dir)) as (
+            stdin,
+            stdout,
+            stderr,
+        ):
             output = stdout.read()
             assert "test.txt" in output
     finally:
@@ -39,17 +47,17 @@ def test_command_with_working_directory():
         temp_dir.rmdir()
 
 
-def test_command_with_environment_variables():
+def test_command_with_environment_variables(operation_system_service):
     """Test command execution with environment variables"""
     env_vars = {"TEST_VAR": "test_value"}
-    with CommandProcessContextManager(["env"], env_vars=env_vars) as (stdin, stdout, stderr):
+    with CommandProcessContextManager(["env"], operation_system_service, env_vars=env_vars) as (stdin, stdout, stderr):
         output = stdout.read()
         assert "TEST_VAR=test_value" in output
 
 
-def test_command_with_input():
+def test_command_with_input(operation_system_service):
     """Test command with stdin input"""
-    with CommandProcessContextManager(["cat"]) as (stdin, stdout, stderr):
+    with CommandProcessContextManager(["cat"], operation_system_service) as (stdin, stdout, stderr):
         stdin.write("hello\n")
         stdin.flush()
         stdin.close()
@@ -57,9 +65,9 @@ def test_command_with_input():
         assert "hello" in output
 
 
-def test_process_termination():
+def test_process_termination(operation_system_service):
     """Test process termination"""
-    manager = CommandProcessContextManager(["sleep", "10"])
+    manager = CommandProcessContextManager(["sleep", "10"], operation_system_service)
     with manager as (stdin, stdout, stderr):
         # Verify process exists
         assert manager.process is not None
@@ -69,9 +77,9 @@ def test_process_termination():
     assert manager.process is None
 
 
-def test_multiple_context_entries():
+def test_multiple_context_entries(operation_system_service):
     """Test multiple entries to the context manager"""
-    manager = CommandProcessContextManager(["echo", "hello"])
+    manager = CommandProcessContextManager(["echo", "hello"], operation_system_service)
 
     # First entry
     with manager as (stdin1, stdout1, stderr1):
@@ -84,13 +92,13 @@ def test_multiple_context_entries():
         assert "hello" in output2
 
 
-def test_error_handling():
+def test_error_handling(operation_system_service):
     """Test error handling within context"""
 
     class CustomError(Exception):
         pass
 
-    manager = CommandProcessContextManager(["echo", "hello"])
+    manager = CommandProcessContextManager(["echo", "hello"], operation_system_service)
     try:
         with manager as (stdin, stdout, stderr):
             raise CustomError("Test error")
@@ -100,17 +108,17 @@ def test_error_handling():
         assert manager.error is not None
 
 
-def test_text_mode_output():
+def test_text_mode_output(operation_system_service):
     """Test text mode output (strings instead of bytes)"""
-    with CommandProcessContextManager(["echo", "hello"]) as (stdin, stdout, stderr):
+    with CommandProcessContextManager(["echo", "hello"], operation_system_service) as (stdin, stdout, stderr):
         output = stdout.read()
         assert isinstance(output, str)  # Should be string, not bytes
         assert "hello" in output
 
 
-def test_cleanup_on_exception():
+def test_cleanup_on_exception(operation_system_service):
     """Test cleanup when an exception occurs"""
-    manager = CommandProcessContextManager(["sleep", "10"])
+    manager = CommandProcessContextManager(["sleep", "10"], operation_system_service)
     try:
         with manager as (stdin, stdout, stderr):
             raise KeyboardInterrupt()

@@ -38,7 +38,7 @@ reviews:
           instructions: |
               "Assess the documentation for misspellings, grammatical errors, missing documentation and correctness"
     auto_review:
-        enabled: false
+        enabled: true
         ignore_title_keywords:
             - "WIP"
             - "DO NOT MERGE"
