@@ -53,3 +53,6 @@ APPLY_STATE_OUT_DESCRIPTION = "(-state-out=path) Path to write state to that is 
 APPLY_PLAN_DESCRIPTION = (
     "Path to a Terraform plan file to apply. This plan file can be generated using the 'terraform plan' command."
 )
+APPLY_INLINE_VAR_DESCRIPTION = "Set a value for one of the input variables in the root module of the configuration. Use this option more than once to set more than one variable."
+APPLY_ENV_VAR_DESCRIPTION = "Environment variables can be used to set variables. The environment variables must be in the format TF_VAR_name and this will be checked last for a value"
+APPLY_VAR_FILE_DESCRIPTION = "Load variable values from the given file, in addition to the default files terraform.tfvars and *.auto.tfvars. Use this option more than once to include more than one variables file."

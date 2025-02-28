@@ -194,7 +194,7 @@ class TerraformActionHandlerMixin:
         output_screen = TerraformCommandOutputScreen()
         self.push_screen(output_screen)  # type: ignore
         command = TerraformApplyCommandBuilder().build_from_settings(event.settings)
-
+        self.notify(f"Applying settings: {' '.join(command)}")
         if self._tf_command_executor:
             self._tf_command_executor.cancel()
 

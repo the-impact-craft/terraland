@@ -59,6 +59,9 @@ class TerraformApplySettingsAttributes:
     STATE = "state"
     STATE_OUT = "state_out"
     PLAN = "plan"
+    ENV_VARS = "env_vars"
+    INLINE_VARS = "inline_vars"
+    VAR_FILES = "var_files"
 
 
 # ------------------------------------------------------------------------------------------
@@ -287,6 +290,10 @@ class ApplySettings:
     state: Optional[str | Path] = None
     state_out: Optional[str | Path] = None
     plan: Optional[List[str | Path]] = None  # Temporary add as list, should be able to limit to a single path
+
+    env_vars: Optional[List[Variable]] = field(default_factory=lambda: [])
+    inline_vars: Optional[List[Variable]] = field(default_factory=lambda: [])
+    var_files: Optional[List[str]] = field(default_factory=lambda: [])
 
 
 @dataclass

@@ -1,9 +1,12 @@
+from typing import List
+
 from textual import on, events
 from textual.app import ComposeResult
 from textual.containers import Container, VerticalScroll, Horizontal
 from textual.widget import Widget
 from textual.widgets import Static, Rule
 
+from terry.domain.operation_system.entities import Variable
 from terry.domain.terraform.core.entities import TerraformApplySettingsAttributes, ApplySettings
 from terry.presentation.cli.commands_descriptions import (
     APPLY_DESCRIPTION,
@@ -16,11 +19,17 @@ from terry.presentation.cli.commands_descriptions import (
     APPLY_STATE_DESCRIPTION,
     APPLY_DISABLE_LOCK_DESCRIPTION,
     APPLY_PLAN_DESCRIPTION,
+    APPLY_ENV_VAR_DESCRIPTION,
+    APPLY_INLINE_VAR_DESCRIPTION,
+    APPLY_VAR_FILE_DESCRIPTION,
 )
 from terry.presentation.cli.messages.tf_apply_action_request import ApplyActionRequest
+from terry.presentation.cli.utils import get_unique_id
+from terry.presentation.cli.widgets.buttons.add_key_value_button import AddKeyValueButton
 from terry.presentation.cli.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
 from terry.presentation.cli.widgets.form.checkbox_settings_block import CheckboxSettingBlock
 from terry.presentation.cli.widgets.form.collapsible_info_settings_block import CollapsibleInfoBlock
+from terry.presentation.cli.widgets.form.key_value_block import KeyValueBlock
 from terry.presentation.cli.widgets.form.text_input_block import TextInputBlock
 from terry.presentation.cli.widgets.modal_control_label import ModalControlLabel
 from terry.presentation.cli.screens.base.base_tf_settings_screen import BaseTfSettingsModalScreen
@@ -35,6 +44,10 @@ class ApplySettingsScreen(BaseTfSettingsModalScreen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
     CONTAINER_ID: str = "apply_settings"
     CSS_PATH = "styles.tcss"
+
+    def __init__(self, env_vars: List[Variable] | None = None, *args, **kwargs):
+        self.env_vars = env_vars or []
+        super().__init__(*args, **kwargs)
 
     def compose(self) -> ComposeResult:
         with Container(id=self.CONTAINER_ID):
@@ -64,6 +77,58 @@ class ApplySettingsScreen(BaseTfSettingsModalScreen):
                 )
 
                 yield Rule()
+                yield CollapsibleInfoBlock(
+                    "env_vars",
+                    "Environment variables:",
+                    APPLY_ENV_VAR_DESCRIPTION,
+                )
+                with Widget(id=TerraformApplySettingsAttributes.ENV_VARS):
+                    for env_var in self.env_vars:
+                        uuid = get_unique_id()
+                        yield KeyValueBlock(
+                            key=env_var.name,
+                            value=env_var.value,
+                            id=uuid,
+                            show_view_button=True,
+                            is_password=True,
+                        )
+
+                    yield AddKeyValueButton(
+                        content="+ Add Environment Variable",
+                        section_id=TerraformApplySettingsAttributes.ENV_VARS,
+                        id="add_env_var_button",
+                    )
+
+                yield Rule()
+                yield CollapsibleInfoBlock(
+                    "inline_variables",
+                    "Inline variables:",
+                    APPLY_INLINE_VAR_DESCRIPTION,
+                )
+                with Widget(id=TerraformApplySettingsAttributes.INLINE_VARS):
+                    yield AddKeyValueButton(
+                        content="+ Add Inline Variable", section_id="inline_vars", id="add_inline_var_button"
+                    )
+
+                yield Rule()
+                yield CollapsibleInfoBlock(
+                    "var_files",
+                    "Variables Files:",
+                    APPLY_VAR_FILE_DESCRIPTION,
+                )
+                with Widget(id=TerraformApplySettingsAttributes.VAR_FILES):
+                    yield FileNavigatorModalButton(
+                        content="+ Add Variables File",
+                        id="add_var_file_button",
+                        section_id=TerraformApplySettingsAttributes.VAR_FILES,
+                        validation_rules=[
+                            FileSystemSelectionValidationRule(
+                                action=lambda path: path.is_file(), error_message="Selected path is not a file"
+                            )
+                        ],
+                    )
+                yield Rule()
+
                 yield TextInputBlock(
                     TerraformApplySettingsAttributes.BACKUP,
                     "Backup path",
@@ -136,7 +201,15 @@ class ApplySettingsScreen(BaseTfSettingsModalScreen):
             [
                 TerraformApplySettingsAttributes.STATE,
                 TerraformApplySettingsAttributes.PLAN,
+                TerraformApplySettingsAttributes.VAR_FILES,
             ]
+        )
+
+        key_value_settings = self.process_key_value_settings(
+            [
+                TerraformApplySettingsAttributes.ENV_VARS,
+                TerraformApplySettingsAttributes.INLINE_VARS,
+            ],
         )
 
         text_input_settings = self.process_text_inputs(
@@ -146,7 +219,14 @@ class ApplySettingsScreen(BaseTfSettingsModalScreen):
             ]
         )
 
-        result.update({**checkbox_settings, **paths_settings, **text_input_settings})
+        result.update(
+            {
+                **paths_settings,
+                **checkbox_settings,
+                **key_value_settings,
+                **text_input_settings,
+            }
+        )
 
         failed_settings = [setting for setting, value in result.items() if value is None]
         if failed_settings:
@@ -168,4 +248,7 @@ class ApplySettingsScreen(BaseTfSettingsModalScreen):
             TerraformApplySettingsAttributes.BACKUP: None,
             TerraformApplySettingsAttributes.STATE: None,
             TerraformApplySettingsAttributes.STATE_OUT: None,
+            TerraformApplySettingsAttributes.ENV_VARS: [],
+            TerraformApplySettingsAttributes.INLINE_VARS: [],
+            TerraformApplySettingsAttributes.VAR_FILES: [],
         }

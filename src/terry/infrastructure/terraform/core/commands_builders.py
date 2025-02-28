@@ -281,6 +281,14 @@ class TerraformApplyCommandBuilder:
         self.command.extend([str(plan_file)])
         return self
 
+    def add_inline_var(self, name: str, value: str) -> "TerraformApplyCommandBuilder":
+        self.command.extend(["-var", f"{name}={value}"])
+        return self
+
+    def add_var_file(self, file: str) -> "TerraformApplyCommandBuilder":
+        self.command.extend(["-var-file", file])
+        return self
+
     def build(self) -> list[str]:
         """Build and return the final terraform apply command."""
         return self.command
@@ -302,6 +310,14 @@ class TerraformApplyCommandBuilder:
             self.add_state(settings.state)
         if settings.state_out:
             self.add_state_out(settings.state_out)
+        if settings.inline_vars:
+            for var in settings.inline_vars:
+                if not var.name or not var.value:
+                    continue
+                self.add_inline_var(var.name, var.value)
+        if settings.var_files:
+            for var_file in settings.var_files:
+                self.add_var_file(var_file)
         if settings.plan:
             self.app_plan_file(f"{settings.plan[0]}")
         return self.build()
