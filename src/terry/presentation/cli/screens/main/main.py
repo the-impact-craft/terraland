@@ -337,6 +337,38 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         content = abs_changed_file_path.read_text()
         content_tabs.update(changed_file_path, content)
 
+    def remove_tab_for_deleted_file(self, event: FileSystemEvent):
+        """
+        Removes the tab from the preview container when a file deletion event is detected.
+
+         Args:
+             event (FileSystemEvent): The file system event containing information about the deleted file.
+        """
+
+        if not isinstance(event, FileSystemEvent):
+            return
+        if event.is_directory:
+            return
+        if event.event_type != "deleted":
+            return
+
+        abs_changed_file_path = Path(event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path)
+
+        if abs_changed_file_path.exists():
+            return
+
+        changed_file_path = str(abs_changed_file_path.relative_to(self.work_dir))
+        try:
+            content_tabs = self.query_one(Content)
+        except NoMatches:
+            return
+
+        if changed_file_path not in content_tabs.files_contents:
+            return
+
+        tab_id = content_tabs.files_contents.get(changed_file_path, {}).get("id")
+        content_tabs.remove_tab(tab_id, changed_file_path)
+
     def cleanup(self):
         """Stop and cleanup the file system observer."""
         self.cleanup_observer()
