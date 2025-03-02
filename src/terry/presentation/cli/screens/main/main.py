@@ -337,12 +337,12 @@ class Terry(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, Syst
         content = abs_changed_file_path.read_text()
         content_tabs.update(changed_file_path, content)
 
-    def delete_selected_file(self, event: FileSystemEvent):
+    def remove_tab_for_deleted_file(self, event: FileSystemEvent):
         """
-        Deletes the selected file  from preview container when a deletion event occurs.
+        Removes the tab from the preview container when a file deletion event is detected.
 
-        Args:
-            event (FileSystemEvent): The file system event containing information about the deleted file.
+         Args:
+             event (FileSystemEvent): The file system event containing information about the deleted file.
         """
 
         if not isinstance(event, FileSystemEvent):

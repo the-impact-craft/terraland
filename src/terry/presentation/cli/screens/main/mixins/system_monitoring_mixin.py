@@ -12,7 +12,7 @@ class SystemMonitoringMixin:
     required_methods = [
         "refresh_env",
         "update_selected_file_content",
-        "delete_selected_file",
+        "remove_tab_for_deleted_file",
     ]
 
     required_attributes = [
@@ -42,9 +42,11 @@ class SystemMonitoringMixin:
 
         This function utilizes an observer pattern to monitor file system events such
         as creation, modification, deletion, or movement within the specified directory.
-        When an event is detected, the following handlers are invoked in order:
-        1. increment_updated_events: Tracks the number of file system events
-        2. update_selected_file_content: Updates the UI when monitored files change
+        When an event is detected, a FileSystemChangeEvent message is posted to the
+        application, which is handled by the on_file_system_change_event method that:
+         1. Tracks the number of file system events
+         2. Updates the UI when monitored files are modified
+         3. Removes tabs when monitored files are deleted
 
         The monitoring process runs continuously until explicitly stopped or interrupted.
         """
@@ -100,4 +102,4 @@ class SystemMonitoringMixin:
         if event.system_event.event_type == "modified":
             self.update_selected_file_content(event.system_event)  # type: ignore #  method is in required_methods
         if event.system_event.event_type == "deleted":
-            self.delete_selected_file(event.system_event)  # type: ignore #  method is in required_methods
+            self.remove_tab_for_deleted_file(event.system_event)  # type: ignore #  method is in required_methods
