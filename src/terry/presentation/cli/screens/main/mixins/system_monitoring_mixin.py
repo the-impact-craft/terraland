@@ -4,11 +4,16 @@ from textual import work
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from watchdog.observers import Observer
 
+from terry.presentation.cli.messages.file_system_change_event import FileSystemChangeEvent
 from terry.settings import SYSTEM_EVENTS_MONITORING_TIMEOUT
 
 
 class SystemMonitoringMixin:
-    required_methods = ["refresh_env", "update_selected_file_content"]
+    required_methods = [
+        "refresh_env",
+        "update_selected_file_content",
+        "delete_selected_file",
+    ]
 
     required_attributes = [
         "work_dir",
@@ -45,20 +50,14 @@ class SystemMonitoringMixin:
         """
 
         class EventHandler(FileSystemEventHandler):
-            def __init__(self, handlers: list[callable], *args, **kwargs):  # type: ignore
+            def __init__(self, handler: callable, *args, **kwargs):  # type: ignore
                 super().__init__(*args, **kwargs)
-                self.handlers = handlers
+                self.handler = handler
 
             def on_any_event(self, event: FileSystemEvent) -> None:
-                for handler in self.handlers:
-                    handler(event)
+                self.handler(event)
 
-        event_handler = EventHandler(
-            [
-                self.increment_updated_events,
-                self.update_selected_file_content,  # type: ignore #  method is in required_methods
-            ]
-        )
+        event_handler = EventHandler(lambda event: self.post_message(FileSystemChangeEvent(event)))  # type: ignore
         self.observer = Observer()
         self.observer.schedule(event_handler, str(self.work_dir), recursive=True)  # type: ignore
         self.observer.start()
@@ -96,13 +95,9 @@ class SystemMonitoringMixin:
             self.observer.stop()
             self.observer.join()
 
-    def increment_updated_events(self, _: FileSystemEvent):
-        """
-        Increments the count of updated events for internal tracking purposes. This
-        method modifies the internal `updated_events_count` attribute by adding one
-        each time it is invoked.
-
-        Arguments:
-            _: The event object whose update triggers the increment.
-        """
+    def on_file_system_change_event(self, event: FileSystemChangeEvent):
         self.updated_events_count += 1
+        if event.system_event.event_type == "modified":
+            self.update_selected_file_content(event.system_event)  # type: ignore #  method is in required_methods
+        if event.system_event.event_type == "deleted":
+            self.delete_selected_file(event.system_event)  # type: ignore #  method is in required_methods
