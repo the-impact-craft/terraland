@@ -452,20 +452,12 @@ class Content(Vertical):
         """
         tabs = self.query_one(Tabs)
         active_tab = tabs.active_tab
-
-        if active_tab is not None:
-            self.remove_tab(active_tab.id, str(active_tab.label))
-        if not self.files_contents:
-            self.query_one(Preview).reset()
-            self.active_tab = None
+        self.remove_tab(getattr(active_tab, "id", None), str(getattr(active_tab, "label", "")))
 
     def remove_tab(self, uuid, label):
-        self.log("Canceling tab %s", label)
         tabs = self.query_one(Tabs)
         if uuid is not None:
-            self.log(f"Tab {uuid} removed.")
             tabs.remove_tab(uuid)
-            self.log(f"Clear {label}.")
             del self.files_contents[label]
         if not self.files_contents:
             self.query_one(Preview).reset()
