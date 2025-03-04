@@ -40,13 +40,13 @@ We prioritize user feedback and real-world use cases to shape our development pr
 - [ ] **Store terraform commands configurations** - TerraLand will allow you to store configurations for terraform commands, making it easier to run them.
 - [ ] **State management** - TerraLand will provide a visual representation of Terraform state files and allow users to manage them effectively.
 - [ ] **UI improvements** - TerraLand will undergo various UI improvements to enhance user experience and productivity.
-  - ✅ **Custom themes**
-  - [ ] **User themes**
-  - [ ] **Improved navigation**
-  - ✅ **Resized containers**
+    - ✅ **Custom themes**
+    - [ ] **User themes**
+    - [ ] **Improved navigation**
+    - ✅ **Resized containers**
 - [ ] **Integrations** - TerraLand will integrate with various tools and services to enhance its functionality.
-  - [ ] **Git integration**
-  - [ ] **Plugins**
+    - [ ] **Git integration**
+    - [ ] **Plugins**
 - [ ] **Documentation** - TerraLand will have comprehensive documentation to help users get started and make the most of the tool.
 - ✅ **Shortcuts** - TerraLand will provide keyboard shortcuts for common actions to improve productivity.
 - [ ] **Notifications** - TerraLand will provide notifications for important events and updates.
