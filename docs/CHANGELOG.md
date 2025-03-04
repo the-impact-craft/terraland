@@ -1,1 +1,1 @@
-## We are looking forrward to our first release! 🚀
+## We are looking forward to our first release! 🚀
