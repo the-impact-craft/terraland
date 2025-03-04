@@ -5,8 +5,10 @@ repo_name: the-impact-craft/terry
 theme:
   name: material
   palette:
-    scheme: slate
-    primary: custom
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+
   custom_dir: docs/overrides
   icon:
     logo: fontawesome/solid/mountain-sun
