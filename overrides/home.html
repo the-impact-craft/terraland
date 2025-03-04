@@ -1,0 +1,351 @@
+{% extends "main.html" %}
+{% block tabs %}
+{{ super() }}
+
+    <style>
+        body {
+            background: radial-gradient(circle at top, #1f1b2d, #0d1117);
+            background-attachment: fixed; /* Keeps background fixed */
+            background-size: cover;
+        }
+        header.md-header {
+            background-color: transparent;
+            backdrop-filter: blur(10px);
+        }
+        header > .md-tabs {
+            background-color: transparent;
+            backdrop-filter: blur(10px);
+        }
+
+        p {
+            font-size: 0.8rem;
+            line-height: 1;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            text-align: center;
+        }
+        .hero {
+            padding: 0 0;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeIn 1s forwards ease-out;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #8a2be2, #58a6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section {
+            padding: 60px 0;
+            border-bottom: 1px solid #30363d;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s forwards ease-out;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            text-align: left;
+        }
+        .feature-card {
+            background: #161b22;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        .feature-card h3 {
+            color: #58a6ff;
+            font-size: 0.8rem;
+        }
+        h2 {
+            color: #58a6ff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .animated-list li:nth-child(1) { animation-delay: 0.2s; }
+        .animated-list li:nth-child(2) { animation-delay: 0.4s; }
+        .animated-list li:nth-child(3) { animation-delay: 0.6s; }
+        .animated-list li:nth-child(4) { animation-delay: 0.8s; }
+        .animated-list li:nth-child(5) { animation-delay: 1s; }
+        .cta-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #8a2be2, #58a6ff);
+            color: #fff;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #30363d;
+            margin-top: 40px;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+        footer a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        .demo-image {
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid #30363d;
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.3s ease;
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+        }
+
+        .demo-image:hover {
+            transform: perspective(1000px) rotateX(0deg);
+        }
+         @media (max-width: 768px) {
+            .demo-image {
+                max-width: 100%;
+            }
+        }
+
+        .animated-list li span.title {
+            color: #00d68f;
+        }
+
+        .section#features {
+            text-align: center;
+        }
+
+        .animated-list {
+            display: inline-block;
+            text-align: left;
+            margin: 0;
+            padding: 0;
+        }
+
+        .animated-list li {
+            padding: 5px 0;
+        }
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .rising-star {
+            position: absolute;
+            width: 2px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 2px;
+            opacity: 0.8;
+            animation: risingStar linear infinite;
+        }
+        @keyframes risingStar {
+            from {
+                transform: translateY(110vh) translateX(calc(-15vw + (Math.random() * 30vw))) rotate(calc(-15deg + (Math.random() * 30deg)));
+                opacity: 0.6;
+            }
+            to {
+                transform: translateY(-10vh) translateX(calc(-15vw + (Math.random() * 30vw))) rotate(calc(-15deg + (Math.random() * 30deg)));
+                opacity: 1;
+            }
+        }
+        .shooting-star {
+            position: absolute;
+            width: 4px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 2px;
+            opacity: 0.8;
+            transform: rotate(-45deg);
+            animation: shootingStar linear infinite;
+        }
+        @keyframes shootingStar {
+            from {
+                transform: translate(-10vw, 10vh) rotate(-45deg);
+                opacity: 0.8;
+            }
+            to {
+                transform: translate(100vw, -50vh) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+        .copy-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #58a6ff;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .copy-button:hover {
+            color: #8a2be2;
+        }
+        pre {
+            background-color: #161b22;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #c9d1d9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: inline-block;
+            width: 300px;
+        }
+    </style>
+
+
+    <div class="background-animation" id="background"></div>
+    <div class="container">
+        <div class="hero">
+            <h1>TerraLand</h1>
+            <p>A Visual Terraform UI to simplify your workflow.</p>
+            <p>
+                <img src="assets/preview_files.gif" alt="TerraLand Demo" class="demo-image">
+            </p>
+
+            <a href="#installation" class="cta-button">Get Started</a>
+        </div>
+
+        <div class="section" id="about">
+            <h2>About TerraLand</h2>
+            <p>TerraLand is a powerful and intuitive visual Terraform UI designed to simplify and streamline Terraform management for developers, DevOps teams, and infrastructure engineers. With its sleek, minimalistic design and real-time validation, TerraLand enhances your workflow by providing an organized, user-friendly interface that makes working with Terraform environments easier, faster, and more accessible.</p>
+
+            <p>Whether you're managing complex infrastructure, reviewing Terraform plans, or executing operations, TerraLand allows you to interact with your infrastructure seamlessly and efficiently. From managing multiple environments to ensuring smooth Terraform execution, TerraLand empowers users with enhanced visibility and control over their infrastructure as code.</p>
+
+            <p>TerraLand helps you take full advantage of Terraform’s capabilities, making it the ideal solution for both seasoned professionals and those just starting their infrastructure-as-code journey. With real-time validation, streamlined error handling, and an intuitive interface, TerraLand boosts your productivity while minimizing the complexity often associated with Terraform management.</p>
+        </div>
+
+        <div class="section" id="features">
+            <h2>Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🚀 Workspace Management</h3>
+                    <p>Effortlessly switch between multiple Terraform workspaces.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📁 Project Explorer</h3>
+                    <p>Visualize and navigate your Terraform files and directory structure.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Real-time Validation</h3>
+                    <p>Execute Terraform commands with immediate feedback.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏳ Command History</h3>
+                    <p>View and reuse previously executed Terraform commands.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 Minimalist UI</h3>
+                    <p>A clean, distraction-free interface built with the Textual framework.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="demo">
+            <h2>See TerraLand in Action</h2>
+            <img src="assets/preview_files.gif" alt="TerraLand Demo" class="demo-image" style="width: 100%;">
+        </div>
+
+
+        <div class="section" id="installation">
+            <h2>Installation Guide</h2>
+            <pre>
+                <button class="copy-button" onclick="copyToClipboard()"><i class="fas fa-copy"></i></button>
+                <code id="install-code">
+pip install TerraLand
+                </code>
+            </pre>
+        </div>
+
+
+    </div>
+    <footer>
+        <p>&copy; 2025 TerraLand. All rights reserved.</p>
+        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </footer>
+    <script>
+
+         document.addEventListener("DOMContentLoaded", function () {
+            const background = document.getElementById("background");
+            for (let i = 0; i < 50; i++) {
+                let risingStar = document.createElement("div");
+                risingStar.classList.add("rising-star");
+                risingStar.style.top = "110vh";
+                risingStar.style.left = Math.random() * 100 + "vw";
+                risingStar.style.animationDuration = Math.random() * 6 + 4 + "s";
+                risingStar.style.transform = `translateX(${Math.random() * 30 - 15}vw) rotate(${Math.random() * 30 - 15}deg)`;
+                background.appendChild(risingStar);
+            }
+            for (let i = 0; i < 8; i++) { // Slightly increased number of shooting stars
+                let shootingStar = document.createElement("div");
+                shootingStar.classList.add("shooting-star");
+                shootingStar.style.top = Math.random() * 100 + "vh";
+                shootingStar.style.left = Math.random() * 100 + "vw";
+                shootingStar.style.animationDuration = Math.random() * 3 + 2 + "s";
+                background.appendChild(shootingStar);
+            }
+        });
+        function copyToClipboard() {
+            const codeBlock = document.getElementById("install-code").innerText.trim();
+            navigator.clipboard.writeText(codeBlock)
+        }
+        function toggleMenu() {
+            document.querySelector(".nav-links").classList.toggle("active");
+        }
+    </script>
+
+{% endblock %}
+{% block content %}
+{% endblock %}
+{% block footer %}
+{% endblock %}
