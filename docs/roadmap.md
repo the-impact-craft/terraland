@@ -45,7 +45,7 @@ We prioritize user feedback and real-world use cases to shape our development pr
   - [ ] **Improved navigation**
   - ✅ **Resized containers**
 - [ ] **Integrations** - TerraLand will integrate with various tools and services to enhance its functionality.
-  - [ ] **git integration**
+  - [ ] **Git integration**
   - [ ] **Plugins**
 - [ ] **Documentation** - TerraLand will have comprehensive documentation to help users get started and make the most of the tool.
 - ✅ **Shortcuts** - TerraLand will provide keyboard shortcuts for common actions to improve productivity.
