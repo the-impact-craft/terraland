@@ -6,7 +6,7 @@
 #    pip-compile-multi
 #
 -r requirements-base.txt
-aiohappyeyeballs==2.4.6
+aiohappyeyeballs==2.4.8
     # via aiohttp
 aiohttp==3.11.13
     # via
