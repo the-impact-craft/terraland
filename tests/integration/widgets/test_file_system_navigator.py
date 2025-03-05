@@ -4,21 +4,21 @@ from unittest.mock import patch
 
 import pytest
 
-from terry.domain.file_system.entities import ListDirOutput
-from terry.presentation.cli.widgets.file_system_navigator import (
+from terraland.domain.file_system.entities import ListDirOutput
+from terraland.presentation.cli.widgets.file_system_navigator import (
     FileSystemNavigator,
     PathListingContainer,
     FileSystemWidget,
     FileSystemNavigatorClasses,
 )
-from terry.presentation.cli.di_container import DiContainer
-from terry.presentation.cli.screens.file_system_navigation.main import FileSystemNavigationModal
+from terraland.presentation.cli.di_container import DiContainer
+from terraland.presentation.cli.screens.file_system_navigation.main import FileSystemNavigationModal
 from tests.integration.utils import double_click, enter, click, focus
 
 FOLDER_CLASS = FileSystemNavigatorClasses.DIRECTORY_LISTING_FOLDER.value
 FILE_CLASS = FileSystemNavigatorClasses.DIRECTORY_LISTING_FILE.value
 
-FILE_SYSTEM_WIDGET_CLASS_PATH = "terry.presentation.cli.widgets.file_system_navigator.FileSystemWidget"
+FILE_SYSTEM_WIDGET_CLASS_PATH = "terraland.presentation.cli.widgets.file_system_navigator.FileSystemWidget"
 
 
 class TestFileSystemNavigator:
@@ -330,7 +330,7 @@ class TestFileSystemNavigator:
     async def navigator(self, pilot, tmp_path, file_system_service, callback=None):
         di_container = DiContainer()
         di_container.config.work_dir.from_value(tmp_path)
-        di_container.wire(packages=["terry.presentation.cli", "tests"])
+        di_container.wire(packages=["terraland.presentation.cli", "tests"])
 
         with di_container.file_system_service.override(file_system_service):
             if not callback:

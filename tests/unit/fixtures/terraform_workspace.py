@@ -1,6 +1,6 @@
 import pytest
 
-from terry.infrastructure.terraform.workspace.services import WorkspaceService
+from terraland.infrastructure.terraform.workspace.services import WorkspaceService
 
 
 @pytest.fixture

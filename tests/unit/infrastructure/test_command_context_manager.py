@@ -1,5 +1,5 @@
 from pathlib import Path
-from terry.infrastructure.shared.command_process_context_manager import CommandProcessContextManager
+from terraland.infrastructure.shared.command_process_context_manager import CommandProcessContextManager
 
 
 def test_successful_command_execution(operation_system_service):

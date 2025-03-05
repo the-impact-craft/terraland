@@ -1,6 +1,6 @@
 import pytest
-from terry.__version__ import __version__
-from terry.presentation.cli.screens.about.main import AboutScreen
+from terraland.__version__ import __version__
+from terraland.presentation.cli.screens.about.main import AboutScreen
 from tests.integration.utils import click, DEFAULT_SCREEN_ID
 
 

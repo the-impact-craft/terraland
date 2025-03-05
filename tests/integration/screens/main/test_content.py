@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 from textual.widgets import TextArea
 
-from terry.presentation.cli.messages.files_select_message import FileSelect
-from terry.settings import ANIMATION_SPEED
+from terraland.presentation.cli.messages.files_select_message import FileSelect
+from terraland.settings import ANIMATION_SPEED
 from tests.integration.utils import click
 
 

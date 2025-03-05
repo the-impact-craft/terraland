@@ -3,10 +3,10 @@ from unittest import mock
 
 import pytest
 
-from terry.domain.terraform.core.entities import TerraformVersion, TerraformFormatOutput
-from terry.domain.terraform.workspaces.entities import WorkspaceListOutput, Workspace
-from terry.presentation.cli.di_container import DiContainer
-from terry.presentation.cli.screens.main.main import Terry
+from terraland.domain.terraform.core.entities import TerraformVersion, TerraformFormatOutput
+from terraland.domain.terraform.workspaces.entities import WorkspaceListOutput, Workspace
+from terraland.presentation.cli.di_container import DiContainer
+from terraland.presentation.cli.screens.main.main import Terry
 
 
 @pytest.fixture
@@ -128,7 +128,7 @@ def app(
     cache_mock = mock.MagicMock()
     cache_mock.get.return_value = None
     di_container.cache.override(cache_mock)
-    di_container.wire(packages=["terry.presentation.cli", "tests"])
+    di_container.wire(packages=["terraland.presentation.cli", "tests"])
 
     with (
         di_container.workspace_service.override(workspace_service),

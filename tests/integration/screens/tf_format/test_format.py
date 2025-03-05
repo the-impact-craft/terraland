@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from terry.presentation.cli.screens.tf_format.main import FormatSettingsScreen
+from terraland.presentation.cli.screens.tf_format.main import FormatSettingsScreen
 from tests.integration.utils import DEFAULT_SCREEN_ID, click
 
 
@@ -65,7 +65,7 @@ class TestFormatScreen:
             self._assert_screen_is_format_settings(pilot)
 
             apply_button = self._get_button_by_id(pilot, self.APPLY_BUTTON_ID)
-            with patch("terry.presentation.cli.screens.tf_format.main.FormatSettingsScreen.apply") as mock_apply:
+            with patch("terraland.presentation.cli.screens.tf_format.main.FormatSettingsScreen.apply") as mock_apply:
                 await click(pilot, apply_button)
                 mock_apply.assert_called_once()
             assert pilot.app.screen.id == DEFAULT_SCREEN_ID

@@ -1,7 +1,7 @@
 import pytest
 
-from terry.domain.terraform.core.entities import PlanSettings
-from terry.infrastructure.terraform.core.services import TerraformCoreService
+from terraland.domain.terraform.core.entities import PlanSettings
+from terraland.infrastructure.terraform.core.services import TerraformCoreService
 
 
 @pytest.fixture

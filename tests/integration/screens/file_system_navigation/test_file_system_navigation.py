@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 import pytest
 from textual.widgets import Static
 
-from terry.presentation.cli.widgets.file_system_navigator import FileSystemNavigator
-from terry.presentation.cli.screens.file_system_navigation.main import (
+from terraland.presentation.cli.widgets.file_system_navigator import FileSystemNavigator
+from terraland.presentation.cli.screens.file_system_navigation.main import (
     FileSystemNavigationModal,
 )
 from tests.integration.utils import click, DEFAULT_SCREEN_ID

@@ -1,8 +1,8 @@
 import pytest
 from textual.widgets import Static
 
-from terry.domain.terraform.core.entities import TerraformApplySettingsAttributes
-from terry.presentation.cli.screens.tf_apply.main import ApplySettingsScreen
+from terraland.domain.terraform.core.entities import TerraformApplySettingsAttributes
+from terraland.presentation.cli.screens.tf_apply.main import ApplySettingsScreen
 from tests.integration.utils import click
 
 

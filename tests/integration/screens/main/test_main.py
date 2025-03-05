@@ -3,10 +3,10 @@ from unittest.mock import patch
 import pytest
 from watchdog.events import FileSystemEvent, EVENT_TYPE_MODIFIED, EVENT_TYPE_CREATED
 
-from terry.presentation.cli.messages.tf_format_action_request import FormatActionRequest
-from terry.presentation.cli.screens.tf_format.main import FormatScope
-from terry.presentation.cli.screens.main.containers.content import Content
-from terry.settings import DEFAULT_THEME
+from terraland.presentation.cli.messages.tf_format_action_request import FormatActionRequest
+from terraland.presentation.cli.screens.tf_format.main import FormatScope
+from terraland.presentation.cli.screens.main.containers.content import Content
+from terraland.settings import DEFAULT_THEME
 
 WORKSPACES_COMPONENT_ID = "#workspaces"
 WORKSPACES_RADIO_SET_ID = "#workspaces_radio_set"

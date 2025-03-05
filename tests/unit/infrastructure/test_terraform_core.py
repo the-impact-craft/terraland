@@ -4,13 +4,13 @@ from unittest.mock import patch, Mock
 
 import pytest
 
-from terry.domain.terraform.core.entities import (
+from terraland.domain.terraform.core.entities import (
     TerraformVersion,
 )
-from terry.infrastructure.terraform.core.exceptions import (
+from terraland.infrastructure.terraform.core.exceptions import (
     TerraformVersionException,
 )
-from terry.infrastructure.terraform.core.services import TerraformCoreService
+from terraland.infrastructure.terraform.core.services import TerraformCoreService
 
 
 class TestTerraformCoreService:

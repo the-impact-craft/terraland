@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from terry.infrastructure.file_system.services import FileSystemService
+from terraland.infrastructure.file_system.services import FileSystemService
 
 
 @pytest.fixture

@@ -4,9 +4,9 @@ from textual.pilot import Pilot
 from textual.widget import Widget
 from textual.widgets import RadioSet
 
-from terry.domain.terraform.workspaces.entities import Workspace
-from terry.infrastructure.terraform.workspace.exceptions import TerraformWorkspaceSwitchException
-from terry.presentation.cli.screens.main.containers.workspaces import Workspaces
+from terraland.domain.terraform.workspaces.entities import Workspace
+from terraland.infrastructure.terraform.workspace.exceptions import TerraformWorkspaceSwitchException
+from terraland.presentation.cli.screens.main.containers.workspaces import Workspaces
 
 # Constants
 WORKSPACES_COMPONENT_ID = "#workspaces"

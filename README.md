@@ -11,7 +11,7 @@ Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance 
 ## 🚀 Features
 
 - 🌎 **Workspace Management**: Easily switch between different Terraform workspaces.
-    ![switch_workspace.gif](media/switch_workspace.gif)[](https://github.com/the-impact-craft/terry/blob/main/media/demo1.gif)
+    ![switch_workspace.gif](media/switch_workspace.gif)[](https://github.com/the-impact-craft/terraland/blob/main/media/demo1.gif)
 
 
 - 📂 **Project Explorer**: View your Terraform files and directory structure effortlessly.
@@ -32,13 +32,13 @@ Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance 
 ## 🛠 Installation
 
 ```bash
-pip install git+https://github.com/the-impact-craft/terry.git
+pip install git+https://github.com/the-impact-craft/terraland.git
 ```
 
 ## 📌 Usage
 
 ```bash
-terry
+terraland
 ```
 
 Navigate through workspaces, view state files, and manage your Terraform infrastructure—all from a single, interactive terminal interface.
@@ -77,7 +77,7 @@ Run in dev mode:
 pip install textual-dev
 cd src
 export PYTHONPATH="$PYTHONPATH:$PWD" && 
-textual run --dev terry/presentation/cli/app.py
+textual run --dev terraland/presentation/cli/app.py
 ```
 
 Run tests:

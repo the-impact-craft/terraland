@@ -4,12 +4,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from terry.domain.file_system.entities import ListDirOutput
-from terry.domain.operation_system.entities import OperationSystem, Variable
-from terry.domain.terraform.core.entities import TerraformVersion
-from terry.domain.terraform.workspaces.entities import WorkspaceListOutput, Workspace
-from terry.presentation.cli.di_container import DiContainer
-from terry.presentation.cli.screens.main.main import Terry
+from terraland.domain.file_system.entities import ListDirOutput
+from terraland.domain.operation_system.entities import OperationSystem, Variable
+from terraland.domain.terraform.core.entities import TerraformVersion
+from terraland.domain.terraform.workspaces.entities import WorkspaceListOutput, Workspace
+from terraland.presentation.cli.di_container import DiContainer
+from terraland.presentation.cli.screens.main.main import Terry
 
 
 @pytest.fixture
@@ -171,7 +171,7 @@ def app(
     di_container.config.work_dir.from_value(tmp_path)
     di_container.config.animation_enabled.from_value(True)
     di_container.cache.override(cache_mock)
-    di_container.wire(packages=["terry.presentation.cli", "tests"])
+    di_container.wire(packages=["terraland.presentation.cli", "tests"])
 
     with (
         di_container.workspace_service.override(workspace_service),

@@ -1,7 +1,7 @@
 import pytest
 from io import StringIO
 from textual.widgets import Input
-from terry.presentation.cli.screens.tf_command_output.main import CommandOutputComponent, TerraformCommandOutputScreen
+from terraland.presentation.cli.screens.tf_command_output.main import CommandOutputComponent, TerraformCommandOutputScreen
 
 
 class TestTerraformCommandOutputScreen:
