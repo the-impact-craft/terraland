@@ -34,7 +34,7 @@ from terraland.presentation.cli.widgets.buttons.sidebar_button import SidebarBut
 from terraland.presentation.cli.widgets.resizable_rule import ResizingRule
 from terraland.presentation.cli.di_container import DiContainer
 from terraland.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
-from terraland.presentation.cli.screens.add_file.main import AddFileScreen
+from terraland.presentation.cli.screens.create_file.main import CreateFileScreen
 from terraland.presentation.cli.screens.main.constants import (
     MainScreenIdentifiers,
     Orientation,
@@ -270,10 +270,10 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
         Returns:
             None
         """
-        add_file_screen = AddFileScreen(
+        create_file_screen = CreateFileScreen(
             self.file_system_service, self.work_dir, self.active_dir.relative_to(self.work_dir)
         )
-        self.push_screen(add_file_screen)
+        self.push_screen(create_file_screen)
 
     def write_command_log(self, message: str, status: CommandStatus, details: str = "") -> None:
         """
