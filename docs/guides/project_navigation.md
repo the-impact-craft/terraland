@@ -13,8 +13,8 @@ Effortlessly explore and manage your Terraform projects with TerraLand’s intui
 
 ## 🚀 Get Started  
 
-1. Open TerraLand in you project dir.  
+1. Open TerraLand in your project dir.  
 2. Use the sidebar to explore the directory structure.  
-3. Click on files to view/edit them .  
+3. Click on files to view/edit them.  
 4. Utilize the search bar (ctrl+f) to quickly find specific resources or variables.  
 

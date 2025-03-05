@@ -56,5 +56,4 @@ We prioritize user feedback and real-world use cases to shape our development pr
 - [ ] **Terraform version dependent features** - TerraLand will provide features based on the Terraform version being used.
 - [ ] **HCL lexer** - TerraLand will provide syntax highlighting for HCL files.
 - [ ] **Resource graph** - TerraLand will provide a visual representation of the infrastructure resources.
-- [ ] **Loging and error reporting** - TerraLand will provide logs and error reporting to help users troubleshoot issues.
-  
+- [ ] **Logging and error reporting** - TerraLand will provide logs and error reporting to help users troubleshoot issues.
