@@ -1,8 +1,9 @@
+from unittest.mock import patch, MagicMock
+
 import pytest
 from textual.widgets import Static
 
 from terraland.domain.terraform.core.entities import TerraformValidateSettingsAttributes, ValidateSettings
-from terraland.presentation.cli.messages.tf_validate_action_request import ValidateActionRequest
 from terraland.presentation.cli.screens.tf_validate.main import ValidateSettingsScreen
 from tests.integration.utils import click
 
@@ -112,10 +113,9 @@ class TestValidateScreen:
     async def test_settings_application(self, app):
         """Test settings application and request generation"""
         screen = ValidateSettingsScreen()
-        messages = []
-        messages_handler = lambda m: messages.append(m)  # noqa
-        async with app.run_test(message_hook=messages_handler) as pilot:
-            await pilot.app.push_screen(screen)
+        callback_mock = MagicMock()
+        async with app.run_test() as pilot:
+            await pilot.app.push_screen(screen, callback=callback_mock)
 
             # Toggle no-tests setting
             no_tests_block = screen.query_one(f"#{TerraformValidateSettingsAttributes.NO_TESTS}")
@@ -124,12 +124,8 @@ class TestValidateScreen:
             # Apply settings
             apply_button = screen.query_one("#apply")
             await pilot.click(apply_button)
-
-            # Verify the generated request
-            validate_requests = [m for m in messages if isinstance(m, ValidateActionRequest)]
-            assert len(validate_requests) == 1
-
-            settings = validate_requests[0].settings
+            
+            settings = callback_mock.call_args.args[0]
             assert isinstance(settings, ValidateSettings)
             assert settings.no_tests is True
             assert settings.test_directory == []
