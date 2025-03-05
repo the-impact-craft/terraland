@@ -22,13 +22,12 @@ class ValidateHandler(BaseTerraformActionHandler):
             settings: An instance of `ValidateSettings` containing the format request
                 details, such as the scope of formatting to be applied.
         """
-        if settings is None:
+        if not settings:
             return
 
         try:
             output = self.app.terraform_core_service.validate(settings)
+            self.app.log_success("Project has been validated.", output.command, output.output)
         except TerraformValidateException as ex:
             self.app.log_error("Project validation failed.", ex.command, ex.message)
-        else:
-            self.app.log_success("Project has been validated.", output.command, output.output)
 

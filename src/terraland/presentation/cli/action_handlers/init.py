@@ -29,18 +29,25 @@ class InitHandler(BaseTerraformActionHandler):
             return
 
         output_screen = TerraformCommandOutputScreen()
-        self.app.push_screen(output_screen)  
+        self.app.push_screen(output_screen)
 
         command = TerraformInitCommandBuilder().build_from_settings(settings)
 
         if self.app.tf_command_executor:
             self.app.tf_command_executor.cancel()
 
-        worker = self.app.run_worker( 
-            self.app.run_tf_action(command, error_message="Failed to apply plan settings.", output_screen=output_screen),
+        worker = self.app.run_worker(
+            self.app.run_tf_action(
+                command,
+                error_message="Failed to apply plan settings.",
+                output_screen=output_screen
+            ),
             exit_on_error=True,
             thread=True,
-            group="tf_command_worker",
+            group="tf_command_worker"
         )
 
-        self.app.tf_command_executor = TerraformCommandExecutor(command=command, worker=worker) #verify order of command and worker
+        self.app.tf_command_executor = TerraformCommandExecutor(
+            command=command,
+            worker=worker
+        )

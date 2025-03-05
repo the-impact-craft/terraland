@@ -12,7 +12,7 @@ class FormatHandler(BaseTerraformActionHandler):
     def handle(self, *args, **kwargs):
         self.app.push_screen(FormatSettingsScreen(), callback=self.format_handler)
         
-    def format_handler(self, format_setting: FormatScope|None ):
+    def format_handler(self, format_setting: FormatScope | None):
         """
         Handle the format apply request event in the TerraLand application.
 
@@ -26,23 +26,25 @@ class FormatHandler(BaseTerraformActionHandler):
         """
         if not format_setting:
             return
+
         format_scope = None
         if format_setting.value == TerraformFormatScope.CURRENT_FILE.value:
-            content_tabs = self.app.query_one(Content) 
+            content_tabs = self.app.query_one(Content)
             format_scope = content_tabs.active_tab
             if not format_scope:
-                self.app.notify("No file selected.", severity="warning") 
+                self.app.notify("No file selected.", severity="warning")
                 return
-        settings = FormatSettings(path=format_scope)
 
+        settings = FormatSettings(path=format_scope)
         command = TerraformFormatCommandBuilder().build_from_settings(settings)
+
         if self.app.tf_command_executor:
             self.app.tf_command_executor.cancel()
 
-        worker = self.app.run_worker(  
+        worker = self.app.run_worker(
             self.app.run_tf_action(command, "Failed to format."),
             exit_on_error=True,
             thread=True,
             group="tf_command_worker",
         )
-        self.app.tf_command_executor = TerraformCommandExecutor(command=command, worker=worker) 
+        self.app.tf_command_executor = TerraformCommandExecutor(command=command, worker=worker)

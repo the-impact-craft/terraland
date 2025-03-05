@@ -35,17 +35,15 @@ class ApplyHandler(BaseTerraformActionHandler):
             return
 
         output_screen = TerraformCommandOutputScreen()
-        self.app.push_screen(output_screen) 
+        self.app.push_screen(output_screen)
         command = TerraformApplyCommandBuilder().build_from_settings(settings)
 
-        env_vars = None
-        if settings.env_vars:
-            env_vars = {var.name: var.value for var in settings.env_vars}
+        env_vars = {var.name: var.value for var in settings.env_vars} if settings.env_vars else None
 
         if self.app.tf_command_executor:
             self.app.tf_command_executor.cancel()
 
-        worker = self.app.run_worker( 
+        worker = self.app.run_worker(
             self.app.run_tf_action(
                 command, error_message="Failed to apply settings.", env_vars=env_vars, output_screen=output_screen
             ),
