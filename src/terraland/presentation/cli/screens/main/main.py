@@ -345,11 +345,11 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
             This method only processes modification events for files that are currently open in the editor.
             It ignores directory events and non-modification events.
         """
-        if not isinstance(event, FileSystemEvent):
-            return
-        if event.is_directory:
-            return
-        if event.event_type != "modified":
+        if (
+            not isinstance(event, FileSystemEvent)
+            or event.is_directory
+            or event.event_type != "modified"
+        ):
             return
 
         abs_changed_file_path = Path(event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path)
@@ -361,11 +361,10 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
             content_tabs = self.query_one(Content)
         except NoMatches:
             return
-        if changed_file_path not in content_tabs.files_contents:
-            return
 
-        content = abs_changed_file_path.read_text()
-        content_tabs.update(changed_file_path, content)
+        if changed_file_path in content_tabs.files_contents:
+            content = abs_changed_file_path.read_text()
+            content_tabs.update(changed_file_path, content)
 
     def remove_tab_for_deleted_file(self, event: FileSystemEvent):
         """
