@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://github.com/the-impact-craft/terraland/</loc>
+         <loc>https://the-impact-craft.github.io/TerraLand/</loc>
          <lastmod>2025-03-05</lastmod>
     </url>
     <url>
-         <loc>https://github.com/the-impact-craft/terraland/CHANGELOG/</loc>
+         <loc>https://the-impact-craft.github.io/TerraLand/CHANGELOG/</loc>
          <lastmod>2025-03-05</lastmod>
     </url>
     <url>
-         <loc>https://github.com/the-impact-craft/terraland/roadmap/</loc>
+         <loc>https://the-impact-craft.github.io/TerraLand/roadmap/</loc>
          <lastmod>2025-03-05</lastmod>
     </url>
     <url>
-         <loc>https://github.com/the-impact-craft/terraland/guides/project_navigation/</loc>
+         <loc>https://the-impact-craft.github.io/TerraLand/guides/project_navigation/</loc>
          <lastmod>2025-03-05</lastmod>
     </url>
     <url>
-         <loc>https://github.com/the-impact-craft/terraland/guides/switch_workspace/</loc>
+         <loc>https://the-impact-craft.github.io/TerraLand/guides/switch_workspace/</loc>
          <lastmod>2025-03-05</lastmod>
     </url>
 </urlset>
