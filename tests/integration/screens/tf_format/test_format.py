@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import pytest
 from terraland.presentation.cli.screens.tf_format.main import FormatSettingsScreen
 from tests.integration.utils import DEFAULT_SCREEN_ID, click
@@ -60,14 +60,15 @@ class TestFormatScreen:
             And I click on the apply button
             Then the format settings action should be executed
         """
+
+        handler_mock = MagicMock()
         async with app.run_test() as pilot:
-            await self._open_format_window(pilot)
+            await pilot.app.push_screen(FormatSettingsScreen(), callback=handler_mock)
             self._assert_screen_is_format_settings(pilot)
 
             apply_button = self._get_button_by_id(pilot, self.APPLY_BUTTON_ID)
-            with patch("terraland.presentation.cli.screens.tf_format.main.FormatSettingsScreen.apply") as mock_apply:
-                await click(pilot, apply_button)
-                mock_apply.assert_called_once()
+            await click(pilot, apply_button)
+            handler_mock.assert_called_once()
             assert pilot.app.screen.id == DEFAULT_SCREEN_ID
 
     @staticmethod
