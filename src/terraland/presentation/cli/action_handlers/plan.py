@@ -43,6 +43,8 @@ class PlanHandler(BaseTerraformActionHandler):
         if self.app.tf_command_executor:
             self.app.tf_command_executor.cancel()
 
+        self.app.tf_command_executor = TerraformCommandExecutor(command=command)
+
         worker = self.app.run_worker(
             self.app.run_tf_action(
                 command, "Failed to apply plan settings.", env_vars=env_vars, output_screen=output_screen
@@ -51,4 +53,5 @@ class PlanHandler(BaseTerraformActionHandler):
             thread=True,
             group="tf_command_worker",
         )
-        self.app.tf_command_executor = TerraformCommandExecutor(command=command, worker=worker)
+        
+        self.app.tf_command_executor.worker = worker
