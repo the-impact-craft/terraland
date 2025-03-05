@@ -371,18 +371,19 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
         """
         Removes the tab from the preview container when a file deletion event is detected.
 
-         Args:
-             event (FileSystemEvent): The file system event containing information about the deleted file.
+        Args:
+            event (FileSystemEvent): The file system event containing information about the deleted file.
         """
+        if (
+            not isinstance(event, FileSystemEvent)
+            or event.is_directory
+            or event.event_type != "deleted"
+        ):
+            return
 
-        if not isinstance(event, FileSystemEvent):
-            return
-        if event.is_directory:
-            return
-        if event.event_type != "deleted":
-            return
-
-        abs_changed_file_path = Path(event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path)
+        abs_changed_file_path = Path(
+            event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path
+        )
 
         if abs_changed_file_path.exists():
             return
@@ -393,11 +394,9 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
         except NoMatches:
             return
 
-        if changed_file_path not in content_tabs.files_contents:
-            return
-
-        tab_id = content_tabs.files_contents.get(changed_file_path, {}).get("id")
-        content_tabs.remove_tab(tab_id, changed_file_path)
+        if changed_file_path in content_tabs.files_contents:
+            tab_id = content_tabs.files_contents[changed_file_path].get("id")
+            content_tabs.remove_tab(tab_id, changed_file_path)
 
     def cleanup(self):
         """Stop and cleanup the file system observer."""
