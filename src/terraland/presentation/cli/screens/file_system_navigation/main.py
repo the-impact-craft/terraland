@@ -230,6 +230,6 @@ class FileSystemNavigationModal(ModalScreen):
             try:
                 if not rule.action(path):
                     return False, rule.error_message
-            except:
+            except Exception:
                 return False, rule.error_message
         return True, ""
