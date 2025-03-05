@@ -5,18 +5,13 @@
     <style>
         body {
             background: radial-gradient(circle at top, #1f1b2d, #0d1117);
-            background-attachment: fixed; /* Keeps background fixed */
+            background-attachment: fixed;
             background-size: cover;
         }
-        header.md-header {
+        header.md-header, header > .md-tabs {
             background-color: transparent;
             backdrop-filter: blur(10px);
         }
-        header > .md-tabs {
-            background-color: transparent;
-            backdrop-filter: blur(10px);
-        }
-
         p {
             font-size: 0.8rem;
             line-height: 1;
@@ -60,15 +55,13 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
         }
-        .feature-card h3 {
+        .feature-card h3, h2 {
             color: #58a6ff;
             font-size: 0.8rem;
         }
         h2 {
-            color: #58a6ff;
             font-size: 0.9rem;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -77,15 +70,6 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .animated-list li:nth-child(1) { animation-delay: 0.2s; }
-        .animated-list li:nth-child(2) { animation-delay: 0.4s; }
-        .animated-list li:nth-child(3) { animation-delay: 0.6s; }
-        .animated-list li:nth-child(4) { animation-delay: 0.8s; }
-        .animated-list li:nth-child(5) { animation-delay: 1s; }
         .cta-button {
             display: inline-block;
             margin-top: 20px;
@@ -102,7 +86,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             text-decoration: none;
         }
-
         footer {
             text-align: center;
             padding: 20px 0;
@@ -129,47 +112,20 @@
             max-width: 800px;
             height: auto;
         }
-
         .demo-image:hover {
             transform: perspective(1000px) rotateX(0deg);
         }
-         @media (max-width: 768px) {
+        @media (max-width: 768px) {
             .demo-image {
                 max-width: 100%;
             }
-        }
-
-        .animated-list li span.title {
-            color: #00d68f;
-        }
-
-        .section#features {
-            text-align: center;
-        }
-
-        .animated-list {
-            display: inline-block;
-            text-align: left;
-            margin: 0;
-            padding: 0;
-        }
-
-        .animated-list li {
-            padding: 5px 0;
-        }
-        @media (max-width: 768px) {
             .container {
                 width: 95%;
             }
             .hero h1 {
                 font-size: 2rem;
             }
-            nav ul {
-                flex-direction: column;
-                gap: 10px;
-            }
         }
-
         .background-animation {
             position: fixed;
             top: 0;
@@ -244,7 +200,6 @@
         }
     </style>
 
-
     <div class="background-animation" id="background"></div>
     <div class="container">
         <div class="hero">
@@ -297,7 +252,6 @@
             <img src="assets/preview_files.gif" alt="TerraLand Demo" class="demo-image" style="width: 100%;">
         </div>
 
-
         <div class="section" id="installation">
             <h2>Installation Guide</h2>
             <pre>
@@ -307,16 +261,13 @@ pip install TerraLand
                 </code>
             </pre>
         </div>
-
-
     </div>
     <footer>
         <p>&copy; 2025 TerraLand. All rights reserved.</p>
         <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
     </footer>
     <script>
-
-         document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             const background = document.getElementById("background");
             for (let i = 0; i < 50; i++) {
                 let risingStar = document.createElement("div");
@@ -327,7 +278,7 @@ pip install TerraLand
                 risingStar.style.transform = `translateX(${Math.random() * 30 - 15}vw) rotate(${Math.random() * 30 - 15}deg)`;
                 background.appendChild(risingStar);
             }
-            for (let i = 0; i < 8; i++) { // Slightly increased number of shooting stars
+            for (let i = 0; i < 8; i++) {
                 let shootingStar = document.createElement("div");
                 shootingStar.classList.add("shooting-star");
                 shootingStar.style.top = Math.random() * 100 + "vh";
@@ -339,9 +290,6 @@ pip install TerraLand
         function copyToClipboard() {
             const codeBlock = document.getElementById("install-code").innerText.trim();
             navigator.clipboard.writeText(codeBlock)
-        }
-        function toggleMenu() {
-            document.querySelector(".nav-links").classList.toggle("active");
         }
     </script>
 
