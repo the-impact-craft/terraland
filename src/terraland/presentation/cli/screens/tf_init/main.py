@@ -146,11 +146,11 @@ class InitSettingsScreen(BaseTfSettingsModalScreen):
         self.query_one(f"#{self.CONTAINER_ID}").border_title = "Init Settings"
 
     @on(InitSettingsScreenControlLabel.Close)
-    async def close(self, _: InitSettingsScreenControlLabel.Close):
-        self.app.pop_screen()
+    def close(self, _: InitSettingsScreenControlLabel.Close):
+        self.dismiss()
 
     @on(InitSettingsScreenControlLabel.Apply)
-    async def apply(self, _: InitSettingsScreenControlLabel.Apply):
+    def apply(self, _: InitSettingsScreenControlLabel.Apply):
         result = self._initialize_result()
 
         result.update(
@@ -191,8 +191,8 @@ class InitSettingsScreen(BaseTfSettingsModalScreen):
             return
 
         settings = InitSettings(**result)
-        self.post_message(InitActionRequest(settings))  # pyright: ignore [reportArgumentType]
-        self.app.pop_screen()
+        self.dismiss(settings)
+
 
     def _initialize_result(self) -> dict:
         """Initialize the result dictionary with default values."""

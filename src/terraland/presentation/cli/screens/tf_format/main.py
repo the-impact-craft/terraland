@@ -56,9 +56,6 @@ class FormatSettingsScreen(ModalScreen):
         """
         self.query_one(f"#{self.CONTAINER_ID}").border_title = "Format Settings"
 
-    def apply(self, format: FormatScope) -> None:
-        self.post_message(FormatActionRequest(format=format))
-
     def apply_format_settings(self) -> None:
         """
         Apply formatting settings based on the selected scope.
@@ -85,8 +82,7 @@ class FormatSettingsScreen(ModalScreen):
             self.notify("Error", severity="error")
             return
         format_scope = self.format_scopes[selected_index]
-        self.apply(format_scope)
-        self.app.pop_screen()
+        self.dismiss(format_scope)
 
     @on(FormatModalControlLabel.Close)
     def on_cancel(self, _: FormatModalControlLabel.Close) -> None:
@@ -98,7 +94,7 @@ class FormatSettingsScreen(ModalScreen):
         Arguments:
             _: The FormatModalControlLabel event of type Close.
         """
-        self.app.pop_screen()
+        self.dismiss()
 
     @on(FormatModalControlLabel.Apply)
     def on_apply(self, _: FormatModalControlLabel.Apply) -> None:

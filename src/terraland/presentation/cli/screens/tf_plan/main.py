@@ -179,8 +179,7 @@ class PlanSettingsScreen(BaseTfSettingsModalScreen):
             return
 
         settings = PlanSettings(**result)
-        self.post_message(PlanActionRequest(settings))  # pyright: ignore [reportArgumentType]
-        self.app.pop_screen()
+        self.dismiss(settings)
 
     def _initialize_result(self) -> dict:
         """Initialize the result dictionary with default values."""

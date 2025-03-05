@@ -234,8 +234,7 @@ class ApplySettingsScreen(BaseTfSettingsModalScreen):
             return
 
         settings = ApplySettings(**result)
-        self.post_message(ApplyActionRequest(settings))  # pyright: ignore [reportArgumentType]
-        self.app.pop_screen()
+        self.dismiss(settings)
 
     def _initialize_result(self) -> dict:
         """Initialize the result dictionary with default values."""

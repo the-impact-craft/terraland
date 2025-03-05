@@ -54,11 +54,11 @@ class ValidateSettingsScreen(BaseTfSettingsModalScreen):
             )
 
     @on(ValidateSettingsScreenControlLabel.Close)
-    async def close(self, _: ValidateSettingsScreenControlLabel.Close):
-        self.app.pop_screen()
+    def close(self, _: ValidateSettingsScreenControlLabel.Close):
+        self.dismiss()
 
     @on(ValidateSettingsScreenControlLabel.Apply)
-    async def apply(self, _: ValidateSettingsScreenControlLabel.Apply):
+    def apply(self, _: ValidateSettingsScreenControlLabel.Apply):
         result = self._initialize_result()
 
         result.update(self.process_checkbox_settings([TerraformValidateSettingsAttributes.NO_TESTS]))
@@ -69,8 +69,7 @@ class ValidateSettingsScreen(BaseTfSettingsModalScreen):
             return
 
         settings = ValidateSettings(**result)
-        self.post_message(ValidateActionRequest(settings))  # pyright: ignore [reportArgumentType]
-        self.app.pop_screen()
+        self.dismiss(settings)
 
     def _initialize_result(self) -> dict:
         """Initialize the result dictionary with default values."""
