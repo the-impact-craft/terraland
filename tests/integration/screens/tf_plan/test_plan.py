@@ -420,7 +420,7 @@ class TestPlanScreen:
             # Verify the settings were applied
 
             apply_button = self._get_button_by_id(pilot, self.APPLY_BUTTON_ID)
-            with patch("terraland.presentation.cli.screens.main.main.Terry.run_tf_action") as mock:
+            with patch("terraland.presentation.cli.screens.main.main.TerraLand.run_tf_action") as mock:
                 await click(pilot, apply_button)
                 mock.assert_called()
 
@@ -458,7 +458,7 @@ class TestPlanScreen:
             destroy_checkbox.remove()
 
             apply_button = self._get_button_by_id(pilot, self.APPLY_BUTTON_ID)
-            with patch("terraland.presentation.cli.screens.main.main.Terry.run_tf_action") as mock:
+            with patch("terraland.presentation.cli.screens.main.main.TerraLand.run_tf_action") as mock:
                 await click(pilot, apply_button)
                 mock.assert_not_called()
             self._assert_screen_is_plan_settings(pilot)
@@ -479,7 +479,7 @@ class TestPlanScreen:
             env_vars_block.remove()
 
             apply_button = self._get_button_by_id(pilot, self.APPLY_BUTTON_ID)
-            with patch("terraland.presentation.cli.screens.main.main.Terry.run_tf_action") as mock:
+            with patch("terraland.presentation.cli.screens.main.main.TerraLand.run_tf_action") as mock:
                 await click(pilot, apply_button)
                 mock.assert_not_called()
             self._assert_screen_is_plan_settings(pilot)

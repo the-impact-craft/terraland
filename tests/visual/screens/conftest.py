@@ -6,7 +6,7 @@ import pytest
 from terraland.domain.terraform.core.entities import TerraformVersion, TerraformFormatOutput
 from terraland.domain.terraform.workspaces.entities import WorkspaceListOutput, Workspace
 from terraland.presentation.cli.di_container import DiContainer
-from terraland.presentation.cli.screens.main.main import Terry
+from terraland.presentation.cli.screens.main.main import TerraLand
 
 
 @pytest.fixture
@@ -111,7 +111,7 @@ def app(
     tmp_path: Path, workspace_service: mock.Mock, terraform_core_service: mock.Mock, file_system_service: mock.Mock
 ):
     """
-    Creates and initializes an Terry instance configured with the provided mock
+    Creates and initializes an TerraLand instance configured with the provided mock
     services and temporary path. This pytest fixture is responsible for setting up
     dependency injection and overriding the necessary services within the DI
     container to facilitate unit testing.
@@ -120,7 +120,7 @@ def app(
     :param workspace_service: A mocked service for workspace-related operations.
     :param terraform_core_service: A mocked service for Terraform's core functionalities.
     :param file_system_service: A mocked service for file system-related operations.
-    :return: An instance of Terry configured for testing.
+    :return: An instance of TerraLand configured for testing.
     """
     di_container = DiContainer()
     di_container.config.work_dir.from_value(tmp_path)
@@ -135,4 +135,4 @@ def app(
         di_container.file_system_service.override(file_system_service),
         di_container.terraform_core_service.override(terraform_core_service),
     ):
-        return Terry(work_dir=tmp_path)
+        return TerraLand(work_dir=tmp_path)

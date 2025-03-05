@@ -48,7 +48,7 @@ class TestAboutScreen:
             await self._click_button_in_controls(pilot, self.COPY_BUTTON_ID)
             terraform_version = app.terraform_version
             expected_clipboard_content = f"""
-                Terry {__version__}
+                TerraLand {__version__}
                 Terraform version: {terraform_version.terraform_version}
                 Platform: {terraform_version.platform}
                 Powered by: the-impact-craft

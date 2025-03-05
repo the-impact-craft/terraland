@@ -4,9 +4,9 @@
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-# Terry - The Visual Terraform CLI
+# TerraLand - The Visual Terraform CLI
 
-Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance your workflow with an intuitive UI and real-time validation. Whether you're managing complex infrastructure or just getting started with Terraform, Terry provides a smooth experience right from your terminal.
+TerraLand is a sleek and minimalistic CLI editor for Terraform, designed to enhance your workflow with an intuitive UI and real-time validation. Whether you're managing complex infrastructure or just getting started with Terraform, TerraLand provides a smooth experience right from your terminal.
 
 ## 🚀 Features
 
@@ -56,11 +56,11 @@ Feel free to open discussions to share your ideas.
 
 ## 📜 License
 
-Terry is released under the MIT License.
+TerraLand is released under the MIT License.
 
 ---
 
-🚀 Get started with Terry and simplify your Terraform workflow!
+🚀 Get started with TerraLand and simplify your Terraform workflow!
 
 
 ## Development instructions

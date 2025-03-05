@@ -1,5 +1,7 @@
 from secrets import choice
 
+NAME = "TerraLand"
+
 BASE_FRAME = r"""
               ,---------------------------,
               |  /---------------------\  |
@@ -54,7 +56,8 @@ def build_animation_frames(text):
 
     return "\n".join(result)
 
-
 LOGO_ANIMATION = [
-    build_animation_frames(placeholder) for placeholder in ["$_", "$t_", "$te_", "$ter_", "$terr_", "$terry"]
+    build_animation_frames(placeholder)
+    for placeholder in 
+    [f"${NAME[:i]}_" for i in range(len(NAME)+1)]
 ]

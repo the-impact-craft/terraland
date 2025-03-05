@@ -27,11 +27,11 @@ def create_file_system_event(src_path, event_type, is_directory):
     return file_system_event
 
 
-class TestTerryApp:
+class TestTerraLandApp:
     """
-    Feature: Terry Main Screen
+    Feature: TerraLand Main Screen
         As a user
-        I want to interact with the Terry interface
+        I want to interact with the TerraLand interface
         So that I can manage Terraform configurations effectively
     """
 
@@ -39,7 +39,7 @@ class TestTerryApp:
     async def test_main_screen(self, app):
         """
         Scenario: Viewing and selecting Terraform files
-            Given the Terry application is launched
+            Given the TerraLand application is launched
             Then the main screen is displayed with "github-dark" theme
             And workspaces, project_tree, state_files, console_log and preview content component are rendered
 

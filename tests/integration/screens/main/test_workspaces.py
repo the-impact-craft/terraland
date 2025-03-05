@@ -16,9 +16,9 @@ ERROR_COMPONENT_NOT_FOUND = "Component {component_id} not found"
 
 class TestWorkspaces:
     """
-    Feature: Terry Main Screen
+    Feature: TerraLand Main Screen
         As a user
-        I want to interact with the Terry interface
+        I want to interact with the TerraLand interface
         So that I can manage Terraform configurations effectively
     """
 
