@@ -87,11 +87,12 @@ class ResultComponent(Widget):
                 *[
                     ListItem(
                         Horizontal(
-                            Static(item.text, classes="search_result_item_text"),
+                            Static(item.text, classes="search_result_item_text", markup=False),
                             Static(
                                 item.file_name + ":" + str(item.line),
                                 classes="search_result_item_path",
                                 name=item.file_name + ":" + str(item.line),
+                                markup=False,
                             ),
                             classes="search_result_item",
                         )
