@@ -4,31 +4,17 @@ from datetime import datetime
 from dependency_injector.wiring import Provide
 from textual.screen import Screen
 
-from terraland.domain.terraform.core.entities import TerraformFormatScope, FormatSettings
 from terraland.infrastructure.shared.command_process_context_manager import CommandProcessContextManager
 from terraland.infrastructure.shared.command_utils import process_stdout_stderr
-from terraland.infrastructure.terraform.core.commands_builders import (
-    TerraformPlanCommandBuilder,
-    TerraformInitCommandBuilder,
-    TerraformApplyCommandBuilder,
-    TerraformFormatCommandBuilder,
-)
-from terraland.infrastructure.terraform.core.exceptions import TerraformValidateException
 from terraland.presentation.cli.action_handlers.main import action_handler_registry
 from terraland.presentation.cli.cache import TerraLandCache
 from terraland.presentation.cli.di_container import DiContainer
 from terraland.presentation.cli.entities.command_cache import CommandCache
 from terraland.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
-from terraland.presentation.cli.messages.tf_apply_action_request import ApplyActionRequest
-from terraland.presentation.cli.messages.tf_format_action_request import FormatActionRequest
-from terraland.presentation.cli.messages.tf_init_action_request import InitActionRequest
-from terraland.presentation.cli.messages.tf_plan_action_request import PlanActionRequest
+
 from terraland.presentation.cli.messages.tf_rerun_command import RerunCommandRequest
-from terraland.presentation.cli.messages.tf_validate_action_request import ValidateActionRequest
-from terraland.presentation.cli.screens.main.containers.content import Content
 from terraland.presentation.cli.screens.tf_command_output.main import TerraformCommandOutputScreen
 from terraland.presentation.cli.widgets.clickable_tf_action_label import ClickableTfActionLabel
-from terraland.settings import CommandStatus
 
 
 class TerraformActionHandlerMixin:
@@ -140,7 +126,7 @@ class TerraformActionHandlerMixin:
                 self._handle_logs(tf_command_str, output_screen, stdin, stdout, stderr)
 
         if manager.error:
-            self._log_error(error_message, tf_command_str, str(manager.error))
+            self.log_error(error_message, tf_command_str, str(manager.error)) # type: ignore
             return
 
 
@@ -162,7 +148,7 @@ class TerraformActionHandlerMixin:
             for line in process_stdout_stderr(stdout, stderr):
                 output.append(line)
 
-        self._log_success("Command executed.", command, "\n".join(output))
+        self.log_success("Command executed.", command, "\n".join(output)) # type: ignore
 
     @contextmanager
     def paused_system_monitoring(self):

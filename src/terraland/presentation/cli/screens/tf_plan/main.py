@@ -20,7 +20,6 @@ from terraland.presentation.cli.commands_descriptions import (
     PLAN_REFRESH_FALSE,
     PLAN_OUT_DESCRIPTION,
 )
-from terraland.presentation.cli.messages.tf_plan_action_request import PlanActionRequest
 from terraland.presentation.cli.widgets.buttons.add_key_value_button import AddKeyValueButton
 from terraland.presentation.cli.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
 from terraland.presentation.cli.widgets.form.checkbox_settings_block import CheckboxSettingBlock

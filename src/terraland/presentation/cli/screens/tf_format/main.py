@@ -6,7 +6,6 @@ from textual.screen import ModalScreen
 from textual.widgets import Label, RadioSet, RadioButton
 
 from terraland.domain.terraform.core.entities import FormatScope
-from terraland.presentation.cli.messages.tf_format_action_request import FormatActionRequest
 from terraland.presentation.cli.widgets.modal_control_label import (
     ModalControlLabel,
 )

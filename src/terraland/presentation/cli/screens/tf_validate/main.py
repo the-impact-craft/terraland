@@ -6,7 +6,6 @@ from textual.widgets import Static, Rule
 
 from terraland.domain.terraform.core.entities import TerraformValidateSettingsAttributes, ValidateSettings
 from terraland.presentation.cli.commands_descriptions import VALIDATE_DESCRIPTION, VALIDATE_NO_TESTS_DESCRIPTION
-from terraland.presentation.cli.messages.tf_validate_action_request import ValidateActionRequest
 from terraland.presentation.cli.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
 from terraland.presentation.cli.widgets.form.checkbox_settings_block import CheckboxSettingBlock
 from terraland.presentation.cli.widgets.modal_control_label import ModalControlLabel

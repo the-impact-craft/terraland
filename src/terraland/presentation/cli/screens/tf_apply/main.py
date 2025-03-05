@@ -23,7 +23,7 @@ from terraland.presentation.cli.commands_descriptions import (
     APPLY_INLINE_VAR_DESCRIPTION,
     APPLY_VAR_FILE_DESCRIPTION,
 )
-from terraland.presentation.cli.messages.tf_apply_action_request import ApplyActionRequest
+
 from terraland.presentation.cli.utils import get_unique_id
 from terraland.presentation.cli.widgets.buttons.add_key_value_button import AddKeyValueButton
 from terraland.presentation.cli.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
