@@ -293,7 +293,7 @@ pip install terraland
         });
         function copyToClipboard() {
             const codeBlock = document.getElementById("install-code").innerText.trim();
-            navigator.clipboard.writeText(codeBlock)
+            navigator.clipboard.writeText(codeBlock).catch(err => console.error('Error copying text:', err))
         }
     </script>
 
