@@ -1,5 +1,6 @@
 from terraland.domain.terraform.core.entities import InitSettings
-from terraland.infrastructure.terraform.core.commands_builders import TerraformInitCommandBuilder
+from terraland.infrastructure.terraform.core.command_builders.terraform_init_command_builder import \
+    TerraformInitCommandBuilder
 from terraland.presentation.cli.action_handlers.base import BaseTerraformActionHandler
 from terraland.presentation.cli.action_handlers.main import action_handler
 from terraland.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor

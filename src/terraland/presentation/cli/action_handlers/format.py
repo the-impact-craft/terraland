@@ -1,5 +1,6 @@
 from terraland.domain.terraform.core.entities import FormatScope, TerraformFormatScope, FormatSettings
-from terraland.infrastructure.terraform.core.commands_builders import TerraformFormatCommandBuilder
+from terraland.infrastructure.terraform.core.command_builders.terraform_format_command_builder import \
+    TerraformFormatCommandBuilder
 from terraland.presentation.cli.action_handlers.base import BaseTerraformActionHandler
 from terraland.presentation.cli.action_handlers.main import action_handler
 from terraland.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor

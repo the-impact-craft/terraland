@@ -1,12 +1,14 @@
 from pathlib import Path
 
 from terraland.domain.terraform.core.entities import PlanSettings, InitSettings, ValidateSettings, ApplySettings, Variable
-from terraland.infrastructure.terraform.core.commands_builders import (
-    TerraformPlanCommandBuilder,
-    TerraformInitCommandBuilder,
-    TerraformValidateCommandBuilder,
-    TerraformApplyCommandBuilder,
-)
+from terraland.infrastructure.terraform.core.command_builders.terraform_apply_command_builder import \
+    TerraformApplyCommandBuilder
+from terraland.infrastructure.terraform.core.command_builders.terraform_init_command_builder import \
+    TerraformInitCommandBuilder
+from terraland.infrastructure.terraform.core.command_builders.terraform_plan_command_builder import \
+    TerraformPlanCommandBuilder
+from terraland.infrastructure.terraform.core.command_builders.terraform_validate_command_builder import \
+    TerraformValidateCommandBuilder
 
 
 class TestTerraformPlanCommandBuilder:

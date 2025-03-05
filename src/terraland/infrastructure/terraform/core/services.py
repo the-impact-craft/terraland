@@ -10,7 +10,8 @@ from terraland.domain.terraform.core.entities import (
 )
 from terraland.domain.terraform.core.services import BaseTerraformCoreService
 from terraland.infrastructure.shared.command_utils import clean_up_command_output
-from terraland.infrastructure.terraform.core.commands_builders import TerraformValidateCommandBuilder
+from terraland.infrastructure.terraform.core.command_builders.terraform_validate_command_builder import \
+    TerraformValidateCommandBuilder
 from terraland.infrastructure.terraform.core.exceptions import (
     TerraformVersionException,
     TerraformValidateException,

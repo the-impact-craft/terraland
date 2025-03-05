@@ -1,6 +1,7 @@
 from terraland.domain.operation_system.entities import EnvVariableFilter
 from terraland.domain.terraform.core.entities import ApplySettings
-from terraland.infrastructure.terraform.core.commands_builders import TerraformApplyCommandBuilder
+from terraland.infrastructure.terraform.core.command_builders.terraform_apply_command_builder import \
+    TerraformApplyCommandBuilder
 from terraland.presentation.cli.action_handlers.base import BaseTerraformActionHandler
 from terraland.presentation.cli.action_handlers.main import action_handler
 from terraland.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
