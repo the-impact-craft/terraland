@@ -333,6 +333,11 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
         }
         .feature-card h3, h2 {
             color: #58a6ff;
@@ -534,7 +539,7 @@
         <div class="section" id="installation">
             <h2>Installation Guide</h2>
             <pre>
-                <button class="copy-button" onclick="copyToClipboard()"><i class="fas fa-copy"></i></button>
+                <button class="copy-button"  onclick="copyToClipboard()">🛰️</button>
                 <code id="install-code">
 pip install terraland
                 </code>
@@ -543,7 +548,6 @@ pip install terraland
     </div>
     <footer>
         <p>&copy; 2025 TerraLand. All rights reserved.</p>
-        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
     </footer>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
