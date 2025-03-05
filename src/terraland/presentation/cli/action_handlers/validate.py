@@ -8,6 +8,10 @@ from terraland.presentation.cli.screens.tf_validate.main import ValidateSettings
 @action_handler("validate")
 class ValidateHandler(BaseTerraformActionHandler):
     def handle(self, *args, **kwargs):
+        """
+        Initiates the validation process by displaying the ValidateSettingsScreen
+        and setting up the callback to handle the validation logic.
+        """
         self.app.push_screen(ValidateSettingsScreen(), callback=self.validate_handler)
         
     def validate_handler(self, settings: ValidateSettings | None):

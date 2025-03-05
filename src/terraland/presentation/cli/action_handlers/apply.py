@@ -12,6 +12,14 @@ from terraland.settings import ENV_VARS_PREFIXES
 @action_handler("apply")
 class ApplyHandler(BaseTerraformActionHandler):
     def handle(self, *args, **kwargs):
+        """
+        Handles the retrieval of environment variables and displays the ApplySettingsScreen.
+
+        This method uses the operation system service to filter and list environment variables
+        based on predefined prefixes. If successful, it pushes the ApplySettingsScreen with the
+        retrieved environment variables and sets the apply_handler as a callback. In case of failure,
+        it notifies the user with an error message.
+        """
         operation_system_service = self.app.operation_system_service
         try:
             env_vars_filter = EnvVariableFilter(prefix=ENV_VARS_PREFIXES)

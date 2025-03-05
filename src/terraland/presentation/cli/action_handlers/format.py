@@ -10,6 +10,13 @@ from terraland.presentation.cli.screens.tf_format.main import FormatSettingsScre
 @action_handler("fmt")
 class FormatHandler(BaseTerraformActionHandler):
     def handle(self, *args, **kwargs):
+        """
+        Initiates the format settings screen in the TerraLand application.
+
+        This method pushes the FormatSettingsScreen onto the application's screen stack,
+        allowing the user to configure and apply formatting settings. The format_handler
+        method is set as a callback to handle the user's selection.
+        """
         self.app.push_screen(FormatSettingsScreen(), callback=self.format_handler)
         
     def format_handler(self, format_setting: FormatScope | None):

@@ -12,6 +12,12 @@ from terraland.settings import ENV_VARS_PREFIXES
 @action_handler("plan")
 class PlanHandler(BaseTerraformActionHandler):
     def handle(self, *args, **kwargs):
+        """
+        Handles the "plan" action by retrieving environment variables and displaying
+        the PlanSettingsScreen. It filters environment variables based on predefined
+        prefixes and handles any exceptions that occur during retrieval by notifying
+        the user of the failure.
+        """
         operation_system_service = self.app.operation_system_service
         try:
             env_vars_filter = EnvVariableFilter(prefix=ENV_VARS_PREFIXES)

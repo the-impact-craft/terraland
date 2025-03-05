@@ -10,6 +10,14 @@ from terraland.presentation.cli.screens.tf_init.main import InitSettingsScreen
 @action_handler("init")
 class InitHandler(BaseTerraformActionHandler):
     def handle(self, *args, **kwargs):
+        """
+        Displays the initialization settings screen and sets up the callback
+        to handle the initialization apply request.
+
+        This method pushes the InitSettingsScreen onto the application's screen
+        stack and assigns the init_handler method as the callback to process
+        the settings once they are applied.
+        """
         self.app.push_screen(InitSettingsScreen(), callback=self.init_handler)
         
     def init_handler(self, settings: InitSettings):
