@@ -3,10 +3,10 @@ from unittest.mock import patch
 import pytest
 from watchdog.events import FileSystemEvent, EVENT_TYPE_MODIFIED, EVENT_TYPE_CREATED
 
-from terry.presentation.cli.messages.tf_format_action_request import FormatActionRequest
-from terry.presentation.cli.screens.tf_format.main import FormatScope
-from terry.presentation.cli.screens.main.containers.content import Content
-from terry.settings import DEFAULT_THEME
+from terraland.presentation.cli.messages.tf_format_action_request import FormatActionRequest
+from terraland.presentation.cli.screens.tf_format.main import FormatScope
+from terraland.presentation.cli.screens.main.containers.content import Content
+from terraland.settings import DEFAULT_THEME
 
 WORKSPACES_COMPONENT_ID = "#workspaces"
 WORKSPACES_RADIO_SET_ID = "#workspaces_radio_set"
@@ -27,11 +27,11 @@ def create_file_system_event(src_path, event_type, is_directory):
     return file_system_event
 
 
-class TestTerryApp:
+class TestTerraLandApp:
     """
-    Feature: Terry Main Screen
+    Feature: TerraLand Main Screen
         As a user
-        I want to interact with the Terry interface
+        I want to interact with the TerraLand interface
         So that I can manage Terraform configurations effectively
     """
 
@@ -39,7 +39,7 @@ class TestTerryApp:
     async def test_main_screen(self, app):
         """
         Scenario: Viewing and selecting Terraform files
-            Given the Terry application is launched
+            Given the TerraLand application is launched
             Then the main screen is displayed with "github-dark" theme
             And workspaces, project_tree, state_files, console_log and preview content component are rendered
 

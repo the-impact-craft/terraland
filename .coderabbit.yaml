@@ -9,21 +9,21 @@ reviews:
     review_status: true
     collapse_walkthrough: false
     path_instructions:
-        - path: "src/terry/domain/**/*.py"
+        - path: "src/terraland/domain/**/*.py"
           instructions: |
             - Ensure domain models are immutable and follow DDD principles
             - Verify that domain services are interface-driven
             - Check for proper exception handling and domain-specific exceptions
             - Validate that domain logic is independent of infrastructure
             - Ensure pythonic codestyle and best practices are followed
-        - path: "src/terry/infrastructure/**/*.py"
+        - path: "src/terraland/infrastructure/**/*.py"
           instructions: |
             - Verify proper implementation of domain interfaces
             - Check for appropriate error handling and mapping to domain exceptions
             - Ensure infrastructure concerns are properly isolated
             - Validate dependency injection usage
             - Ensure pythonic codestyle and best practices are followed
-        - path: "src/terry/presentation/**/*.py"
+        - path: "src/terraland/presentation/**/*.py"
           instructions: |
             - Review UI component separation and responsibility
             - Check proper use of dependency injection

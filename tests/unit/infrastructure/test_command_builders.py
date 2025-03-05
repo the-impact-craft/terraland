@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from terry.domain.terraform.core.entities import PlanSettings, InitSettings, ValidateSettings, ApplySettings, Variable
-from terry.infrastructure.terraform.core.commands_builders import (
+from terraland.domain.terraform.core.entities import PlanSettings, InitSettings, ValidateSettings, ApplySettings, Variable
+from terraland.infrastructure.terraform.core.commands_builders import (
     TerraformPlanCommandBuilder,
     TerraformInitCommandBuilder,
     TerraformValidateCommandBuilder,

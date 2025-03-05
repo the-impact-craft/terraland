@@ -3,9 +3,9 @@ import pytest
 from unittest.mock import patch, Mock
 import subprocess
 
-from terry.infrastructure.file_system.services import FileSystemService
-from terry.infrastructure.file_system.exceptions import FileSystemGrepException, ReadFileException, ListDirException
-from terry.domain.file_system.entities import SearchResultOutput, ListDirOutput
+from terraland.infrastructure.file_system.services import FileSystemService
+from terraland.infrastructure.file_system.exceptions import FileSystemGrepException, ReadFileException, ListDirException
+from terraland.domain.file_system.entities import SearchResultOutput, ListDirOutput
 
 
 class TestFileSystemService:

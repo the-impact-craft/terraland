@@ -1,7 +1,7 @@
 import pytest
 from textual.widgets import DirectoryTree
 
-from terry.presentation.cli.screens.main.containers.project_tree import TfDirectoryTree
+from terraland.presentation.cli.screens.main.containers.project_tree import TfDirectoryTree
 
 
 class TestProjectTree:

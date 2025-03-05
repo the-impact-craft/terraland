@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from terry.domain.operation_system.entities import OperationSystem, EnvVariableFilter, Variable
-from terry.infrastructure.operation_system.exceptions import EnvVarOperationSystemException
+from terraland.domain.operation_system.entities import OperationSystem, EnvVariableFilter, Variable
+from terraland.infrastructure.operation_system.exceptions import EnvVarOperationSystemException
 
 
 class TestOperationSystemService:

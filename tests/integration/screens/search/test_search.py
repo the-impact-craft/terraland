@@ -1,6 +1,6 @@
 import pytest
 
-from terry.presentation.cli.screens.search.main import SearchScreen
+from terraland.presentation.cli.screens.search.main import SearchScreen
 
 # Constants for maintainability
 SEARCH_KEY_BINDING = "ctrl+f"

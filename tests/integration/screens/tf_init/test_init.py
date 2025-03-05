@@ -1,9 +1,9 @@
 import pytest
 from textual.widgets import Static
 
-from terry.domain.terraform.core.entities import TerraformInitSettingsAttributes
-from terry.presentation.cli.widgets.form.key_value_block import KeyValueBlock
-from terry.presentation.cli.screens.tf_init.main import InitSettingsScreen
+from terraland.domain.terraform.core.entities import TerraformInitSettingsAttributes
+from terraland.presentation.cli.widgets.form.key_value_block import KeyValueBlock
+from terraland.presentation.cli.screens.tf_init.main import InitSettingsScreen
 from tests.integration.utils import click
 
 

@@ -2,16 +2,16 @@ from unittest.mock import patch
 
 import pytest
 
-from terry.domain.terraform.core.entities import TerraformPlanSettingsAttributes
-from terry.presentation.cli.widgets.buttons.add_key_value_button import AddKeyValueButton
-from terry.presentation.cli.widgets.buttons.delete_button import DeleteButton
-from terry.presentation.cli.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
-from terry.presentation.cli.widgets.buttons.view_secret_field_button import ViewSecretFieldButton
-from terry.presentation.cli.widgets.clickable_icon import ClickableIcon
-from terry.presentation.cli.widgets.form.file_selection_block import FileSelectionBlock
-from terry.presentation.cli.widgets.form.key_value_block import KeyValueBlock
-from terry.presentation.cli.screens.file_system_navigation.main import FileSystemNavigationModal
-from terry.presentation.cli.screens.tf_plan.main import PlanSettingsScreen
+from terraland.domain.terraform.core.entities import TerraformPlanSettingsAttributes
+from terraland.presentation.cli.widgets.buttons.add_key_value_button import AddKeyValueButton
+from terraland.presentation.cli.widgets.buttons.delete_button import DeleteButton
+from terraland.presentation.cli.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
+from terraland.presentation.cli.widgets.buttons.view_secret_field_button import ViewSecretFieldButton
+from terraland.presentation.cli.widgets.clickable_icon import ClickableIcon
+from terraland.presentation.cli.widgets.form.file_selection_block import FileSelectionBlock
+from terraland.presentation.cli.widgets.form.key_value_block import KeyValueBlock
+from terraland.presentation.cli.screens.file_system_navigation.main import FileSystemNavigationModal
+from terraland.presentation.cli.screens.tf_plan.main import PlanSettingsScreen
 from tests.integration.utils import DEFAULT_SCREEN_ID, enter, click
 
 
@@ -420,7 +420,7 @@ class TestPlanScreen:
             # Verify the settings were applied
 
             apply_button = self._get_button_by_id(pilot, self.APPLY_BUTTON_ID)
-            with patch("terry.presentation.cli.screens.main.main.Terry.run_tf_action") as mock:
+            with patch("terraland.presentation.cli.screens.main.main.TerraLand.run_tf_action") as mock:
                 await click(pilot, apply_button)
                 mock.assert_called()
 
@@ -458,7 +458,7 @@ class TestPlanScreen:
             destroy_checkbox.remove()
 
             apply_button = self._get_button_by_id(pilot, self.APPLY_BUTTON_ID)
-            with patch("terry.presentation.cli.screens.main.main.Terry.run_tf_action") as mock:
+            with patch("terraland.presentation.cli.screens.main.main.TerraLand.run_tf_action") as mock:
                 await click(pilot, apply_button)
                 mock.assert_not_called()
             self._assert_screen_is_plan_settings(pilot)
@@ -479,7 +479,7 @@ class TestPlanScreen:
             env_vars_block.remove()
 
             apply_button = self._get_button_by_id(pilot, self.APPLY_BUTTON_ID)
-            with patch("terry.presentation.cli.screens.main.main.Terry.run_tf_action") as mock:
+            with patch("terraland.presentation.cli.screens.main.main.TerraLand.run_tf_action") as mock:
                 await click(pilot, apply_button)
                 mock.assert_not_called()
             self._assert_screen_is_plan_settings(pilot)

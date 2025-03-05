@@ -1,5 +1,5 @@
 [project]
-name = "terry"
+name = "terraland"
 version = "1.0.0"
 description = "UI for Terraform"
 dynamic = ["dependencies"]
@@ -9,7 +9,7 @@ authors = [
 readme = {file = "README.md", content-type = "text/markdown"}
 
 [project.scripts]
-terry = "terry.presentation.cli.app:main"
+terraland = "terraland.presentation.cli.app:main"
 
 [build-system]
 requires = ["setuptools >= 61.0",  "setuptools-scm"]
@@ -21,7 +21,7 @@ dependencies = { file = ["./requirements/requirements-base.txt"] }
 [tool.coverage.run]
 branch = true
 source = [
-    "src/terry",
+    "src/terraland",
 ]
 command_line = "-m pytest tests/ -v"
 

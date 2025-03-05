@@ -3,12 +3,12 @@ import pytest
 from unittest.mock import patch, Mock
 
 
-from terry.infrastructure.terraform.workspace.services import WorkspaceService
-from terry.infrastructure.terraform.workspace.exceptions import (
+from terraland.infrastructure.terraform.workspace.services import WorkspaceService
+from terraland.infrastructure.terraform.workspace.exceptions import (
     TerraformWorkspaceListException,
     TerraformWorkspaceSwitchException,
 )
-from terry.domain.terraform.workspaces.entities import WorkspaceListOutput
+from terraland.domain.terraform.workspaces.entities import WorkspaceListOutput
 
 
 class TestWorkspaceService:

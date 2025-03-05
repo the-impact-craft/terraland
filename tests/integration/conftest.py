@@ -4,12 +4,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from terry.domain.file_system.entities import ListDirOutput
-from terry.domain.operation_system.entities import OperationSystem, Variable
-from terry.domain.terraform.core.entities import TerraformVersion
-from terry.domain.terraform.workspaces.entities import WorkspaceListOutput, Workspace
-from terry.presentation.cli.di_container import DiContainer
-from terry.presentation.cli.screens.main.main import Terry
+from terraland.domain.file_system.entities import ListDirOutput
+from terraland.domain.operation_system.entities import OperationSystem, Variable
+from terraland.domain.terraform.core.entities import TerraformVersion
+from terraland.domain.terraform.workspaces.entities import WorkspaceListOutput, Workspace
+from terraland.presentation.cli.di_container import DiContainer
+from terraland.presentation.cli.screens.main.main import TerraLand
 
 
 @pytest.fixture
@@ -152,7 +152,7 @@ def app(
     operation_system_service: mock.Mock,
 ):
     """
-    Creates and initializes an Terry instance configured with the provided mock
+    Creates and initializes an TerraLand instance configured with the provided mock
     services and temporary path. This pytest fixture is responsible for setting up
     dependency injection and overriding the necessary services within the DI
     container to facilitate unit testing.
@@ -162,7 +162,7 @@ def app(
     :param terraform_core_service: A mocked service for Terraform's core functionalities.
     :param file_system_service: A mocked service for file system-related operations.
     :param operation_system_service: A mocked service for OS-related operations.
-    :return: An instance of Terry configured for testing.
+    :return: An instance of TerraLand configured for testing.
     """
 
     cache_mock = MagicMock()
@@ -171,7 +171,7 @@ def app(
     di_container.config.work_dir.from_value(tmp_path)
     di_container.config.animation_enabled.from_value(True)
     di_container.cache.override(cache_mock)
-    di_container.wire(packages=["terry.presentation.cli", "tests"])
+    di_container.wire(packages=["terraland.presentation.cli", "tests"])
 
     with (
         di_container.workspace_service.override(workspace_service),
@@ -179,4 +179,4 @@ def app(
         di_container.operation_system_service.override(operation_system_service),
         di_container.terraform_core_service.override(terraform_core_service),
     ):
-        return Terry(tmp_path)
+        return TerraLand(tmp_path)

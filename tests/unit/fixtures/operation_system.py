@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from terry.infrastructure.operation_system.services import OperationSystemService
+from terraland.infrastructure.operation_system.services import OperationSystemService
 
 
 @pytest.fixture

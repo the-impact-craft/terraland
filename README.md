@@ -4,14 +4,14 @@
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-# Terry - The Visual Terraform CLI
+# TerraLand - The Visual Terraform CLI
 
-Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance your workflow with an intuitive UI and real-time validation. Whether you're managing complex infrastructure or just getting started with Terraform, Terry provides a smooth experience right from your terminal.
+TerraLand is a sleek and minimalistic CLI editor for Terraform, designed to enhance your workflow with an intuitive UI and real-time validation. Whether you're managing complex infrastructure or just getting started with Terraform, TerraLand provides a smooth experience right from your terminal.
 
 ## 🚀 Features
 
 - 🌎 **Workspace Management**: Easily switch between different Terraform workspaces.
-    ![switch_workspace.gif](media/switch_workspace.gif)[](https://github.com/the-impact-craft/terry/blob/main/media/demo1.gif)
+    ![switch_workspace.gif](media/switch_workspace.gif)[](https://github.com/the-impact-craft/terraland/blob/main/media/demo1.gif)
 
 
 - 📂 **Project Explorer**: View your Terraform files and directory structure effortlessly.
@@ -32,13 +32,13 @@ Terry is a sleek and minimalistic CLI editor for Terraform, designed to enhance 
 ## 🛠 Installation
 
 ```bash
-pip install git+https://github.com/the-impact-craft/terry.git
+pip install git+https://github.com/the-impact-craft/terraland.git
 ```
 
 ## 📌 Usage
 
 ```bash
-terry
+terraland
 ```
 
 Navigate through workspaces, view state files, and manage your Terraform infrastructure—all from a single, interactive terminal interface.
@@ -56,11 +56,11 @@ Feel free to open discussions to share your ideas.
 
 ## 📜 License
 
-Terry is released under the MIT License.
+TerraLand is released under the MIT License.
 
 ---
 
-🚀 Get started with Terry and simplify your Terraform workflow!
+🚀 Get started with TerraLand and simplify your Terraform workflow!
 
 
 ## Development instructions
@@ -77,7 +77,7 @@ Run in dev mode:
 pip install textual-dev
 cd src
 export PYTHONPATH="$PYTHONPATH:$PWD" && 
-textual run --dev terry/presentation/cli/app.py
+textual run --dev terraland/presentation/cli/app.py
 ```
 
 Run tests:

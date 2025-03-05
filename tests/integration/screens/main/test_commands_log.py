@@ -1,7 +1,7 @@
 import pytest
 from textual.widgets import RichLog
 
-from terry.settings import CommandStatus
+from terraland.settings import CommandStatus
 
 
 class TestCommandsLog:

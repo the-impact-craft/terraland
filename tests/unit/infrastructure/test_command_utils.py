@@ -1,7 +1,7 @@
 import pytest
 from io import StringIO
-from terry.infrastructure.shared.command_utils import process_stdout_stderr, clean_up_command_output
-from terry.infrastructure.shared.exceptions import CommandExecutionException
+from terraland.infrastructure.shared.command_utils import process_stdout_stderr, clean_up_command_output
+from terraland.infrastructure.shared.exceptions import CommandExecutionException
 
 
 def test_process_stdout_simple():

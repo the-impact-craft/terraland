@@ -4,9 +4,9 @@ from textual.pilot import Pilot
 from textual.widget import Widget
 from textual.widgets import RadioSet
 
-from terry.domain.terraform.workspaces.entities import Workspace
-from terry.infrastructure.terraform.workspace.exceptions import TerraformWorkspaceSwitchException
-from terry.presentation.cli.screens.main.containers.workspaces import Workspaces
+from terraland.domain.terraform.workspaces.entities import Workspace
+from terraland.infrastructure.terraform.workspace.exceptions import TerraformWorkspaceSwitchException
+from terraland.presentation.cli.screens.main.containers.workspaces import Workspaces
 
 # Constants
 WORKSPACES_COMPONENT_ID = "#workspaces"
@@ -16,9 +16,9 @@ ERROR_COMPONENT_NOT_FOUND = "Component {component_id} not found"
 
 class TestWorkspaces:
     """
-    Feature: Terry Main Screen
+    Feature: TerraLand Main Screen
         As a user
-        I want to interact with the Terry interface
+        I want to interact with the TerraLand interface
         So that I can manage Terraform configurations effectively
     """
 
