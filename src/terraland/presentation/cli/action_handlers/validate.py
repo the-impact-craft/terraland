@@ -30,4 +30,3 @@ class ValidateHandler(BaseTerraformActionHandler):
             self.app.log_success("Project has been validated.", output.command, output.output)
         except TerraformValidateException as ex:
             self.app.log_error("Project validation failed.", ex.command, ex.message)
-
