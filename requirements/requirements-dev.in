@@ -1,4 +1,5 @@
 -r requirements-base.in
+pip-compile-multi==2.7.1
 textual-dev == 1.7.0
 pytest==8.3.4
 coverage==7.6.10

@@ -1,12 +1,13 @@
 [project]
 name = "terraland"
-version = "1.0.0"
-description = "UI for Terraform"
+version = "0.1.1"
+requires-python = ">= 3.12"
+description = "Terminal IDE for Terraform"
 dynamic = ["dependencies"]
 authors = [
   {name = "Bohdana Kuzmenko", email = "bogdana.kuzmenko.16@gmail.com"},
 ]
-readme = {file = "README.md", content-type = "text/markdown"}
+readme = {file = "PYPI_README.md", content-type = "text/markdown"}
 
 [project.scripts]
 terraland = "terraland.presentation.cli.app:main"
@@ -24,6 +25,10 @@ source = [
     "src/terraland",
 ]
 command_line = "-m pytest tests/ -v"
+
+[project.urls]
+Homepage = "https://github.com/the-impact-craft/terraland"
+Issues = "https://github.com/the-impact-craft/terraland/issues"
 
 [tool.coverage.report]
 fail_under = 70
