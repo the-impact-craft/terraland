@@ -28,10 +28,8 @@ jobs:
         with:
           coverageCommand: coverage xml
           debug: true
-      - name: Build qlty.sh coverage export
-        run: coverage lcov
       - name: Publish code coverage to qlty.sh
         uses: qltysh/qlty-action/coverage@main
         with:
           coverage-token: ${{ vars.QLTY_COVERAGE_TOKEN }}
-          files: coverage.lcov
+          files: coverage.xml
