@@ -76,22 +76,20 @@ class FileSystemService(BaseFileSystemService):
         text_limit = max(text_limit, 0)
         command = ["grep", "-nr", pattern, str(self.work_dir)]
         try:
-            result = subprocess.run(command, capture_output=True, check=True)
-            result = result.stdout.decode("utf-8").split("\n")
-            result = [i.strip() for i in result if i.strip().startswith(str(self.work_dir))]
-            # Remove the last empty line and the line that shows the total number of results
-            total_search_result = len(result)
-            result = [value.split(":", 2) for value in result[:result_limit]]
-            result = [
+            result = subprocess.run(command, capture_output=True, check=True, text=True)
+            lines = result.stdout.splitlines()
+            filtered_lines = [line for line in lines if line.startswith(str(self.work_dir))]
+            total_search_result = len(filtered_lines)
+            results = [
                 SearchResult(
                     text=value[2].strip()[:text_limit],
                     file_name=str(Path(value[0]).relative_to(self.work_dir)),
                     line=int(value[1]),
                 )
-                for value in result
+                for value in (line.split(":", 2) for line in filtered_lines[:result_limit])
                 if len(value) == 3
             ]
-            return SearchResultOutput(pattern=pattern, output=result, total=total_search_result)
+            return SearchResultOutput(pattern=pattern, output=results, total=total_search_result)
 
         except subprocess.CalledProcessError as e:
             raise FileSystemGrepException(e.stderr.decode())

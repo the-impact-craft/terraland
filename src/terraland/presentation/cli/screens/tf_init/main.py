@@ -20,7 +20,6 @@ from terraland.presentation.cli.commands_descriptions import (
     INIT_PLUGIN_DIR_DESCRIPTION,
     INIT_TEST_DIRECTORY_DESCRIPTION,
 )
-from terraland.presentation.cli.messages.tf_init_action_request import InitActionRequest
 from terraland.presentation.cli.widgets.buttons.add_key_value_button import AddKeyValueButton
 from terraland.presentation.cli.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
 from terraland.presentation.cli.widgets.form.checkbox_settings_block import CheckboxSettingBlock
@@ -146,11 +145,11 @@ class InitSettingsScreen(BaseTfSettingsModalScreen):
         self.query_one(f"#{self.CONTAINER_ID}").border_title = "Init Settings"
 
     @on(InitSettingsScreenControlLabel.Close)
-    async def close(self, _: InitSettingsScreenControlLabel.Close):
-        self.app.pop_screen()
+    def close(self, _: InitSettingsScreenControlLabel.Close):
+        self.dismiss()
 
     @on(InitSettingsScreenControlLabel.Apply)
-    async def apply(self, _: InitSettingsScreenControlLabel.Apply):
+    def apply(self, _: InitSettingsScreenControlLabel.Apply):
         result = self._initialize_result()
 
         result.update(
@@ -191,8 +190,8 @@ class InitSettingsScreen(BaseTfSettingsModalScreen):
             return
 
         settings = InitSettings(**result)
-        self.post_message(InitActionRequest(settings))  # pyright: ignore [reportArgumentType]
-        self.app.pop_screen()
+        self.dismiss(settings)
+
 
     def _initialize_result(self) -> dict:
         """Initialize the result dictionary with default values."""

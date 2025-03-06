@@ -1,0 +1,44 @@
+SearchScreen {
+    align: center middle;
+}
+
+#search_container {
+    padding: 0 1;
+    width: 100;
+    height: 7;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+#search_result {
+    padding: 0 1;
+    width: 100;
+    height: 11;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+.search_result_item {
+    height: 2;
+    padding: 0 0;
+    margin: 0 0;
+    layout: grid;
+    grid-size: 2 1;
+}
+
+.search_result_item_path {
+     content-align: right top;
+     color: $text-muted;
+}
+
+.search_result_total {
+    width: 100%;
+}
+
+#search_result_empty {
+    content-align-horizontal: center;
+    content-align-vertical: middle;
+    width: 100%;
+    height: 1fr;
+    padding: 1;
+}

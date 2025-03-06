@@ -27,39 +27,25 @@ class Click:
     label: str
 
 
+class ResultLine(ListItem):
+    
+    def __init__(self, search_result: SearchResult, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_result = search_result
+    
+    def compose(self) -> ComposeResult:
+        search_line = f"{self.search_result.file_name}:{self.search_result.line}"
+        with Horizontal(classes="search_result_item"):
+            yield Static(self.search_result.text, classes="search_result_item_text", markup=False)
+            yield Static(search_line, classes="search_result_item_path", name=search_line, markup=False)
+    
+
 class ResultComponent(Widget):
+    RESULT_FILES_LIST_COMPONENT_ID = "search_result_list"
+    
     search_result: reactive[List[SearchResult] | None] = reactive([], recompose=True)
     total_search_result: reactive[int] = reactive(0, recompose=True)
 
-    DEFAULT_CSS = """
-    .search_result_item {
-        height: 2;
-        padding: 0 0;
-        margin: 0 0;
-        layout: grid;
-        grid-size: 2 1;
-    }
-
-    .search_result_item_path {
-         content-align: right top;
-         color: $text-muted;
-    }
-
-    .search_result_total {
-        width: 100%;
-    }
-
-    #search_result_empty {
-        content-align-horizontal: center;
-        content-align-vertical: middle;
-        width: 100%;
-        height: 1fr;
-        padding: 1;
-    }
-
-    """
-
-    RESULT_FILES_LIST_COMPONENT_ID = "search_result_list"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -78,33 +64,21 @@ class ResultComponent(Widget):
         Attributes:
             self.search_result (list): A list of tuples containing search result text and file path.
         """
-        if self.search_result is None:
-            yield LoadingIndicator()
-        elif len(self.search_result) == 0:
-            yield Label("No results found.", variant="secondary", id="search_result_empty")
-        else:
-            yield ListView(
-                *[
-                    ListItem(
-                        Horizontal(
-                            Static(item.text, classes="search_result_item_text"),
-                            Static(
-                                item.file_name + ":" + str(item.line),
-                                classes="search_result_item_path",
-                                name=item.file_name + ":" + str(item.line),
-                            ),
-                            classes="search_result_item",
-                        )
-                    )
-                    for item in self.search_result
-                ],
-                id=self.RESULT_FILES_LIST_COMPONENT_ID,
+        if not self.search_result:
+            yield LoadingIndicator() if self.search_result is None else Label(
+                "No results found.", variant="secondary", id="search_result_empty"
             )
-            yield Label(
-                f"Found {self.total_search_result} results. Shown top {min(20, self.total_search_result)} results",
-                variant="secondary",
-                classes="search_result_total",
-            )
+            return
+
+        yield ListView(
+            *(ResultLine(item) for item in self.search_result),
+            id=self.RESULT_FILES_LIST_COMPONENT_ID,
+        )
+        yield Label(
+            f"Found {self.total_search_result} results. Shown top {min(20, self.total_search_result)} results",
+            variant="secondary",
+            classes="search_result_total",
+        )
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         """
@@ -128,23 +102,20 @@ class ResultComponent(Widget):
                 2. The same list item is clicked twice
             - Triggers a file double-click event when conditions are met.
         """
-
         try:
             label = event.item.query_one(".search_result_item_path").name
-            if not label:
-                raise ValueError("Invalid format: no name")
-            if ":" not in label:
-                raise ValueError("Invalid format: missing line number")
+            if not label or ":" not in label:
+                raise ValueError("Invalid format: missing name or line number")
             path, line_str = label.split(":", 1)
             line = int(line_str)
         except (ValueError, TypeError) as e:
             self.notify(f"Invalid search result format: {str(e)}", severity="error")
             return
+
         if event.list_view.id == self.RESULT_FILES_LIST_COMPONENT_ID:
             current_click = Click(time(), label)
-            # check click (enter)
             if self._is_double_click(current_click):
-                self.post_message(FileSelect(Path(path), int(line) - 1))
+                self.post_message(FileSelect(Path(path), line - 1))
                 self.app.pop_screen()
 
             self.last_file_click = current_click
@@ -161,27 +132,7 @@ class ResultComponent(Widget):
 class SearchScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
-    DEFAULT_CSS = """
-    SearchScreen {
-        align: center middle;
-    }
-
-    #search_container {
-        padding: 0 1;
-        width: 100;
-        height: 7;
-        border: thick $background 80%;
-        background: $surface;
-    }
-
-    #search_result {
-        padding: 0 1;
-        width: 100;
-        height: 11;
-        border: thick $background 80%;
-        background: $surface;
-    }
-    """
+    CSS_PATH = "styles.tcss"
 
     @inject
     def __init__(
@@ -256,8 +207,8 @@ class SearchScreen(Screen):
             return
 
         if self.search == search_value:
-            self.query_one(ResultComponent).search_result = search_result.output
-            self.query_one(ResultComponent).total_search_result = search_result.total
+            result_component.search_result = search_result.output
+            result_component.total_search_result = search_result.total
 
     async def _debounced_search(self, value: str) -> None:
         """
@@ -288,12 +239,13 @@ class SearchScreen(Screen):
             - Updates the `search_result` of the `ResultComponent` with formatted search results.
         """
         self.search = changed.value
+        result_component = self.query_one(ResultComponent)
 
         if not self.search:
-            self.query_one(ResultComponent).search_result = []
+            result_component.search_result = []
             return
 
-        self.query_one(ResultComponent).search_result = None
+        result_component.search_result = None
 
         if self._search_task:
             self._search_task.cancel()

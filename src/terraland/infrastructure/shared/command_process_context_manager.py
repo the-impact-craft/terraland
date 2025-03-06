@@ -72,17 +72,15 @@ class CommandProcessContextManager:
         """
         Terminates the process and ensures all streams are closed.
         """
+        if not self.process:
+            return
+
         try:
-            if not self.process:
-                return
-            if self.process.stdin:
-                self.process.stdin.close()
-            if self.process.stdout:
-                self.process.stdout.close()
-            if self.process.stderr:
-                self.process.stderr.close()
-            if self.process:
-                self.process.terminate()  # Gracefully terminate the process
+            for stream in (self.process.stdin, self.process.stdout, self.process.stderr):
+                if stream:
+                    stream.close()
+
+            self.process.terminate()  # Gracefully terminate the process
             self.process = None
         except subprocess.TimeoutExpired:
             self.process.kill()  # type: ignore # Force kill if it doesn't terminate in time

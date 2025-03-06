@@ -6,7 +6,6 @@ from textual.widgets import Static, Rule
 
 from terraland.domain.terraform.core.entities import TerraformValidateSettingsAttributes, ValidateSettings
 from terraland.presentation.cli.commands_descriptions import VALIDATE_DESCRIPTION, VALIDATE_NO_TESTS_DESCRIPTION
-from terraland.presentation.cli.messages.tf_validate_action_request import ValidateActionRequest
 from terraland.presentation.cli.widgets.buttons.open_file_navigator_modal_button import FileNavigatorModalButton
 from terraland.presentation.cli.widgets.form.checkbox_settings_block import CheckboxSettingBlock
 from terraland.presentation.cli.widgets.modal_control_label import ModalControlLabel
@@ -54,11 +53,11 @@ class ValidateSettingsScreen(BaseTfSettingsModalScreen):
             )
 
     @on(ValidateSettingsScreenControlLabel.Close)
-    async def close(self, _: ValidateSettingsScreenControlLabel.Close):
-        self.app.pop_screen()
+    def close(self, _: ValidateSettingsScreenControlLabel.Close):
+        self.dismiss()
 
     @on(ValidateSettingsScreenControlLabel.Apply)
-    async def apply(self, _: ValidateSettingsScreenControlLabel.Apply):
+    def apply(self, _: ValidateSettingsScreenControlLabel.Apply):
         result = self._initialize_result()
 
         result.update(self.process_checkbox_settings([TerraformValidateSettingsAttributes.NO_TESTS]))
@@ -69,8 +68,7 @@ class ValidateSettingsScreen(BaseTfSettingsModalScreen):
             return
 
         settings = ValidateSettings(**result)
-        self.post_message(ValidateActionRequest(settings))  # pyright: ignore [reportArgumentType]
-        self.app.pop_screen()
+        self.dismiss(settings)
 
     def _initialize_result(self) -> dict:
         """Initialize the result dictionary with default values."""

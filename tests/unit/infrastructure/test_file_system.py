@@ -42,7 +42,7 @@ class TestFileSystemService:
 
         grep_results = file_system_service_with_grep_files._mocked_grep_results
         mock_result = Mock()
-        mock_result.stdout = "\n".join(grep_results).encode("utf-8")
+        mock_result.stdout = "\n".join(grep_results)
         mock_result.returncode = 0
 
         max_response_number = 1
@@ -86,7 +86,7 @@ class TestFileSystemService:
 
         grep_results = file_system_service_with_grep_files._mocked_grep_results
         mock_result = Mock()
-        mock_result.stdout = "\n".join(grep_results).encode("utf-8")
+        mock_result.stdout = "\n".join(grep_results)
         mock_result.returncode = 0
 
         with patch("subprocess.run", return_value=mock_result):

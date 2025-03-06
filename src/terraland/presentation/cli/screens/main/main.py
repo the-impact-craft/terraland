@@ -34,7 +34,7 @@ from terraland.presentation.cli.widgets.buttons.sidebar_button import SidebarBut
 from terraland.presentation.cli.widgets.resizable_rule import ResizingRule
 from terraland.presentation.cli.di_container import DiContainer
 from terraland.presentation.cli.entities.terraform_command_executor import TerraformCommandExecutor
-from terraland.presentation.cli.screens.add_file.main import AddFileScreen
+from terraland.presentation.cli.screens.create_file.main import CreateFileScreen
 from terraland.presentation.cli.screens.main.constants import (
     MainScreenIdentifiers,
     Orientation,
@@ -139,7 +139,7 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
         self.workspaces: List[Workspace] = []
         self.selected_workspace: Workspace | None = None
         self.terraform_version: TerraformVersion | None = None
-        self._tf_command_executor: TerraformCommandExecutor | None = None
+        self.tf_command_executor: TerraformCommandExecutor | None = None
 
         self.workspace_service: WorkspaceService = workspace_service
         self.terraform_core_service: TerraformCoreService = terraform_core_service
@@ -270,10 +270,40 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
         Returns:
             None
         """
-        add_file_screen = AddFileScreen(
+        create_file_screen = CreateFileScreen(
             self.file_system_service, self.work_dir, self.active_dir.relative_to(self.work_dir)
         )
-        self.push_screen(add_file_screen)
+        self.push_screen(create_file_screen)
+        
+    def log_success(self, message: str, command, details: str):
+        """
+        Log the success of a Terraform command.
+
+        This method logs the success of a Terraform command by writing the output and command to the log.
+
+        Args:
+            message (str): Command main message.
+            command (str): The Terraform command that was executed
+            details (str): The output of the Terraform command that was executed
+        """
+        self.notify(message, severity="information")  # type: ignore
+        self.log.info(details)  # type: ignore
+        self.write_command_log(command, CommandStatus.SUCCESS, details)  # type: ignore
+
+    def log_error(self, message: str, command: str, error_message: str):
+        """
+        Log the error of a Terraform command.
+
+        This method logs the error of a Terraform command by writing the error and command to the log.
+
+        Args:
+            message (str): Command main message.
+            command (str): The Terraform command that was executed
+            error_message (str): The error message of the Terraform command that was executed
+        """
+        self.log.error(error_message)  # type: ignore
+        self.notify(message, severity="error")  # type: ignore
+        self.write_command_log(command, CommandStatus.ERROR, error_message)  # type: ignore
 
     def write_command_log(self, message: str, status: CommandStatus, details: str = "") -> None:
         """
@@ -315,11 +345,11 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
             This method only processes modification events for files that are currently open in the editor.
             It ignores directory events and non-modification events.
         """
-        if not isinstance(event, FileSystemEvent):
-            return
-        if event.is_directory:
-            return
-        if event.event_type != "modified":
+        if (
+            not isinstance(event, FileSystemEvent)
+            or event.is_directory
+            or event.event_type != "modified"
+        ):
             return
 
         abs_changed_file_path = Path(event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path)
@@ -331,28 +361,28 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
             content_tabs = self.query_one(Content)
         except NoMatches:
             return
-        if changed_file_path not in content_tabs.files_contents:
-            return
 
-        content = abs_changed_file_path.read_text()
-        content_tabs.update(changed_file_path, content)
+        if changed_file_path in content_tabs.files_contents:
+            content = abs_changed_file_path.read_text()
+            content_tabs.update(changed_file_path, content)
 
     def remove_tab_for_deleted_file(self, event: FileSystemEvent):
         """
         Removes the tab from the preview container when a file deletion event is detected.
 
-         Args:
-             event (FileSystemEvent): The file system event containing information about the deleted file.
+        Args:
+            event (FileSystemEvent): The file system event containing information about the deleted file.
         """
+        if (
+            not isinstance(event, FileSystemEvent)
+            or event.is_directory
+            or event.event_type != "deleted"
+        ):
+            return
 
-        if not isinstance(event, FileSystemEvent):
-            return
-        if event.is_directory:
-            return
-        if event.event_type != "deleted":
-            return
-
-        abs_changed_file_path = Path(event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path)
+        abs_changed_file_path = Path(
+            event.src_path.decode() if isinstance(event.src_path, bytes) else event.src_path
+        )
 
         if abs_changed_file_path.exists():
             return
@@ -363,17 +393,15 @@ class TerraLand(App, ResizeContainersWatcherMixin, TerraformActionHandlerMixin, 
         except NoMatches:
             return
 
-        if changed_file_path not in content_tabs.files_contents:
-            return
-
-        tab_id = content_tabs.files_contents.get(changed_file_path, {}).get("id")
-        content_tabs.remove_tab(tab_id, changed_file_path)
+        if changed_file_path in content_tabs.files_contents:
+            tab_id = content_tabs.files_contents[changed_file_path].get("id")
+            content_tabs.remove_tab(tab_id, changed_file_path)
 
     def cleanup(self):
         """Stop and cleanup the file system observer."""
         self.cleanup_observer()
-        if self._tf_command_executor:
-            self._tf_command_executor.cancel()
+        if self.tf_command_executor:
+            self.tf_command_executor.cancel()
 
     def watch_show_history_sidebar(self, show_history_sidebar: bool) -> None:
         """Set or unset visible class when reactive changes."""

@@ -28,7 +28,7 @@ class SystemMonitoringMixin:
                 raise AttributeError(f"Class {cls.__name__} must have attribute {attribute}")
 
         for method in cls.required_methods:
-            if not hasattr(cls, method) or not callable(getattr(cls, method)):
+            if not callable(getattr(cls, method, None)):
                 raise TypeError(f"Class {cls.__name__} must implement method {method}")
 
     def __init__(self):
@@ -101,5 +101,5 @@ class SystemMonitoringMixin:
         self.updated_events_count += 1
         if event.system_event.event_type == "modified":
             self.update_selected_file_content(event.system_event)  # type: ignore #  method is in required_methods
-        if event.system_event.event_type == "deleted":
+        elif event.system_event.event_type == "deleted":
             self.remove_tab_for_deleted_file(event.system_event)  # type: ignore #  method is in required_methods

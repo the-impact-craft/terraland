@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 from watchdog.events import FileSystemEvent, EVENT_TYPE_MODIFIED, EVENT_TYPE_CREATED
 
-from terraland.presentation.cli.messages.tf_format_action_request import FormatActionRequest
 from terraland.presentation.cli.screens.tf_format.main import FormatScope
 from terraland.presentation.cli.screens.main.containers.content import Content
 from terraland.settings import DEFAULT_THEME
@@ -48,21 +47,6 @@ class TestTerraLandApp:
             assert app.theme == DEFAULT_THEME
             for component_id in COMPONENT_IDS:
                 assert pilot.app.query_one(f"#{component_id}") is not None
-
-    @pytest.mark.asyncio
-    async def test_format_current_file_with_no_opened_file_request(self, app):
-        """
-        Scenario: Format request
-            Given the application is running
-            When I request to format the current file
-            Then the format action should not be executed
-        """
-        async with app.run_test() as pilot:
-            # Publish the format request
-            pilot.app.post_message(FormatActionRequest(FORMAT_ACTION_PARAMS))
-
-            await pilot.pause()
-            pilot.app.terraform_core_service.fmt.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_update_selected_file_content(self, app):

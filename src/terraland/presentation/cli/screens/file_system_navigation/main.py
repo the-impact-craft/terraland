@@ -206,7 +206,7 @@ class FileSystemNavigationModal(ModalScreen):
         else:
             self.dismiss(event.path)
 
-    def validate_path(self, path) -> tuple[bool, str]:
+    def validate_path(self, path: Path) -> tuple[bool, str]:
         """
         Validate the given path against a set of predefined validation rules.
 
@@ -226,17 +226,10 @@ class FileSystemNavigationModal(ModalScreen):
             - Stops validation on the first failed rule and returns its error message.
             - Catches and handles any exceptions raised during rule validation.
         """
-        valid = True
-        details = ""
-        if not self.validation_rules:
-            return valid, details
-        for rule in self.validation_rules:
+        for rule in self.validation_rules or []:
             try:
                 if not rule.action(path):
-                    valid = False
-                    details = rule.error_message
-                    break
+                    return False, rule.error_message
             except Exception:
-                valid = False
-                details = rule.error_message
-        return valid, details
+                return False, rule.error_message
+        return True, ""
