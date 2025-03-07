@@ -37,6 +37,12 @@ We prioritize user feedback and real-world use cases to shape our development pr
     - [ ] **Delete**
     - ✅ **List**
     - ✅ **Select**
+- [ ] **File editor** - Improve user experience 
+    - [ ] **HCL lexer** - TerraLand will provide syntax highlighting for HCL files.
+    - [ ] **Dynamic language/format detection**
+    - ✅ **Manual file saving** - Ctrl+S can be used to store changes
+    - [ ] **Auto-save** - Add auto-save mode
+    - [ ] **Modified datetime indicator** - Show user if file has unsaved changes
 - [ ] **Store terraform commands configurations** - TerraLand will allow you to store configurations for terraform commands, making it easier to run them.
 - [ ] **State management** - TerraLand will provide a visual representation of Terraform state files and allow users to manage them effectively.
 - [ ] **UI improvements** - TerraLand will undergo various UI improvements to enhance user experience and productivity.
@@ -54,6 +60,7 @@ We prioritize user feedback and real-world use cases to shape our development pr
 - [ ] **Settings** - TerraLand will allow users to customize settings and configurations to suit their needs.
 - [ ] **Global error handling** - TerraLand will provide better error handling and feedback to users.
 - [ ] **Terraform version dependent features** - TerraLand will provide features based on the Terraform version being used.
-- [ ] **HCL lexer** - TerraLand will provide syntax highlighting for HCL files.
 - [ ] **Resource graph** - TerraLand will provide a visual representation of the infrastructure resources.
 - [ ] **Logging and error reporting** - TerraLand will provide logs and error reporting to help users troubleshoot issues.
+- [ ] **Copy log** - Enable copy action on command log area
+- [ ] **Terminal area** - TerraLand will have area where user may run custom commands manually
