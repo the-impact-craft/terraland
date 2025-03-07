@@ -1,6 +1,6 @@
 ## About
 
-TerraLand is evolving to become the better Terraform UI experience, simplifying infrastructure management while enhancing productivity. Our roadmap outlines the upcoming features, improvements, and integrations we plan to bring to TerraLand.
+TerraLand is evolving to bring better Terraform UI experience, simplifying infrastructure management while enhancing productivity. Our roadmap outlines the upcoming features, improvements, and integrations we plan to bring to TerraLand.
 
 We prioritize user feedback and real-world use cases to shape our development process. If you have suggestions or feature requests, feel free to contribute or open a discussion!
 
