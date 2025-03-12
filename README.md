@@ -1,4 +1,5 @@
 ![Command Center](https://img.shields.io/badge/terraform%20command%20center-45d298?logo=terraform&logoColor=white)
+[![PyPI Downloads](https://static.pepy.tech/badge/terraland)](https://pepy.tech/projects/terraland)
 [![Maintainability](https://qlty.sh/badges/cd586ab2-d5b8-438e-ad72-48ffcb996370/maintainability.svg)](https://qlty.sh/gh/the-impact-craft/projects/terraland)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/62ef5aeefc01a2c5521b/test_coverage)](https://codeclimate.com/repos/67ab4de0fe407500a7cecccf/test_coverage)
 
