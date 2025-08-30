@@ -1,6 +1,6 @@
 [project]
 name = "terraland"
-version = "0.1.2"
+version = "0.1.3"
 requires-python = ">= 3.12"
 description = "Terminal IDE for Terraform"
 dynamic = ["dependencies"]
@@ -12,9 +12,6 @@ readme = {file = "PYPI_README.md", content-type = "text/markdown"}
 [project.scripts]
 terraland = "terraland.presentation.cli.app:main"
 
-[build-system]
-requires = ["setuptools >= 61.0",  "setuptools-scm"]
-build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["./requirements/requirements-base.txt"] }
@@ -51,3 +48,14 @@ exclude_also = [
 
 [tool.black]
 line-length = 127
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["src"]
+sources = ["src"]
+
+[tool.hatch.version]
+path = "src/sourcerer/__init__.py"
