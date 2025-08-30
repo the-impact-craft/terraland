@@ -1,0 +1,151 @@
+init:
+  description: |
+    Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, 
+    downloading modules, etc.
+  disable_backend:
+    description: |
+      (-backend=false) Disable backend or HCP Terraform initialization for this configuration and use what was previously initialized instead.
+  force_copy:
+    description: |
+      (-force-copy) Suppress prompts about copying state data when initializating a new state backend. This is equivalent to providing a 'yes' to all confirmation prompts.
+  disable_download:
+    description: |
+      (-get=false) Disable downloading modules for this configuration.
+  disable_lock:
+    description: |
+      (-lock=false) Disable locking of state files during state operations.
+  reconfigure:
+    description: |
+      (-reconfigure) Reconfigure the backend, ignoring any saved configuration.
+  migrate_state:
+    description: |
+      (-migrate-state) Reconfigure a backend, and attempt to migrate any existing state.
+  upgrade:
+    description: |
+      (-upgrade) Install the latest module and provider versions allowed within configured constraints,
+      overriding th default behavior of selecting exactly the version recorded in the dependency lockfile.
+  ignore_remote_version:
+    description: |
+      (-ignore-remote-version) A rare option used for HCP Terraform and the remote backend only. 
+      Set this to ignore checking that the local and remote Terraform versions use compatible state representations, 
+      making an operation proceed even when there is a potential mismatch. See the documentation on configuring 
+      Terraform with HCP Terraform or Terraform Enterprise for more information.
+  disable_input:
+    description: |
+      (-input=false) Disable interactive prompts. Note that some actions may require interactive prompts and will 
+      error if input is disabled.
+  backend_config:
+    description: |
+      Configuration to be merged with what is in the configuration file's 'backend' block. This can be either a path 
+      to an HCL file with key/value assignments (same format as terraform.tfvars) or a 'key=value' format, and can be 
+      specified multiple times. The backend type must be in the configuration itself.
+  plugin_dir:
+    description: |
+      (-plugin-dir=path) The path to a directory containing plugin binaries. This can be used to override the default
+      search path for plugin binaries.
+  test_directory:
+    description: |
+      (-test-directory=path)  Set the Terraform test directory, defaults to "tests".
+plan:
+  description: |
+    Generates a speculative execution plan, showing what actions Terraform would take to apply the current configuration. 
+    This command will not actually perform the planned actions.
+  destroy:
+    description: |
+      (-destroy) Select the "destroy" planning mode, which creates a plan to destroy all objects currently managed by
+      this Terraform configuration instead of the usual behavior.
+  refresh_only:
+    description: |
+      (-refresh-only) Select the "refresh only" planning mode, which checks whether remote objects still match the
+      outcome of the most recent Terraform apply but does not propose any actions to undo any changes made outside of
+      Terraform.
+  refresh_false:
+    description: |
+      (-refresh=false) Skip checking for external changes to remote objects while creating the plan. This can potentially
+      make planning faster, but at the expense of possibly planning against a stale record of the remote system state.
+  mode_settings:
+    description: |
+      Alternative planning modes that you can use for some special situations where your goal is not just to change the
+      remote system to match your configuration.
+  inline_var:
+    description: |
+      Set a value for one of the input variables in the root module of the configuration. Use this option more than once
+      to set more than one variable.
+  env_var:
+    description: |
+      Environment variables can be used to set variables. The environment variables must be in the format TF_VAR_name and
+      this will be checked last for a value
+  var_file:
+    description: |
+      Load variable values from the given file, in addition to the default files terraform.tfvars and *.auto.tfvars. 
+      Use this option more than once to include more than one variables file.
+  out:
+    description: |
+      (-out=path) Write a plan file to the given path. This can be used as input to the "apply" command.
+validate:
+  description: |
+    Validate the configuration files in a directory, referring only to the configuration and not accessing any remote
+    services such as remote state, provider APIs, etc.
+  no_tests:
+    description: |
+      (-no-tests) If specified, Terraform will not validate test files.
+  test_directory:
+    description: |
+      (-test-directory=path) Set the Terraform test directory, defaults to "tests".
+apply:
+  description: |
+    Creates or updates infrastructure according to Terraform configuration files in the current directory.
+  auto_approve:
+    description: |
+      (-auto-approve) Skip interactive approval of plan before applying.
+  backup:
+    description: |
+      (-backup=path) Path to backup the existing state file before modifying. Defaults to the '-state-out' path with
+      '.backup' extension.
+  disable_backup:
+    description: |
+      (-backup=-) Disable automatic backup of the state file before modifying.
+
+  compact_warnings:
+    description: |
+      (-compact-warnings) If Terraform produces any warnings that are not accompanied by errors, show them in a more
+      compact form that includes only the summary messages.
+  destroy:
+    description: |
+      (-destroy) Destroy Terraform-managed infrastructure. The command "terraform destroy" is a convenience alias for
+      this option.
+  disable_lock:
+    description: |
+      (-lock=false) Don't hold a state lock during the operation. This is dangerous if others might concurrently run
+      commands against the same workspace.
+  input:
+    description: |
+      (-input=true) Ask for input for variables if not directly set.
+  no_color:
+    description: |
+      (-no-color) If specified, output won't contain any color.
+  parallelism:
+    description: |
+      (-parallelism=n) Limit the number of parallel resource operations. Defaults to 10.
+  state:
+    description: |
+      (-state=path) Path to read and save state (unless state-out is specified). Defaults to 'terraform.tfstate'.
+  state_out:
+    description: |
+      (-state-out=path) Path to write state to that is different than '-state'. This can be used to preserve the old
+      state.
+  plan:
+    description: |
+      Path to a Terraform plan file to apply. This plan file can be generated using the 'terraform plan' command.
+  inline_var:
+    description: |
+      Set a value for one of the input variables in the root module of the configuration. Use this option more than once
+      to set more than one variable.
+  env_var:
+    description: |
+      Environment variables can be used to set variables. The environment variables must be in the format TF_VAR_name and
+      this will be checked last for a value
+  var_file:
+    description: |
+      Load variable values from the given file, in addition to the default files terraform.tfvars and *.auto.tfvars. 
+      Use this option more than once to include more than one variables file.

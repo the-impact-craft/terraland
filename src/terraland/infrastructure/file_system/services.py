@@ -14,6 +14,7 @@ from terraland.infrastructure.file_system.exceptions import (
     DeleteDirException,
     MoveFileException,
 )
+from terraland.infrastructure.file_system.utils import custom_sort_key
 
 
 class FileSystemService(BaseFileSystemService):
@@ -125,13 +126,21 @@ class FileSystemService(BaseFileSystemService):
         except Exception as e:
             raise ReadFileException(f"Error reading file: {e}")
 
-    def list_dir(self, path: Path, relative_paths: bool = False) -> ListDirOutput:
+    def list_dir(
+        self,
+        path: Path,
+        relative_paths: bool = False,
+        recursively=False,
+        max_items: int | None = None,
+    ) -> ListDirOutput:
         """
         List all files and directories within the specified directory.
 
         Args:
             path (Path): The path to the directory.
             relative_paths (bool): Whether to return relative paths or full paths.
+            recursively (bool): Whether iterate recursively over the content.
+            max_items (int | None): Maximum number of items to return.
 
         Returns:
              ListDirOutput: A data class containing the list of files and directories within the specified path.
@@ -139,7 +148,7 @@ class FileSystemService(BaseFileSystemService):
                 - directories (list[Path]): Sorted list of directory paths
 
         Raises:
-            ListDirException: If the path is invalid, directory doesn't exist, or path is not a directory.
+            ListDirError: If the path is invalid, directory doesn't exist, or path is not a directory.
 
         """
         if not isinstance(path, Path):
@@ -156,14 +165,24 @@ class FileSystemService(BaseFileSystemService):
             files = []
             directories = []
 
-            for entry in path.iterdir():
+            entries = path.rglob("*") if recursively else path.iterdir()
+            items = 0
+            for entry in entries:
+                if max_items and items > max_items:
+                    raise ListDirException(
+                        f"Too many items, max processable dir size: {max_items}"
+                    )
+                items += 1  # noqa SIM103
                 target = files if entry.is_file() else directories
                 target.append(entry.relative_to(path) if relative_paths else entry)
-            return ListDirOutput(files=files, directories=directories)
+            return ListDirOutput(
+                files=sorted(files, key=custom_sort_key),
+                directories=sorted(directories, key=custom_sort_key),
+            )
         except PermissionError as e:
-            raise ListDirException(f"Access denied: {e}")
+            raise ListDirException(f"Access denied: {e}") from e
         except Exception as e:
-            raise ListDirException(f"Error listing directory: {e}")
+            raise ListDirException(f"Error listing directory: {e}") from e
 
     def create_file(self, path: Path, content: str | None = None) -> None:
         """
