@@ -151,4 +151,4 @@ class TestTerraformCommandOutputScreen:
             assert "Enter a value: two" in get_rich_log_text(command_output)
 
 def get_rich_log_text(rlog: RichLog):
-    return [line.text for line in rlog.lines]
+    return ' '.join([line.text for line in rlog.lines])
