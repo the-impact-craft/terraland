@@ -49,8 +49,9 @@ class TerraformCommandOutputScreen(ModalScreen):
 
     @on(Input.Submitted)
     def _on_input(self, message):
-        if self._text_area is not None:
-            self._text_area.write(message.value)
+        if self._text_area is None:
+            return
+        self._text_area.write(message.value)
 
         if self.stdin is None:
             self.log("STDIN is not available.")

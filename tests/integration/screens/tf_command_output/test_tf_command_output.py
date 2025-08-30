@@ -1,7 +1,7 @@
 import pytest
 from io import StringIO
-from textual.widgets import Input
-from terraland.presentation.cli.screens.tf_command_output.main import CommandOutputComponent, TerraformCommandOutputScreen
+from textual.widgets import Input, RichLog
+from terraland.presentation.cli.screens.tf_command_output.main import TerraformCommandOutputScreen
 
 
 class TestTerraformCommandOutputScreen:
@@ -19,7 +19,7 @@ class TestTerraformCommandOutputScreen:
             await pilot.app.push_screen(screen)
 
             # Verify components
-            assert screen.query_one(CommandOutputComponent) is not None
+            assert screen.query_one(RichLog) is not None
             assert screen.query_one(Input) is not None
             assert screen.query_one(f"#{screen.CONTAINER_ID}") is not None
 
@@ -42,9 +42,9 @@ class TestTerraformCommandOutputScreen:
             await pilot.pause()
 
             # Verify log content
-            command_output = screen.query_one(CommandOutputComponent)
-            assert "First message" in command_output.log_content
-            assert "Second message" in command_output.log_content
+            command_output = screen.query_one(RichLog)
+            assert "First message" in command_output.lines
+            assert "Second message" in command_output.lines
 
     @pytest.mark.asyncio
     async def test_input_handling(self, app):
@@ -69,8 +69,8 @@ class TestTerraformCommandOutputScreen:
             await pilot.pause()
 
             # Verify input is processed
-            command_output = screen.query_one(CommandOutputComponent)
-            assert "Enter a value: hello" in command_output.log_content
+            command_output = screen.query_one(RichLog)
+            assert "Enter a value: hello" in command_output.lines
             assert stdin.getvalue() == "hello\n"
 
     @pytest.mark.asyncio
@@ -146,6 +146,6 @@ class TestTerraformCommandOutputScreen:
             await pilot.pause()
 
             # Verify both inputs are processed
-            command_output = screen.query_one(CommandOutputComponent)
-            assert "Enter a value: one" in command_output.log_content
-            assert "Enter a value: two" in command_output.log_content
+            command_output = screen.query_one(RichLog)
+            assert "Enter a value: one" in command_output.lines
+            assert "Enter a value: two" in command_output.lines
