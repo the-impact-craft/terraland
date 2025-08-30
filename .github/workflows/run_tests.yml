@@ -28,8 +28,3 @@ jobs:
         with:
           coverageCommand: coverage xml
           debug: true
-      - name: Publish code coverage to qlty.sh
-        uses: qltysh/qlty-action/coverage@main
-        with:
-          coverage-token: ${{ vars.QLTY_COVERAGE_TOKEN }}
-          files: coverage.xml
