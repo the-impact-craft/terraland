@@ -21,10 +21,8 @@ jobs:
       - name: Run tests
         run: |
           export PYTHONPATH="$PYTHONPATH:$PWD/src" && coverage run && coverage report -m
-      - name: Publish code coverage to codeclimate
-        uses: paambaati/codeclimate-action@v9.0.0
-        env:
-          CC_TEST_REPORTER_ID: ${{ vars.CC_TEST_REPORTER_ID }}
+      - name: Publish code coverage to qlty.sh
+        uses: qltysh/qlty-action/coverage@main
         with:
-          coverageCommand: coverage xml
-          debug: true
+          coverage-token: ${{ vars.QLTY_COVERAGE_TOKEN }}
+          files: coverage.xml
