@@ -43,8 +43,8 @@ class TestTerraformCommandOutputScreen:
 
             # Verify log content
             command_output = screen.query_one(RichLog)
-            assert "First message" in command_output.lines
-            assert "Second message" in command_output.lines
+            assert "First message" in get_rich_log_text(command_output)
+            assert "Second message" in get_rich_log_text(command_output)
 
     @pytest.mark.asyncio
     async def test_input_handling(self, app):
@@ -70,7 +70,7 @@ class TestTerraformCommandOutputScreen:
 
             # Verify input is processed
             command_output = screen.query_one(RichLog)
-            assert "Enter a value: hello" in command_output.lines
+            assert "Enter a value: hello" in get_rich_log_text(command_output)
             assert stdin.getvalue() == "hello\n"
 
     @pytest.mark.asyncio
@@ -147,5 +147,8 @@ class TestTerraformCommandOutputScreen:
 
             # Verify both inputs are processed
             command_output = screen.query_one(RichLog)
-            assert "Enter a value: one" in command_output.lines
-            assert "Enter a value: two" in command_output.lines
+            assert "Enter a value: one" in get_rich_log_text(command_output)
+            assert "Enter a value: two" in get_rich_log_text(command_output)
+
+def get_rich_log_text(rlog: RichLog):
+    return [line.text for line in rlog.lines]
